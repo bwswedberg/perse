@@ -6,9 +6,16 @@
 
 define([
     'jquery',
+    'calendar/calendarbutton',
+    'general/combobutton',
+    'perplots/perplot',
     // no namespace
     'bootstrap'
-], function ($) {
+], function (
+    $,
+    calendarbutton,
+    perplot
+) {
 
     var perplots = {};
 
@@ -16,6 +23,7 @@ define([
         this.container = $('<div>').attr({'class': 'container-fluid perse-perplots'});;
         this.listeners = [];
         this.metadata = undefined;
+        this.calendarName = 'Gregorian';
         this.plots = [];
     };
 
@@ -24,10 +32,43 @@ define([
         return this;
     };
 
-    perplots.PerPlots.prototype.build = function () {
+    perplots.PerPlots.prototype.build = function (data) {
+        var calendarButtonRow = $('<div>').attr({'class': 'row perse-row'}),
+            calendarButton = new calendarbutton.CalendarButton('Gregorian')
+                .render(calendarButtonRow)
+                .registerListener(this.createCalendarChangedListener);
+
+        this.container.append(calendarButtonRow);
+
+
+        // should be in a forEach loop
+        var plot = new perplot.PerPlot('0')
+            .render(this.container)
+            .registerListener(this.createPerPlotListener())
+            .onDataSetChanged(data, this.metadata);
+        this.plots.push(plot);
 
     };
 
+    perplots.PerPlots.prototype.createCalendarChangedListener = function () {
+        return {
+            context: this,
+            onCalendarChanged: function (event) {
+                this.plots.forEach(function (p) {
+                    p.setCalendarName(event.calendar);
+                });
+            }
+        };
+    };
+
+    perplots.PerPlots.prototype.createPerPlotListener = function () {
+        return {
+            context: this,
+            onFilterChanged: function (event) {
+                console.log('filter changed');
+            }
+        };
+    };
 
     perplots.PerPlots.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {

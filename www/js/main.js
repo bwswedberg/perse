@@ -1,3 +1,9 @@
+/**
+ *  This file is part of PerSE. PerSE is a visual analytics app for
+ *  event periodicity detection and analysis.
+ *  Copyright (C) 2015  Brian Swedberg
+ */
+
 require.config({
     paths: {
         'jquery': 'lib/jquery',
@@ -8,7 +14,8 @@ require.config({
         'ol': 'lib/ol',
         'papaparse': 'lib/papaparse',
         'colorbrewer': 'lib/colorbrewer',
-        'bootstrap': 'lib/bootstrap'
+        'bootstrap': 'lib/bootstrap',
+        'randomcolor': 'lib/randomcolor'
     },
     shim: {
         'jquery': {exports: '$'},
@@ -19,7 +26,8 @@ require.config({
         'ol': {exports: 'ol'},
         'papaparse': {exports: 'Papa'},
         'colorbrewer': {exports: 'colorbrewer'},
-        'bootstrap': {deps: ['jquery']}
+        'bootstrap': {deps: ['jquery']},
+        'randomcolor': {exports: 'randomcolor'}
     }
 });
 

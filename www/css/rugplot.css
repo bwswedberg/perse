@@ -1,0 +1,62 @@
+.histogram-rugplot {
+    position: relative;
+    margin-left: 1em;
+    font-size: .7em;
+}
+
+.rugplot-select {
+    fill: none;
+    stroke-opacity: 0;
+    pointer-events: none;
+    stroke-opacity: 0.2;
+    stroke-width: .5px;
+    shape-rendering: crispEdges;
+}
+
+.rugplot-select.selected {
+    stroke-opacity: 0.2;
+}
+
+.rugplot-background {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .2;
+    stroke-width: .5px;
+    shape-rendering: crispEdges;
+}
+
+.rugplot-background.selected {
+}
+
+.selecting .rugplot-select, .selecting .rugplot-background {
+    fill-opacity: .2;
+}
+
+.rugplot-range {
+}
+
+.rugplot-range > span {
+    margin-right: .2em;
+    margin-left: .2em;
+}
+
+.rugplot-range > input {
+    width: 3.5em;
+}
+
+.perse-perattr-rugplot svg .brush .extent {
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+
+.rugplot-axis path,
+.rugplot-axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    stroke-width: .5px;
+}
+
+.rugplot-axis text {
+    font-size: .31em;
+}

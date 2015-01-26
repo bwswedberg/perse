@@ -1,0 +1,44 @@
+.perse-perattr-barchart {
+    font-size: .7em;
+    position: relative;
+    margin-left: 1em;
+}
+
+/*
+.barchart {
+    position: relative;
+    margin-left: 1em;
+    font: .23em sans-serif;
+}*/
+
+.barchart-bin rect {
+    stroke-width: .5px;
+    stroke: white;
+    shape-rendering: crispEdges;
+}
+
+.barchart-axis path,
+.barchart-axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    stroke-width: .5px;
+}
+
+.barchart-axis text {
+    font-size: .5em;
+
+}
+
+.barchart-bin-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3.5em;
+}
+
+.barchart-axis-label {
+    font-size: 1em;
+    letter-spacing: .05em;
+    shape-rendering: precision;
+}

@@ -1,0 +1,36 @@
+.perse-perwheel-header {
+    text-align: center;
+}
+
+.perse-perwheel-range,
+.perse-perwheel-calendar,
+.perse.perwheel-timewheel {
+    marign-top: 1em;
+    marign-bottom: 1em;
+}
+
+.perse-perwheel-range input {
+    font-size: .9em;
+}
+
+.perse-perwheel-range > * {
+    margin-left: .1em;
+    margin-right: .5em;
+}
+
+.perse-perwheel-range:first-child,
+.perse-perwheel-calendar:first-child,
+.perse.perwheel-timewheel:first-child {
+    marign-left: 2em;
+}
+
+.perse-perwheel-timewheel-mjrlabel,
+.perse-perwheel-timewheel-mnrlabel {
+    font-size: .71em;
+    margin-left: .5em;
+}
+
+.perse-perwheel-timewheel-mnrlabel {
+    font-style: italic;
+    margin-left: .5em;
+}

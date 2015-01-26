@@ -1,0 +1,55 @@
+.perse-perattr-categoricalbarchart {
+    width: 200px;
+    height: 200px;
+}
+
+.categoricalbarchart-chart,
+.categoricalbarchart-axis {
+     font-size: .7em;
+ }
+
+.categoricalbarchart-chart {
+    width: 200px;
+    height: 170px;
+    overflow: auto;
+}
+
+.categoricalbarchart-axis svg path,
+.categoricalbarchart-axis svg line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    stroke-width: 1px;
+}
+
+.categoricalbarchart-axis-label {
+    font-size: 1.1em;
+    letter-spacing: .05em;
+    shape-rendering: precision;
+}
+
+.categoricalbarchart-category {
+    cursor: pointer;
+}
+
+.categoricalbarchart-category text {
+    pointer-events: none;
+}
+/*
+.categoricalbarchart-category .outline {
+    stroke: none;
+    pointer-events: all;
+}*/
+
+.categoricalbarchart-category-background {
+    stroke: #000;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+    fill: none;
+    stroke-opacity: 0;
+    pointer-events: all;
+}
+
+.categoricalbarchart-category:hover .categoricalbarchart-category-background {
+    stroke-opacity: 1;
+}

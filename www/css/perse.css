@@ -1,0 +1,50 @@
+#perse {
+
+}
+
+#perse-large {
+
+}
+
+#perse-medium {
+
+}
+
+#perse-smleft {
+
+}
+
+#perse-smright {
+
+}
+
+
+.perse-btn {
+    background: #FFFFFF;
+    border-color: #FAFAFA;
+}
+
+
+.perse-btn:hover,
+.perse-btn:focus,
+.perse-btn:active,
+.perse-btn.active,
+.open .perse-btn.dropdown-toggle {
+    background: #FAFAFA;
+    border-color: #FAFAFA;
+
+}
+
+.perse-icon {
+    cursor: pointer;
+    margin: auto;
+    display: inline-block;
+}
+
+.perse-row {
+    margin-top: .5em;
+    margin-bottom: .5em;
+}
+
+
+

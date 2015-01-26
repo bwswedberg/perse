@@ -1,0 +1,28 @@
+.timewheel-svg {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.timewheel-arc-background {
+    pointer-events: all;
+}
+
+.timewheel-arc-fill,
+.timewheel-arc-background > text {
+    pointer-events: none;
+}
+
+.timewheel-arc-background > path {
+    cursor: pointer;
+    fill: none;
+}
+
+.timewheel-arc-background.enabled > path,
+.timewheel-arc-background > path:hover {
+    fill: none;
+}
+
+.timewheel-arc-background > path:active {
+    fill: none;
+}

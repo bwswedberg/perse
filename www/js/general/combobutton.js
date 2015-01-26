@@ -43,8 +43,6 @@ define([
                 .append(menu),
             label = $('<span>').attr({'class': 'col-sm-3'}).text('Cycle:');
 
-        this.cButton = b;
-
         this.params.values.forEach(function (d) {
             var button = $('<a>').attr({'role': 'menuitem'}).text(d.alias),
                 li = $('<li>').attr({'role': 'presentation'}).append(button);

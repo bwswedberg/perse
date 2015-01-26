@@ -14,6 +14,7 @@ define([
 ], function (
     $,
     calendarbutton,
+    combobutton,
     perplot
 ) {
 
@@ -23,7 +24,8 @@ define([
         this.container = $('<div>').attr({'class': 'container-fluid perse-perplots'});;
         this.listeners = [];
         this.metadata = undefined;
-        this.calendarName = 'Gregorian';
+        this.calendarName = 'Islamic';
+        this.cycleName = 'MonthOfYear';
         this.plots = [];
     };
 
@@ -34,7 +36,7 @@ define([
 
     perplots.PerPlots.prototype.build = function (data) {
         var calendarButtonRow = $('<div>').attr({'class': 'row perse-row'}),
-            calendarButton = new calendarbutton.CalendarButton('Gregorian')
+            calendarButton = new calendarbutton.CalendarButton(this.calendarName)
                 .render(calendarButtonRow)
                 .registerListener(this.createCalendarChangedListener);
 
@@ -45,7 +47,9 @@ define([
         var plot = new perplot.PerPlot('0')
             .render(this.container)
             .registerListener(this.createPerPlotListener())
-            .onDataSetChanged(data, this.metadata);
+            .setCalendarName(this.calendarName)
+            .setCycleName(this.cycleName);
+        plot.onDataSetChanged(data, this.metadata);
         this.plots.push(plot);
 
     };
@@ -54,6 +58,7 @@ define([
         return {
             context: this,
             onCalendarChanged: function (event) {
+                this.calendarName = event.calendar
                 this.plots.forEach(function (p) {
                     p.setCalendarName(event.calendar);
                 });

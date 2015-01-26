@@ -33,13 +33,14 @@ define([
 
     perplot.PerPlot.prototype.render = function (parent) {
         $(parent).append(this.container);
+        console.log(MG);
         this.plot = MG.data_graphic({
-            title: "Month of Year",
-            description: "Event Count",
+            title: 'Month of Year',
+            description: 'Event Count',
             chart_type: 'missing-data',
             width: 400,
             height: 250,
-            target: this.container
+            target: this.container.get(0)
         });
         return this;
     };
@@ -64,7 +65,7 @@ define([
             chart_type: 'line',
             width: 400,
             height: 250,
-            target: this.container,
+            target: this.container.get(0),
             x_accessor: 'x',
             y_accessor: 'y',
             xax_format: function (d) {return cal.local.monthNamesShort[d]; },
@@ -75,10 +76,12 @@ define([
 
     perplot.PerPlot.prototype.setCalendarName = function (calendarName) {
         this.calendarName = calendarName;
+        return this;
     };
 
     perplot.PerPlot.prototype.setCycleName = function (cycleName) {
         this.cycleName = cycleName;
+        return this;
     };
 
     perplot.PerPlot.prototype.notifyListeners = function (callbackStr, event) {

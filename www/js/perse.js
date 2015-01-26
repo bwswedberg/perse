@@ -13,6 +13,7 @@ define([
     'permap/permap',
     'perwheel/perwheel',
     'perattr/perattr',
+    'perplots/perplots',
     // No namespace
     'bootstrap'
 ], function (
@@ -23,7 +24,8 @@ define([
     coordination,
     permap,
     perwheel,
-    perattr
+    perattr,
+    perplots
 ) {
 
     var perse = {};
@@ -73,6 +75,12 @@ define([
             .render(smRightBottomRight)
             .registerListener(this.coordinator.getFilterChangedListener());
         this.coordinator.registerObserver(perAttr);
+
+        // perplots section
+        var perPlots = new perplots.PerPlots()
+            .render(largeLeft)
+            .registerListener(this.coordinator.getFilterChangedListener());
+        this.coordinator.registerObserver(perPlots);
 
     };
 

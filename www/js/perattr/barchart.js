@@ -175,7 +175,6 @@ define([
             .outerTickSize(2)
             .tickPadding(2)
             .tickFormat(function (v) {
-                console.log(v);
                 return (v >= 1000) ? formater(v/1000).toString() + 'k' : v;
 
             })

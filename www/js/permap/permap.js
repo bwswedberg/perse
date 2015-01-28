@@ -7,8 +7,9 @@
 define([
     'jquery',
     'ol',
+    'permap/voronoi',
     'data/filter'
-], function ($, ol, filter) {
+], function ($, ol, voronoi, filter) {
 
     var permap = {};
 
@@ -16,12 +17,16 @@ define([
         this.container = $('<div>').attr({'class': 'perse-permap'});
         this.metadata = undefined;
         this.theMap = undefined;
-        this.vector = undefined;
         this.listeners = [];
+        this.voronoi = undefined;
+        this.voronoiObservers = [];
+        this.voronoiPointsLayer = undefined;
+        this.voronoiPolygonLayer = undefined;
+        this.eventPointsLayer = undefined;
         this.filter = new filter.Filter({
             uniqueId: 'perse-permap',
             property: 'coord',
-            filterOn: function (d) {return true; }
+            filterOn: function () {return true; }
         });
     };
 
@@ -46,7 +51,37 @@ define([
         return this;
     };
 
-    permap.PerMap.prototype.createPointsLayer = function (data) {
+    permap.PerMap.prototype.build = function (data) {
+        var pointsLayer = this.createPointsVectorLayer(data),
+            extent = this.formatExtent(pointsLayer.getSource().getExtent()); // [minx, miny, maxx, maxy]
+
+        this.voronoi = new voronoi.Voronoi(this.metadata)
+            .setExtent(extent);
+
+
+        this.eventPointsLayer = pointsLayer;
+        this.voronoiPolygonLayer = this.voronoi.buildVoronoiPolygonVectorLayer();
+        this.voronoiPointsLayer = this.voronoi.buildVoronoiPointVectorLayer();
+        this.theMap.addLayer(this.eventPointsLayer);
+        this.theMap.addLayer(this.voronoiPolygonLayer);
+        this.theMap.addLayer(this.voronoiPointsLayer);
+        this.theMap.getView().fitExtent(pointsLayer.getSource().getExtent(), this.theMap.getSize());
+        this.notifyVoronoiObservers(this.voronoi.parseData(data));
+    };
+
+    permap.PerMap.prototype.update = function (data) {
+        var newEventPointsLayer = this.createPointsVectorLayer(data);
+
+        this.theMap.removeLayer(this.eventPointsLayer);
+        this.eventPointsLayer = newEventPointsLayer;
+        this.theMap.addLayer(this.eventPointsLayer);
+        //this.theMap.removeLayer(this.voronoiPointsLayer);
+        //this.theMap.removeLayer(this.voronoiPolygonLayer);
+
+        this.notifyVoronoiObservers(this.voronoi.parseData(data));
+    };
+
+    permap.PerMap.prototype.createPointsVectorLayer = function (data) {
         var features = [],
             projection = this.metadata.getMetadata().geospatial.projection,
             vectorSource,
@@ -56,8 +91,7 @@ define([
 
         data.forEach(function (obj) {
             var feature = new ol.Feature({
-                geometry: new ol.geom.Point(ol.proj.transform(obj.coord, projection,
-                    'EPSG:3857')),
+                geometry: new ol.geom.Point(ol.proj.transform(obj.coord, projection, 'EPSG:3857')),
                 data: obj
             });
             features.push(feature);
@@ -86,18 +120,21 @@ define([
         return new ol.layer.Vector({source: vectorSource, style: styles});
     };
 
+    permap.PerMap.prototype.formatExtent = function (olExtentObj) {
+        // olExtentObj = [minx, miny, maxx, maxy]
+        return {
+            x: {max: olExtentObj[2], min: olExtentObj[0], dif: (olExtentObj[2] - olExtentObj[0])},
+            y: {max: olExtentObj[3], min: olExtentObj[1], dif: (olExtentObj[3] - olExtentObj[1])}
+        };
+    };
+
     permap.PerMap.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
-        this.pointsLayer = this.createPointsLayer(data);
-        this.theMap.getView().fitExtent(this.pointsLayer.getSource().getExtent(), this.theMap.getSize());
-        this.theMap.addLayer(this.pointsLayer);
+        this.build(data);
     };
 
     permap.PerMap.prototype.onSelectionChanged = function (data) {
-        var newPointsLayer = this.createPointsLayer(data);
-        this.theMap.removeLayer(this.pointsLayer);
-        this.theMap.addLayer(newPointsLayer);
-        this.pointsLayer = newPointsLayer;
+        this.update(data);
     };
 
     permap.PerMap.prototype.makeInteractive = function () {
@@ -160,6 +197,17 @@ define([
 
     permap.PerMap.prototype.registerListener = function (callbackObj) {
         this.listeners.push(callbackObj);
+        return this;
+    };
+
+    permap.PerMap.prototype.notifyVoronoiObservers = function (data) {
+        this.voronoiObservers.forEach(function (o) {
+            o.onVoronoiChanged(data);
+        });
+    };
+
+    permap.PerMap.prototype.registerVoronoiObserver = function (callbackObj) {
+        this.voronoiObservers.push(callbackObj);
         return this;
     };
 

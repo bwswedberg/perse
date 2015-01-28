@@ -46,41 +46,42 @@ define([
 
     perse.PerSE.prototype.build = function () {
         var mainRow = $('<div>').attr({'class': 'row'}),
-            largeLeft = $('<div>').attr({'class': 'col-sm-6', 'id': 'perse-large'}),
-            largeRight = $('<div>').attr({'class': 'col-sm-6'}),
+            largeLeft = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-large'}),
+            largeRight = $('<div>').attr({'class': 'col-md-6'}),
             largeRightRow = $('<div>').attr({'class': 'container-fluid'}),
-            mediumRightTop = $('<div>').attr({'class': 'col-sm-12', 'id': 'perse-medium'}),
-            smRightBottomLeft = $('<div>').attr({'class': 'col-sm-6', 'id': 'perse-smleft'}),
-            smRightBottomRight = $('<div>').attr({'class': 'col-sm-6', 'id': 'perse-smright'});
+            mediumRightTop = $('<div>').attr({'class': 'col-md-12', 'id': 'perse-medium'}),
+            smRightBottomLeft = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-smleft'}),
+            smRightBottomRight = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-smright'});
         this.container.append(mainRow);
         mainRow.append(largeLeft).append(largeRight);
         largeRight.append(largeRightRow);
         largeRightRow.append(mediumRightTop).append(smRightBottomLeft).append(smRightBottomRight);
 
-        // permap section
-        var perMap = new permap.PerMap()
-            .render(mediumRightTop)
-            .registerListener(this.coordinator.getFilterChangedListener());
-        perMap.makeInteractive();
-        this.coordinator.registerObserver(perMap);
-
         // perwheel section
         var perWheel = new perwheel.PerWheel()
             .render(smRightBottomLeft)
-            .registerListener(this.coordinator.getFilterChangedListener());
+            .registerListener(this.coordinator.getCoordinationListener());
         this.coordinator.registerObserver(perWheel);
 
         // perattr section
         var perAttr = new perattr.PerAttr()
             .render(smRightBottomRight)
-            .registerListener(this.coordinator.getFilterChangedListener());
+            .registerListener(this.coordinator.getCoordinationListener());
         this.coordinator.registerObserver(perAttr);
 
         // perplots section
         var perPlots = new perplots.PerPlots()
             .render(largeLeft)
-            .registerListener(this.coordinator.getFilterChangedListener());
+            .registerListener(this.coordinator.getCoordinationListener());
         this.coordinator.registerObserver(perPlots);
+
+        // permap section
+        var perMap = new permap.PerMap()
+            .render(mediumRightTop)
+            .registerListener(this.coordinator.getCoordinationListener());
+        perMap.makeInteractive();
+        perMap.registerVoronoiObserver(perPlots);
+        this.coordinator.registerObserver(perMap);
 
     };
 

@@ -18,7 +18,7 @@ define([
 
     perplot.PerPlot = function (uniqueId) {
         var id = 'perse-perplot-' + uniqueId;
-        this.container = $('<div>').attr({'class': 'container-fluid perse-perplot col-sm-6', 'id': id});
+        this.container = $('<div>').attr({'class': 'perse-perplot', 'id': id});
         this.listeners = [];
         this.metadata = undefined;
         this.filter = new filter.Filter({
@@ -33,38 +33,33 @@ define([
 
     perplot.PerPlot.prototype.render = function (parent) {
         $(parent).append(this.container);
-        console.log(MG);
         this.plot = MG.data_graphic({
-            title: 'Month of Year',
-            description: 'Event Count',
             chart_type: 'missing-data',
-            width: 400,
-            height: 250,
+            show_missing_background: true,
             target: this.container.get(0)
         });
         return this;
     };
 
-    perplot.PerPlot.prototype.update = function (data) {
-        var fullData = new perplotsdatasetbuilder.PerPlotsDataSetBuilder()
-            .setCalendarName(this.calendarName)
-            .setCycleName(this.cycleName)
-            .setData(data)
-            .build();
-        console.log(fullData);
-        var legendData = fullData.map(function (d) {return d.label; });
-        var chartData =  fullData.map(function (d) {return d.partitions; })
+    perplot.PerPlot.prototype.update = function (data, extent) {
+        var legendData = data.map(function (d) {return d.label; });
+        var chartData =  data.map(function (d) {return d.partitions; })
             .map(function (d) {
                 return d.map(function (p) {return {x: p.value, y: p.events.length}; });
             });
         var cal = $.calendars.instance(this.calendarName);
         this.plot = MG.data_graphic({
-            title: "Month of Year",
-            description: "Event Count",
             data: chartData,
+            full_height: true,
+            full_width: true,
             chart_type: 'line',
-            width: 400,
-            height: 250,
+            buffer: 0,
+            max_y: extent.max,
+            min_y: extent.min,
+            width: 200,
+            height: 150,
+            left: 20,
+            top: 15,
             target: this.container.get(0),
             x_accessor: 'x',
             y_accessor: 'y',
@@ -84,6 +79,10 @@ define([
         return this;
     };
 
+    perplot.PerPlot.prototype.getFilter = function () {
+        return this.filter;
+    };
+
     perplot.PerPlot.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
             listenerObj[callbackStr].call(listenerObj.context, event);
@@ -101,7 +100,7 @@ define([
 
     perplot.PerPlot.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
-        this.update(data);
+        //this.update(data);
     };
 
     return perplot;

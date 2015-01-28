@@ -12,7 +12,8 @@ define([
     
     var perplots = {};
 
-    perplots.PerPlotsDataSetBuilder = function () {
+    perplots.PerPlotsDataSetBuilder = function (metadata) {
+        this.metadata = metadata;
         this.calendarName = undefined;
         this.cycleName = undefined;
         this.data = [];
@@ -30,15 +31,16 @@ define([
 
     perplots.PerPlotsDataSetBuilder.prototype.setData = function (data) {
         //var cal = $.calendars.instance(this.calendarName);
-        this.data = data;
+        this.data = data || [];
         //this.data = data.filter(function (d) {return cal.fromJD(d.julianDate).year() >= 1431 && d.attribute_1 === 'Boko Haram'; });
         return this;
     };
 
     perplots.PerPlotsDataSetBuilder.prototype.createMonthOfYearData = function () {
+
         var cal = $.calendars.instance(this.calendarName),
             newData = [],
-            extent = this.getExtent(),
+            extent = this.getJulianDateExtent(),
             minDate = {year: cal.fromJD(extent.min).year(), month: cal.fromJD(extent.min).monthOfYear() - 1},
             maxDate = {year: cal.fromJD(extent.max).year(), month: cal.fromJD(extent.max).monthOfYear() - 1},
             myDate = {year: cal.fromJD(extent.min).year(), month: cal.fromJD(extent.min).monthOfYear() - 1},
@@ -65,6 +67,7 @@ define([
                 m = newData[date.year() - minDate.year].partitions[0].value;
             newData[date.year() - minDate.year].partitions[date.monthOfYear() - 1 - m].events.push(d);
         });
+
         return newData;
     };
 
@@ -154,13 +157,18 @@ define([
         return newData;
     };
 
-    perplots.PerPlotsDataSetBuilder.prototype.getExtent = function () {
+    perplots.PerPlotsDataSetBuilder.prototype.getJulianDateExtent = function () {
+        var m = this.metadata.getMetadata().temporal;
+        return {min: m.beginJulianDate, max: m.endJulianDate};
+    };
+    /*
+    perplots.PerPlotsDataSetBuilder.prototype.getJulianDateExtent_dep = function () {
         return this.data.reduce(function (prev, cur) {
             prev.min = Math.min(prev.min, cur.julianDate);
             prev.max = Math.max(prev.max, cur.julianDate);
             return prev;
         }, {min: this.data[0].julianDate, max: this.data[0].julianDate});
-    };
+    };*/
 
     perplots.PerPlotsDataSetBuilder.prototype.build = function () {
         var newData;

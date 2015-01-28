@@ -30,7 +30,7 @@ define([], function () {
         }, this);
     };
 
-    coordination.Coordinator.prototype.getFilterChangedListener = function () {
+    coordination.Coordinator.prototype.getCoordinationListener = function () {
         return {
             context: this,
             onFilterChanged: function (event) {
@@ -38,6 +38,9 @@ define([], function () {
             },
             onRemoveFilter: function (event) {
                 this.removeFilter(event.filter);
+            },
+            onRefresh: function (event) {
+                this.selectionChanged(this.getDataSetAdapter().getData());
             }
         };
     };

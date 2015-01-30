@@ -102,10 +102,10 @@ define([
         this.categoricalBarChart.onDataSetChanged(data, this.metadata);
 
         this.container.append(
-            categoryAmtDiv,
             $('<span>').text('Categories:'),
             this.categoricalBarChart.createAllNoneSpan(),
-            categoricalBarChartDiv);
+            categoricalBarChartDiv
+        );
     };
 
     histogram.Histogram.prototype.getFilter = function () {

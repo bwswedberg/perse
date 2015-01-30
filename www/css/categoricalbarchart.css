@@ -1,6 +1,6 @@
 .perse-perattr-categoricalbarchart {
     width: 200px;
-    height: 200px;
+    height: 210px;
 }
 
 .categoricalbarchart-chart,
@@ -10,12 +10,14 @@
 
 .categoricalbarchart-chart {
     width: 200px;
-    height: 170px;
+    max-height: 170px;
     overflow: auto;
 }
 
 .categoricalbarchart-axis svg path,
-.categoricalbarchart-axis svg line {
+.categoricalbarchart-axis svg line,
+.categoricalbarchart-axis path,
+.categoricalbarchart-axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;

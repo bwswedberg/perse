@@ -71,7 +71,7 @@ define([
             xAxisBuilder;
 
         axisSvg = d3.select(container).append('svg')
-            .attr('height', '30px')
+            .attr('height', '40px')
             .attr('width', this.size.width + this.margin.left + this.margin.right + 'px')
             .append('g')
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -93,7 +93,7 @@ define([
             .call(xAxisBuilder)
             .append('text')
             .attr('class', 'categoricalbarchart-axis-label')
-            .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 23 + ')')
+            .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 27 + ')')
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .text("Frequency");
@@ -105,7 +105,8 @@ define([
             yScale,
             offset = 1,
             height = 20,
-            bars;
+            bars,
+            yAxisBuilder;
         this.dataExtent = d3.extent(data, function (d) {return d.count; });
         this.size.height = this.margin.top + this.margin.bottom + height * data.length;
 
@@ -177,6 +178,19 @@ define([
             .attr('y', offset)
             .attr('width', this.size.width + 'px')
             .attr('height', height - (offset * 2) + 'px');
+
+        yAxisBuilder = d3.svg.axis()
+            .scale(yScale)
+            .tickFormat('')
+            .ticks(0)
+            .innerTickSize(0)
+            .outerTickSize(0)
+            .orient("left");
+
+        this.svg.append("g")
+            .attr('class', 'categoricalbarchart-axis')
+            .attr("transform", "translate(-2, 0)")
+            .call(yAxisBuilder);
 
     };
 

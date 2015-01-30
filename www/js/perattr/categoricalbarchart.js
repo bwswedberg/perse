@@ -34,21 +34,19 @@ define([
     };
 
     categoricalbarchart.CategoricalBarChart.prototype.createAllNoneSpan = function () {
-        var noneButton = $('<button>')
-                .attr({type: 'button', title: 'Deselect All Categories'})
-                .text('None'),
-            allButton = $('<button>')
-                .attr({type: 'button', title: 'Select All Categories'})
-                .text('All');
+        var noneButton = $('<a>')
+                .attr({'class': 'btn btn-link btn-sm', 'role': 'button', 'title': 'Deselect All Categories'})
+                .text('Clear'),
+            allButton = $('<a>')
+                .attr({'class': 'btn btn-link btn-sm', 'role': 'button', 'title': 'Select All Categories'})
+                .text('Reset');
 
         noneButton.click($.proxy(function () {
-            console.log('here');
             this.deselected = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues);
             this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
         }, this));
 
        allButton.click($.proxy(function () {
-           console.log('here');
             this.deselected = [];
             this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
         }, this));

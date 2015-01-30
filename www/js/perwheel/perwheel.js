@@ -8,22 +8,22 @@ define([
     'jquery',
     'data/filter',
     'perwheel/timewheel',
+    'general/combobutton',
     // no namespace
     '$.calendars',
     'bootstrap'
-], function ($, filter, timewheel) {
+], function ($, filter, timewheel, combobutton) {
     
     var perwheel = {};
 
     perwheel.PerWheel = function () {
         this.container = $('<div>').attr({'class': 'container-fluid perse-perwheel'});
-        this.calendarName = 'Gregorian';
+        this.calendarName = 'gregorian';
         this.listeners = [];
         this.rangePicker = undefined;
         this.timeWheel = undefined;
         this.timeWheelDescriptionMajor = undefined;
         this.timeWheelDescriptionMinor = undefined;
-        this.calendarButton = undefined;
         this.filter = new filter.Filter({
             uniqueId: 'perse-perwheel',
             property: 'julianDate',
@@ -47,40 +47,28 @@ define([
     };
 
     perwheel.PerWheel.prototype.createCalendar = function () {
-        var availableCalendars = [
-                {'alias': 'Gregorian', 'name': 'gregorian'},
-                {'alias': 'Islamic', 'name': 'islamic'}
-            ],
-            b = $('<button>')
-                .attr({'class': 'btn btn-default dropdown-toggle btn-xs perse-btn', 'data-toggle':'dropdown'})
-                .text(this.calendarName + ' ')
-                .append($('<span>').attr({'class': 'caret'})),
-            menu = $('<ul>')
-                .attr({'class': 'dropdown-menu', 'role': 'menu'}),
-            dropdown = $('<span>')
-                .attr({'class': 'dropdown span3'})
-                .append(b)
-                .append(menu),
-            label = $('<span>').attr({'class': 'span3'}).text('Calendar:');
-
-        this.calendarButton = b;
-
-        availableCalendars.forEach(function (d) {
-            var button = $('<a>').attr({'role': 'menuitem'}).text(d.alias),
-                li = $('<li>').attr({'role': 'presentation'}).append(button);
-            button.click($.proxy(function () {
-                var newCalendar = $(button).text();
-                this.calendarChanged(newCalendar);
-            }, this));
-            menu.append(li);
-        }, this);
-
-        return $('<div>').attr({'class': 'row perse-row perse-perwheel-calendar'}).append(label).append(dropdown);
+        var row = $('<div>').attr({'class': 'row perse-row perse-perwheel-calendar'}),
+            calendarDropdown = new combobutton.ComboButton({
+                'label': 'Calendar:',
+                'values': [
+                    {'alias': 'Gregorian', id: 'gregorian'},
+                    {'alias': 'Islamic', id: 'islamic'}
+                ],
+                'active': this.calendarName
+            });
+        calendarDropdown.registerListener({
+            context: this,
+            onComboChanged: function (event) {
+                this.calendarName = event.active;
+                this.calendarChanged(event.active);
+            }
+        });
+        calendarDropdown.render(row);
+        return row;
     };
 
     perwheel.PerWheel.prototype.calendarChanged = function (newCalendar) {
         this.calendarName = newCalendar;
-        this.calendarButton.text(newCalendar+ ' ' ).append($('<span>').attr({'class': 'caret'}));
         this.timeWheel.setCalendarName(this.calendarName);
         this.updateRange();
         this.filter.filterOn = function () {return true; }

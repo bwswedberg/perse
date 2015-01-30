@@ -82,19 +82,13 @@ define([
             this.rugPlot.createRangeInput(),
             rugPlotDiv,
             $('<span>').text('Histogram:'),
-            barChartDiv);
+            barChartDiv
+        );
     };
 
     histogram.Histogram.prototype.buildCategorical = function (data) {
         var categoricalBarChartDiv = $('<div>')
-                .attr({'class': 'perse-perattr-histogram'}),
-            categoryAmt = $('<span>')
-                .text(Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues).length.toString()),
-            categoryAmtLabel = $('<span>')
-                .text('Total Unique Categories:'),
-            categoryAmtDiv = $('<div>')
-                .append(categoryAmtLabel, categoryAmt);
-
+                .attr({'class': 'perse-perattr-histogram'});
 
         this.categoricalBarChart = new categoricalbarchart.CategoricalBarChart(this.attribute)
             .render(categoricalBarChartDiv.get(0))

@@ -8,7 +8,7 @@ define([
     'jquery',
     // no namespace
     'bootstrap'
-],function ($) {
+], function ($) {
 
     var combobutton = {};
 
@@ -31,25 +31,31 @@ define([
     };
 
     combobutton.ComboButton.prototype.render = function (parent) {
-        var b = $('<button>')
-                .attr({'class': 'btn btn-default dropdown-toggle btn-xs perse-btn', 'data-toggle':'dropdown'})
-                .text(this.params.label + ' ')
+        var initText = this.params.values.filter(function (d) {return this.params.active === d.id; }, this)[0].alias,
+            b = $('<button>')
+                .attr({'class': 'btn btn-default dropdown-toggle btn-xs perse-btn perse-general-combobutton', 'data-toggle': 'dropdown'})
+                .text(initText + ' ')
                 .append($('<span>').attr({'class': 'caret'})),
             menu = $('<ul>')
                 .attr({'class': 'dropdown-menu', 'role': 'menu'}),
             dropdown = $('<span>')
-                .attr({'class': 'dropdown col-sm-3'})
+                .attr({'class': 'dropdown'})
                 .append(b)
                 .append(menu),
-            label = $('<span>').attr({'class': 'col-sm-3'}).text('Cycle:');
+            label = $('<span>').attr({'class': 'perse-general-combolabel'}).text(this.params.label);
 
         this.params.values.forEach(function (d) {
             var button = $('<a>').attr({'role': 'menuitem'}).text(d.alias),
                 li = $('<li>').attr({'role': 'presentation'}).append(button);
+            if (d.id === this.params.active) {
+                li.addClass('active');
+            }
             button.click($.proxy(function () {
                 var newAlias = $(button).text(),
                     newId = this.params.values.filter(function (d) {return newAlias === d.alias; })[0].id;
-                b.text(newAlias);
+                $(menu).find('.active').removeClass('active');
+                $(li).attr({'class': 'active'});
+                b.text(newAlias + ' ').append($('<span>').attr({'class': 'caret'}));
                 this.params.active = newId;
                 this.notifyListeners('onComboChanged', {'context': this, 'active': newId});
             }, this));

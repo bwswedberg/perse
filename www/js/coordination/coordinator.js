@@ -41,6 +41,9 @@ define([], function () {
             },
             onRefresh: function (event) {
                 this.selectionChanged(this.getDataSetAdapter().getData());
+            },
+            onDataSetRequested: function (event) {
+                event.callback.call(event.context, this.getDataSetAdapter().getData());
             }
         };
     };

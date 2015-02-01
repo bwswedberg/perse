@@ -54,12 +54,11 @@ define([
             numericCount = 0,
             numericColorSchemes = ['Reds', 'YlGn', 'YlOrBr'];
         data.forEach(function (d) {
-            beginDate = (d.julianDate < beginDate) ? d.julianDate : beginDate;
-            endDate = (d.julianDate > endDate) ? d.julianDate : endDate;
+            beginDate = Math.min(d.julianDate, beginDate);
+            endDate = Math.max(d.julianDate, endDate);
         });
         builder.setTemporal({beginJulianDate: beginDate, endJulianDate: endDate, id: 'julianDate'});
         builder.setGeospatial({id: 'coord'});
-
         columns.attributes.forEach(function (a) {
             attributes[a] = {
                 label: a,

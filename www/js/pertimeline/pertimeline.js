@@ -13,6 +13,7 @@ define([
     pertimeline.PerTimeline = function () {
         this.container = $('<div>').attr({'class': 'container-fluid perse-pertimeline'});
         this.calendarName = 'islamic';
+        this.resolution = 'week';
         this.metadata = undefined;
         this.listeners = [];
         this.filter = new filter.Filter({
@@ -27,7 +28,8 @@ define([
         $(parent).append(this.container);
         this.container
             .append(this.createHeader())
-            .append(this.createCalendar())
+            .append(this.createCalendarCombo())
+            .append(this.createResolutionCombo())
             .append(this.createTimeline());
         return this;
     };
@@ -37,7 +39,7 @@ define([
         return $('<div>').attr({'class': 'row'}).append(h);
     };
 
-    pertimeline.PerTimeline.prototype.createCalendar = function () {
+    pertimeline.PerTimeline.prototype.createCalendarCombo = function () {
         var row = $('<div>').attr({'class': 'row perse-row perse-pertimeline-calendar'}),
             calendarDropdown = new combobutton.ComboButton({
                 'label': 'Calendar:',
@@ -57,9 +59,31 @@ define([
         return row;
     };
 
+    pertimeline.PerTimeline.prototype.createResolutionCombo = function () {
+        var row = $('<div>').attr({'class': 'row perse-row perse-pertimeline-resolution'}),
+            resolutionDropdown = new combobutton.ComboButton({
+                'label': 'Resolution:',
+                'values': [
+                    {'alias': 'Year', id: 'year'},
+                    {'alias': 'Month', id: 'month'},
+                    {'alias': 'Week', id: 'week'},
+                    {'alias': 'Day', id: 'day'}
+                ],
+                'active': this.resolution
+            });
+        resolutionDropdown.registerListener({
+            context: this,
+            onComboChanged: function (event) {
+                this.resolutionChanged(event.active);
+            }
+        });
+        resolutionDropdown.render(row);
+        return row;
+    };
+
     pertimeline.PerTimeline.prototype.createTimeline = function () {
         var timelineContainer = $('<div>').attr({'class': 'perse-pertimeline-timelinecontainer'});
-        this.timeline = new timeline.Timeline();
+        this.timeline = new timeline.Timeline(this.calendarName, this.resolution);
         this.timeline.render(timelineContainer);
         this.timeline.registerListener({
             context: this,
@@ -74,6 +98,18 @@ define([
 
     pertimeline.PerTimeline.prototype.calendarChanged = function (calendarName) {
         this.calendarName = calendarName;
+        this.timeline.setCalendarName(calendarName);
+        this.notifyListeners('onDataSetRequested', {context: this, callback: function (data) {
+            this.timeline.onSelectionChanged(data);
+        }});
+    };
+
+    pertimeline.PerTimeline.prototype.resolutionChanged = function (resolution) {
+        this.resolution = resolution;
+        this.timeline.setResolution(resolution);
+        this.notifyListeners('onDataSetRequested', {context: this, callback: function (data) {
+            this.timeline.onResolutionChanged(data);
+        }});
     };
 
     pertimeline.PerTimeline.prototype.getFilter = function () {

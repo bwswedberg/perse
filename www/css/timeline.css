@@ -13,3 +13,21 @@
     fill-opacity: .125;
     shape-rendering: crispEdges;
 }
+
+.timeline-axis path,
+.timeline-axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    stroke-width: 1px;
+}
+
+.timeline-axis text {
+    font-size: .60em;
+}
+
+.timeline-axis text.timeline-axis-label {
+    font-size: .69em;
+    letter-spacing: .05em;
+    shape-rendering: precision;
+}

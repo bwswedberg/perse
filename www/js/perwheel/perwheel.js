@@ -20,7 +20,6 @@ define([
         this.container = $('<div>').attr({'class': 'container-fluid perse-perwheel'});
         this.calendarName = 'gregorian';
         this.listeners = [];
-        this.rangePicker = undefined;
         this.timeWheel = undefined;
         this.timeWheelDescriptionMajor = undefined;
         this.timeWheelDescriptionMinor = undefined;
@@ -36,13 +35,12 @@ define([
         this.container
             .append(this.createHeader())
             .append(this.createCalendar())
-            .append(this.createRange())
             .append(this.createTimeWheel());
         return this;
     };
 
     perwheel.PerWheel.prototype.createHeader = function () {
-        var h = $('<h3>').attr({'class': 'perse-perwheel-header'}).text('Time Selection');
+        var h = $('<h3>').attr({'class': 'perse-perwheel-header'}).text('Time-Wheel');
         return $('<div>').attr({'class': 'row'}).append(h);
     };
 
@@ -70,37 +68,8 @@ define([
     perwheel.PerWheel.prototype.calendarChanged = function (newCalendar) {
         this.calendarName = newCalendar;
         this.timeWheel.setCalendarName(this.calendarName);
-        this.updateRange();
         this.filter.filterOn = function () {return true; }
         this.notifyListeners('onFilterChanged', {context: this, filter: this.filter });
-    };
-
-    perwheel.PerWheel.prototype.createRange = function () {
-        var labelSpan = $('<span>').text('Range:'),
-            pickerSpan = $('<span>');
-
-        this.rangePicker = $('<input>').attr({'type': 'text'});
-        this.rangePicker.calendarsPicker({
-            calendar: $.calendars.instance(this.calendarName),
-            rangeSelect: true,
-            showOtherMonths: true,
-            selectOtherMonths: true
-        });
-        pickerSpan.append(this.rangePicker);
-        /*
-        var calendarIcon = $('<img>').attr({'class': 'perse-icon', 'src': './img/calendar.png'});
-        calendarIcon.click($.proxy(function () {
-            this.rangePicker.calendarsPicker('show');
-        }, this));
-        */
-        return $('<div>').attr({'class': 'row perse-row perse-perwheel-range'}).append(labelSpan).append(pickerSpan);
-    };
-
-    perwheel.PerWheel.prototype.updateRange = function () {
-        var oldestDate = $.calendars.instance(this.calendarName).fromJD(this.metadata.getMetadata().temporal.beginJulianDate),
-            youngestDate = $.calendars.instance(this.calendarName).fromJD(this.metadata.getMetadata().temporal.endJulianDate);
-        this.rangePicker.calendarsPicker('option', 'calendar', $.calendars.instance(this.calendarName));
-        this.rangePicker.calendarsPicker('setDate', oldestDate, youngestDate);
     };
 
     perwheel.PerWheel.prototype.createTimeWheel = function () {
@@ -131,14 +100,8 @@ define([
     };
 
     perwheel.PerWheel.prototype.getData = function () {
-
-        var cdates = $(this.rangePicker).calendarsPicker('getDate'),
-            data = {
+        var data = {
                 calendarName: this.calendarName,
-                range: {
-                    begin: cdates[0].toJD(),
-                    end: cdates[1].toJD()
-                },
                 periodicity: this.timeWheel.getData()
             };
         return data;
@@ -149,9 +112,6 @@ define([
             cal = $.calendars.instance(data.calendarName);
         this.filter.filterOn = function (julianDate) {
             var date = cal.fromJD(julianDate);
-            if (julianDate > data.range.end || julianDate <  data.range.begin) {
-                return false;
-            }
             if (!data.periodicity.dayOfWeek.data[date.dayOfWeek()].enabled) {
                 return false;
             }
@@ -184,7 +144,6 @@ define([
     perwheel.PerWheel.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.timeWheel.onDataSetChanged(data, metadata);
-        this.updateRange();
     };
 
     return perwheel;

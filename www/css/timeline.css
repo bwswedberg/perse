@@ -1,0 +1,15 @@
+.timeline-bars rect {
+    fill: steelblue;
+    fill-opacity: .1;
+    stroke: none;
+    pointer-events: none;
+}
+
+.timeline-bars.selected rect {
+    fill-opacity: 1;
+}
+
+.perse-timeline svg .brush .extent {
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}

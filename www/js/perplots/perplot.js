@@ -43,6 +43,7 @@ define([
 
     perplot.PerPlot.prototype.update = function (data, extent) {
         var legendData = data.map(function (d) {return d.label; });
+        var xLabels = data[0].partitions.map(function (d) {return d.label; });
         var chartData =  data.map(function (d) {return d.partitions; })
             .map(function (d) {
                 return d.map(function (p) {return {x: p.value, y: p.events.length}; });
@@ -63,7 +64,7 @@ define([
             target: this.container.get(0),
             x_accessor: 'x',
             y_accessor: 'y',
-            xax_format: function (d) {return cal.local.monthNamesShort[d]; },
+            xax_format: function (d) {return xLabels[d]; },
             interpolate: "monotone",
             legend: legendData
         });
@@ -95,7 +96,7 @@ define([
     };
 
     perplot.PerPlot.prototype.onSelectionChanged = function (data) {
-        this.update(data);
+        //this.update(data);
     };
 
     perplot.PerPlot.prototype.onDataSetChanged = function (data, metadata) {

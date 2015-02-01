@@ -12,13 +12,7 @@ define([
     'perplots/perplotsdatasetbuilder',
     // no namespace
     'bootstrap'
-], function (
-    $,
-    calendarbutton,
-    combobutton,
-    perplot,
-    perplotsdatasetbuilder
-) {
+], function ($, calendarbutton, combobutton, perplot, perplotsdatasetbuilder) {
 
     var perplots = {};
 
@@ -26,7 +20,7 @@ define([
         this.container = $('<div>').attr({'class': 'perse-perplots container-fluid'});
         this.listeners = [];
         this.metadata = undefined;
-        this.calendarName = 'Islamic';
+        this.calendarName = 'islamic';
         this.cycleName = 'MonthOfYear';
         this.plots = [];
     };
@@ -38,16 +32,16 @@ define([
 
     perplots.PerPlots.prototype.build = function (data) {
         var calendarButtonRow = $('<div>').attr({'class': 'row perse-row'}),
-            calendarButton = new calendarbutton.CalendarButton(this.calendarName)
-                .render(calendarButtonRow)
-                .registerListener(this.createCalendarChangedListener()),
+            calendarComboButton = this.createCalendarDropdown(),
+            cycleComboButton = this.createCycleComboButton(),
             row;
+        calendarComboButton.render(calendarButtonRow);
+        cycleComboButton.render(calendarButtonRow);
 
         this.container.append(calendarButtonRow);
 
-
-        // should be in a forEach loop
-        [[],[],[],[],[],[]].forEach(function (d, i) {
+        // make this more dynamic
+        [ [], [], [], [], [], []].forEach(function (d, i) {
             var plotContainer = $('<div>').attr({'class': 'col-sm-6'}),
                 plot = new perplot.PerPlot('0')
                     .render(plotContainer)
@@ -71,20 +65,52 @@ define([
             plot.onDataSetChanged(initData, this.metadata);
             this.plots.push(plot);
         }, this);
-
     };
 
-    perplots.PerPlots.prototype.createCalendarChangedListener = function () {
-        return {
+    perplots.PerPlots.prototype.createCalendarDropdown = function () {
+        var calendarDropdown = new combobutton.ComboButton({
+            'label': 'Calendar:',
+            'values': [
+                {'alias': 'Gregorian', id: 'gregorian'},
+                {'alias': 'Islamic', id: 'islamic'}
+            ],
+            'active': this.calendarName
+        });
+        calendarDropdown.registerListener({
             context: this,
-            onCalendarChanged: function (event) {
-                this.calendarName = event.calendar;
+            onComboChanged: function (event) {
+                this.calendarName = event.active;
                 this.plots.forEach(function (p) {
-                    p.setCalendarName(event.calendar);
+                    p.setCalendarName(event.active);
                 });
                 this.notifyListeners('onRefresh', {context: this, view: this});
             }
-        };
+        });
+        return calendarDropdown;
+    };
+
+    perplots.PerPlots.prototype.createCycleComboButton = function () {
+        var cycleDropdown = new combobutton.ComboButton({
+            'label': 'Cycle:',
+            'values': [
+                {'alias': 'Month of Year', 'id': 'MonthOfYear'},
+                {'alias': 'Day of Week', 'id': 'DayOfWeek'},
+                {'alias': 'Day of Month', 'id': 'DayOfMonth'},
+                {'alias': 'Week of Year', 'id': 'WeekOfYear'}
+            ],
+            'active': this.cycleName
+        });
+        cycleDropdown.registerListener({
+            context: this,
+            onComboChanged: function (event) {
+                this.cycleName = event.active;
+                this.plots.forEach(function (p) {
+                    p.setCycleName(event.active);
+                });
+                this.notifyListeners('onRefresh', {context: this, view: this});
+            }
+        });
+        return cycleDropdown;
     };
 
     perplots.PerPlots.prototype.createPerPlotListener = function () {
@@ -108,12 +134,7 @@ define([
     };
 
     perplots.PerPlots.prototype.onSelectionChanged = function (data) {
-        // blank because this gets sent to
-        /*
-        this.plots.forEach(function (plot) {
-            plot.onSelectionChanged(data);
-        });
-        */
+        // blank because perplots updates from permap data
     };
 
     perplots.PerPlots.prototype.getExtent = function (data) {
@@ -131,7 +152,6 @@ define([
     };
 
     perplots.PerPlots.prototype.onVoronoiChanged = function (data) {
-        console.log(data);
         var newData = data.map(function (d) {
             return new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
                 .setCalendarName(this.calendarName)

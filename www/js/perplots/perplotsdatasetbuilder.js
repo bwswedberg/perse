@@ -9,7 +9,7 @@ define([
     // no namesapce
     '$.calendars'
 ], function ($) {
-    
+
     var perplots = {};
 
     perplots.PerPlotsDataSetBuilder = function (metadata) {
@@ -41,9 +41,9 @@ define([
         var cal = $.calendars.instance(this.calendarName),
             newData = [],
             extent = this.getJulianDateExtent(),
-            minDate = {year: cal.fromJD(extent.min).year(), month: cal.fromJD(extent.min).monthOfYear() - 1},
+            minDate = {year: cal.fromJD(extent.min).year(), month: 0},
             maxDate = {year: cal.fromJD(extent.max).year(), month: cal.fromJD(extent.max).monthOfYear() - 1},
-            myDate = {year: cal.fromJD(extent.min).year(), month: cal.fromJD(extent.min).monthOfYear() - 1},
+            myDate = {year: cal.fromJD(extent.min).year(), month: 0},
             maxPossibleMonths = cal.local.monthNamesShort.length;
 
         // builds the structure
@@ -73,17 +73,42 @@ define([
 
     perplots.PerPlotsDataSetBuilder.prototype.createDayOfWeekData = function () {
         var cal = $.calendars.instance(this.calendarName),
-            newData = [];
+            extent = this.getJulianDateExtent(),
+            myDate = cal.fromJD(extent.min).add(-cal.fromJD(extent.min).dayOfWeek(), 'd'),
+            newData = [],
+            item,
+            ii,
+            i,
+            endD;
 
         // builds the structure
-        cal.local.dayNamesShort.forEach(function (label, index) {
-            newData.push({label: label, count: 0, value: index});
-        });
+        for (i = 0; myDate.toJD() <= extent.max; i += 1) {
+            item = {label: i.toString(), value: i, partitions: []};
+
+            for (ii = 0; ii < cal.local.dayNamesShort.length; ii += 1) {
+                item.partitions.push({
+                    label: cal.local.dayNamesShort[ii],
+                    value: ii,
+                    events: []
+                });
+                myDate.add(1, 'd');
+            }
+            newData.push(item);
+        }
 
         // adds the real data
+        this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
+        i = 0;
+        endD = cal.fromJD(extent.min)
+            .add(-(cal.fromJD(extent.min).dayOfWeek()), 'd')
+            .add(1, 'w');
         this.data.forEach(function (d) {
             var date = cal.fromJD(d.julianDate);
-            newData[date.dayOfWeek()].count += 1;
+            while (date.compareTo(endD) >= 0) {
+                endD.add(1, 'w');
+                i += 1;
+            }
+            newData[i].partitions[date.dayOfWeek()].events.push(d);
         });
         return newData;
     };
@@ -91,21 +116,44 @@ define([
     perplots.PerPlotsDataSetBuilder.prototype.createDayOfMonthData = function () {
         var cal = $.calendars.instance(this.calendarName),
             newData = [],
-            min = cal.minDay,
-            max = cal.daysPerMonth.reduce(function (pre, cur) {
-                return (pre < cur) ? cur : pre;
-            }),
-            i;
+            extent = this.getJulianDateExtent(),
+            myDate = cal.fromJD(extent.min).add((-cal.fromJD(extent.min).day()) + 1, 'd'),
+            endD,
+            item,
+            ii,
+            i = 0;
 
         // builds the structure
-        for (i = min; i <= max; i += 1) {
-            newData.push({label: i, count: 0, value: i - min});
+        while (myDate.toJD() <= extent.max) {
+            item = {label: (i + 1).toString(), value: i, partitions: []};
+
+            for (ii = 1; myDate.day() === ii; ii += 1, myDate.add(1, 'd')) {
+                item.partitions.push({
+                    label: ii,
+                    value: ii - 1,
+                    events: []
+                });
+            }
+            i += 1;
+            newData.push(item);
         }
 
-        // adds the real data
+        this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
+        i = 0;
+        endD = cal.fromJD(extent.min)
+            .add((-cal.fromJD(extent.min).day()) + 1, 'd')
+            .add(1, 'm');
+
         this.data.forEach(function (d) {
             var date = cal.fromJD(d.julianDate);
-            newData[date.day() - min].count += 1;
+            if (date.compareTo(endD) < 0) {
+                newData[i].partitions[date.day() - 1].events.push(d);
+            } else {
+                while (date.compareTo(endD) >= 0) {
+                    endD.add(1, 'm');
+                    i += 1;
+                }
+            }
         });
 
         return newData;
@@ -114,23 +162,45 @@ define([
     perplots.PerPlotsDataSetBuilder.prototype.createWeekOfYearData = function () {
         var cal = $.calendars.instance(this.calendarName),
             newData = [],
-            initDate = cal.fromJD(this.data[0].julianDate),
-            weeksInYear = initDate.daysInYear() / initDate.daysInWeek(),
-            i;
+            extent = this.getJulianDateExtent(),
+            myDate = cal.fromJD(extent.min)
+                .add((-cal.fromJD(extent.min).weekOfYear()) + 1, 'w'),
+            item,
+            endD,
+            i,
+            y,
+            w;
 
         // builds the structure
-        for (i = 0; i < weeksInYear; i += 1) {
-            newData.push({label: i + 1, count: 0, value: i - 1});
+        while (myDate.toJD() <= extent.max) {
+            item = {label: myDate.year().toString(), value: myDate.year(), partitions: []};
+            while (myDate.weekOfYear() >= item.partitions.length) {
+                if (item.partitions.length !== myDate.weekOfYear()) {
+                    item.partitions.push({label: myDate.weekOfYear().toString(), value: myDate.weekOfYear() - 1, events: []});
+                }
+                myDate.add(1, 'd');
+            }
+            newData.push(item);
         }
 
-        // adds the real data
+
+
+        this.data = this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
+
+        i = 0;
+        w = cal.fromJD(this.data[0].julianDate).weekOfYear();
         this.data.forEach(function (d) {
             var date = cal.fromJD(d.julianDate);
-            if (date.weekOfYear() > newData.length) {
-                newData.push({label: date.weekOfYear(), count: 0, value: date.weekOfYear() - 1});
+            if (date.weekOfYear() < w) {
+                i += 1;
+                while (newData[i].value < date.year()) {
+                    i += i;
+                }
             }
-            newData[date.weekOfYear() - 1].count += 1;
+            w = date.weekOfYear();
+            newData[i].partitions[date.weekOfYear() - 1].events.push(d);
         });
+
         return newData;
     };
 
@@ -161,14 +231,14 @@ define([
         var m = this.metadata.getMetadata().temporal;
         return {min: m.beginJulianDate, max: m.endJulianDate};
     };
-    /*
+
     perplots.PerPlotsDataSetBuilder.prototype.getJulianDateExtent_dep = function () {
         return this.data.reduce(function (prev, cur) {
             prev.min = Math.min(prev.min, cur.julianDate);
             prev.max = Math.max(prev.max, cur.julianDate);
             return prev;
         }, {min: this.data[0].julianDate, max: this.data[0].julianDate});
-    };*/
+    };
 
     perplots.PerPlotsDataSetBuilder.prototype.build = function () {
         var newData;

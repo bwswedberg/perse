@@ -32,8 +32,10 @@ require.config({
 });
 
 require([
-    'perse'
-], function (perse) {
+    'perse',
+    'jquery'
+], function (perse, $) {
     var app = new perse.PerSE(document.getElementById('perse'));
+    $('body').prepend(app.createNavBar());
     app.init();
 });

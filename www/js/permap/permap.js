@@ -58,7 +58,6 @@ define([
         this.voronoi = new voronoi.Voronoi(this.metadata)
             .setExtent(extent);
 
-
         this.eventPointsLayer = pointsLayer;
         this.voronoiPolygonLayer = this.voronoi.buildVoronoiPolygonVectorLayer();
         this.voronoiPointsLayer = this.voronoi.buildVoronoiPointVectorLayer();

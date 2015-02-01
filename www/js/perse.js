@@ -14,6 +14,7 @@ define([
     'perwheel/perwheel',
     'perattr/perattr',
     'perplots/perplots',
+    'pertimeline/pertimeline',
     // No namespace
     'bootstrap'
 ], function (
@@ -25,7 +26,8 @@ define([
     permap,
     perwheel,
     perattr,
-    perplots
+    perplots,
+    pertimeline
 ) {
 
     var perse = {};
@@ -48,14 +50,15 @@ define([
         var mainRow = $('<div>').attr({'class': 'row'}),
             largeLeft = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-large'}),
             largeRight = $('<div>').attr({'class': 'col-md-6'}),
+            longSkinny = $('<div>').attr({'class': 'col-md-12', 'id': 'perse-longskinny'}),
             largeRightRow = $('<div>').attr({'class': 'container-fluid'}),
             mediumRightTop = $('<div>').attr({'class': 'col-md-12', 'id': 'perse-medium'}),
             smRightBottomLeft = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-smleft'}),
             smRightBottomRight = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-smright'});
         this.container.append(mainRow);
-        mainRow.append(largeLeft).append(largeRight);
+        mainRow.append(largeLeft, largeRight, longSkinny);
         largeRight.append(largeRightRow);
-        largeRightRow.append(mediumRightTop).append(smRightBottomLeft).append(smRightBottomRight);
+        largeRightRow.append(mediumRightTop, smRightBottomLeft, smRightBottomRight);
 
         // perwheel section
         var perWheel = new perwheel.PerWheel()
@@ -83,17 +86,54 @@ define([
         perMap.registerVoronoiObserver(perPlots);
         this.coordinator.registerObserver(perMap);
 
+        // pertimeline section
+        var perTimeline = new pertimeline.PerTimeline()
+            .render(longSkinny)
+            .registerListener(this.coordinator.getCoordinationListener());
+        this.coordinator.registerObserver(perTimeline);
+
     };
 
     perse.PerSE.prototype.createNavBar = function () {
-        var nav = $('<nav>').attr({'class': 'navbar navbar-default navbar-fixed-top'}),
-            header = $('<div>').attr({'class': 'navbar-header'}),
-            b = $('<p>').attr({'class': 'navbar-brand'}).text('PerSE'),
-            p = $('<p>').attr({'class': 'navbar-text'}).text('Visual Analytics for Event Periodicity');
-        header.append(b);
-        nav.append(header).append(p);
+        var // ------ title/sub ----
+            b = $('<a>')
+                .attr({'class': 'navbar-brand', 'href': './index.html'})
+                .text('PerSE'),
+            p = $('<p>')
+                .attr({'class': 'navbar-text'})
+                .text('Visual Analytics for Event Periodicity Detection and Analysis'),
+            divHeader = $('<div>')
+                .attr({'class': 'navbar-header'})
+                .append(b, p),
+            // ----- Navbar stuff ------
+            aAbout = $('<a>')
+                .attr({'href': './about.html'})
+                .text('About'),
+            aHelp = $('<a>')
+                .attr({'href': './help.html'})
+                .text('Help'),
+            nav = $('<ul>')
+                .attr({'class': 'nav navbar-nav navbar-right'})
+                .append(
+                    $('<li>').append(aAbout),
+                    $('<li>').append(aHelp)
+                ),
+            navbar = $('<div>')
+                .attr({'class': 'navbar-collapse collapse'})
+                .append(nav),
+            // ----- Wrap it all up -----
+            cont = $('<div>')
+                .attr({'class': 'container'})
+                .append(divHeader, navbar),
+            header = $('<div>')
+                .attr({'class': 'navbar navbar-default navbar-fixed-top'})
+                .append(cont);
 
         return header;
+    };
+
+    perse.PerSE.prototype.createFooter = function () {
+
     };
 
     perse.PerSE.prototype.loadData = function () {

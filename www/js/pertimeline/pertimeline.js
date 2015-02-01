@@ -12,7 +12,7 @@ define([
 
     pertimeline.PerTimeline = function () {
         this.container = $('<div>').attr({'class': 'container-fluid perse-pertimeline'});
-        this.calendarName = 'gregorian';
+        this.calendarName = 'islamic';
         this.metadata = undefined;
         this.listeners = [];
         this.filter = new filter.Filter({
@@ -58,8 +58,9 @@ define([
     };
 
     pertimeline.PerTimeline.prototype.createTimeline = function () {
+        var timelineContainer = $('<div>').attr({'class': 'perse-pertimeline-timelinecontainer'});
         this.timeline = new timeline.Timeline();
-        this.timeline.render();
+        this.timeline.render(timelineContainer);
         this.timeline.registerListener({
             context: this,
             onTimelineLabelChanged: function (event) {
@@ -68,6 +69,7 @@ define([
                 this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
             }
         });
+        return timelineContainer;
     };
 
     pertimeline.PerTimeline.prototype.calendarChanged = function (calendarName) {
@@ -75,8 +77,12 @@ define([
     };
 
     pertimeline.PerTimeline.prototype.getFilter = function () {
+        var timelineExtent = this.timeline.getBrushExtent();
         this.filter.filterOn = function (julianDate) {
-
+            if (timelineExtent.begin <= julianDate && timelineExtent.end >= julianDate) {
+                return true;
+            }
+            return false;
         };
         return this.filter;
     };

@@ -81,6 +81,14 @@ define([
 
         brushmove = function () {
             var extent = that.brush.extent();
+            var cal = $.calendars.instance(that.calendarName),
+                bDate = cal.fromJD(extent[0]),
+                eDate = cal.fromJD(extent[1])
+
+            that.updateLabel([
+                [bDate.day(), cal.local.monthNamesShort[bDate.month() - 1], bDate.year()].join('-'),
+                [eDate.day(), cal.local.monthNamesShort[eDate.month() - 1], eDate.year()].join('-')
+            ].join(' to '));
 
             //barsG.classed("selected", function (d) { return (extent[0] <= d.dateRange.begin) && (d.dateRange.end <= extent[1]); });
             //that.toInput.value = extent[0];
@@ -302,7 +310,7 @@ define([
             bbox = labelNode.node().getBBox();
         labelNode
             .attr('x', this.size.width - bbox.width)
-            .attr('y', -1);
+            .attr('y', -3);
 
     };
 

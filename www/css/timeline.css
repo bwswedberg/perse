@@ -7,11 +7,18 @@
 
 .timeline-bars.selected rect {
     fill-opacity: 1;
+    pointer-events: all;
+}
+
+.timeline-bars.selected rect:hover {
+    fill-opacity: .8;
+    cursor: auto;
 }
 
 .perse-timeline svg .brush .extent {
     fill-opacity: .125;
     shape-rendering: crispEdges;
+    pointer-events: all;
 }
 
 .timeline-axis path,
@@ -30,4 +37,9 @@
     font-size: .69em;
     letter-spacing: .05em;
     shape-rendering: precision;
+}
+
+#timeline-label {
+    text-anchor: top;
+    font-size: .69em;
 }

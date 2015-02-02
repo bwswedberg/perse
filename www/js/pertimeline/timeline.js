@@ -22,7 +22,7 @@ define([
         this.listeners = [];
         this.container = $('<div>').attr({'class': 'perse-timeline'});
         this.svg = undefined;
-        this.margin = {left: 30, right: 3, top: 3, bottom: 30};
+        this.margin = {left: 30, right: 3, top: 10, bottom: 30};
         this.size = {
             width: 1000 + this.margin.right + this.margin.left,
             height: 50 + this.margin.top + this.margin.bottom
@@ -44,9 +44,6 @@ define([
                 x: this.getXExtent(),
                 y: this.getYExtent(data)
             },
-            xAxisBuilder,
-            yAxisBuilder,
-            barsG,
             brushmove,
             brushend;
 
@@ -59,19 +56,26 @@ define([
             .domain([0, extent.y.max])
             .range([this.size.height, 0]);
 
-        yAxisBuilder = d3.svg.axis()
-            .scale(this.yScale)
-            .innerTickSize(2)
-            .outerTickSize(2)
-            .tickPadding(2)
-            .orient('left');
-
         this.svg = d3.select(this.container.get(0))
             .append('svg')
             .attr('width', this.size.width + this.margin.left + this.margin.right)
             .attr('height', this.size.height + this.margin.top + this.margin.bottom)
             .append('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+
+        this.dateScale = d3.scale.linear()
+            .domain([0, this.size.width])
+            .range([extent.x.min, extent.x.max]);
+
+        this.svg.on('mousemove', function () {
+            var cal = $.calendars.instance(that.calendarName),
+                myDate = cal.fromJD(that.dateScale(d3.mouse(that.svg.node())[0]));
+
+            that.updateLabel([myDate.day(), cal.local.monthNames[myDate.month() - 1], myDate.year()].join(' '));
+            })
+            .on('mouseout', function () {
+                that.updateLabel('');
+            });
 
         this.updateResolution(data);
 
@@ -109,6 +113,9 @@ define([
 
         // TODO: add text to handles for extent of rectangle
 
+        this.svg.append('text')
+            .attr('id', 'timeline-label');
+
     };
 
     timeline.Timeline.prototype.updateResolution = function (data) {
@@ -130,6 +137,14 @@ define([
             .data(data);
 
         barsG.enter().append('g')
+            /*
+            .on('mouseover', function (d) {
+                that.updateLabel(d.label);
+            })
+            .on('mouseout', function () {
+                that.updateLabel('');
+            })
+            */
             .attr('class', 'timeline-bars selected')
             .append('rect');
 
@@ -178,6 +193,14 @@ define([
             .data(data);
 
         barsG.enter().append('g')
+            /*
+            .on('mouseover', function (d) {
+                that.updateLabel(d.label);
+            })
+            .on('mouseout', function () {
+                that.updateLabel('');
+            })
+            */
             .attr('class', 'timeline-bars selected')
             .append('rect');
 
@@ -271,6 +294,16 @@ define([
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .text("Year");
+    };
+
+    timeline.Timeline.prototype.updateLabel = function (label) {
+        var labelNode = this.svg.select('#timeline-label')
+                .text(label),
+            bbox = labelNode.node().getBBox();
+        labelNode
+            .attr('x', this.size.width - bbox.width)
+            .attr('y', -1);
+
     };
 
     timeline.Timeline.prototype.getXExtent = function () {

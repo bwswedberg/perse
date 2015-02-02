@@ -86,7 +86,10 @@ define([
             extent = this.getExtent(),
             minDate = cal.fromJD(extent.min),
             myDate = cal.fromJD(extent.min),
-            agg = this.createAggregate(cal.local.monthNamesShort[myDate.monthOfYear() - 1], myDate.monthOfYear() - 1);
+            agg = this.createAggregate(
+                cal.local.monthNamesShort[myDate.monthOfYear() - 1] + ' ' + myDate.year().toString(),
+                myDate.monthOfYear() - 1
+            );
 
         agg.dateRange.begin = minDate.toJD();
         if (myDate.day() !== 1) {
@@ -97,7 +100,10 @@ define([
             var currentDate = cal.fromJD(d.julianDate);
             while (myDate.compareTo(currentDate) < 1) {
                 if (myDate.day() === 1) {
-                    agg = this.createAggregate(cal.local.monthNamesShort[myDate.monthOfYear() - 1], myDate.monthOfYear() - 1);
+                    agg = this.createAggregate(
+                        cal.local.monthNamesShort[myDate.monthOfYear() - 1] + ' ' + myDate.year().toString(),
+                        myDate.monthOfYear() - 1
+                    );
                     agg.dateRange.begin = myDate.toJD();
                     newData.push(agg);
                 }
@@ -137,6 +143,16 @@ define([
             newData[newData.length - 1].composite.push(d);
         }, this);
 
+        newData = newData.map(function (d) {
+            var bDate = cal.fromJD(d.dateRange.begin),
+                eDate = cal.fromJD(d.dateRange.end);
+            d.label = [
+                bDate.day(), cal.local.monthNames[bDate.month() - 1], bDate.year(), ' - ',
+                eDate.day(), cal.local.monthNames[eDate.month() - 1], eDate.year()
+            ].join(' ');
+            return d;
+        });
+
         return newData;
     };
 
@@ -152,7 +168,10 @@ define([
         this.data.forEach(function (d) {
             var currentDate = cal.fromJD(d.julianDate);
             while (myDate.compareTo(currentDate) < 1) {
-                agg = this.createAggregate(newData.length.toString(), newData.length);
+                agg = this.createAggregate(
+                    [myDate.day(), cal.local.monthNamesShort[myDate.month() - 1], myDate.year()].join(' '),
+                    newData.length
+                );
                 agg.dateRange.begin = myDate.toJD();
                 newData.push(agg);
                 myDate.add(1, 'd');

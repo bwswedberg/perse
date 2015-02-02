@@ -21,8 +21,6 @@ define([
         this.calendarName = 'gregorian';
         this.listeners = [];
         this.timeWheel = undefined;
-        this.timeWheelDescriptionMajor = undefined;
-        this.timeWheelDescriptionMinor = undefined;
         this.filter = new filter.Filter({
             uniqueId: 'perse-perwheel',
             property: 'julianDate',
@@ -74,30 +72,19 @@ define([
     };
 
     perwheel.PerWheel.prototype.createTimeWheel = function () {
-        var label = $('<span>').text('Periodicity:'),
-            timeWheelDiv = $('<div>').attr({'class': 'col-sm-12'});
-        this.timeWheelDescriptionMajor = $('<span>').attr({'class': 'perse-perwheel-timewheel-mjrlabel'});
-        this.timeWheelDescriptionMinor = $('<span>').attr({'class': 'perse-perwheel-timewheel-mnrlabel'});
+        var timeWheelDiv = $('<div>').attr({'class': 'col-sm-12'});
 
         this.timeWheel = new timewheel.TimeWheel(this.calendarName, timeWheelDiv.get(0));
 
         this.timeWheel.registerListener({
             context: this,
-            onTimeWheelLabelChanged: function (event) {
-                //console.log('onLabelChanged', event);
-                this.timeWheelDescriptionMajor.text(event.ringLabel + '');
-                this.timeWheelDescriptionMinor.text(event.arcLabel);
-            },
             onTimeWheelSelectionChanged: function (event) {
                 this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
             }
         });
         return $('<div>')
             .attr({'class': 'row perse-row perse-perwheel-timewheel'})
-            .append(label)
-            .append(timeWheelDiv)
-            .append(this.timeWheelDescriptionMajor)
-            .append(this.timeWheelDescriptionMinor);
+            .append(timeWheelDiv);
     };
 
     perwheel.PerWheel.prototype.createResetSpan = function () {

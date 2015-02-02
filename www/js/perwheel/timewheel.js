@@ -19,7 +19,8 @@ define([
         this.calendarName = calendarName;
         this.wrapper = container;
         this.svg = undefined;
-        this.viewBox = {width: 100, height: 100};
+        this.margin = {left: 4, right: 4, top: 7, bottom: 1};
+        this.viewBox = {width: 100 - this.margin.left - this.margin.right, height: 100 - this.margin.top - this.margin.bottom};
         this.radius = {
             max: this.viewBox.width / 2.0,
             min: (this.viewBox.width / 2.0) * 0.2
@@ -31,11 +32,15 @@ define([
     };
 
     timewheel.TimeWheel.prototype.build = function (data) {
-        var that = this,
-            scale = 0.98;
+        var that = this;
         this.svg = d3.select(this.wrapper).append('svg')
             .attr('class', 'timewheel-svg')
-            .attr('viewBox', [0, 0, this.viewBox.width, this.viewBox.height].join(' '))
+            .attr('viewBox', [
+                0,
+                0,
+                this.viewBox.width + this.margin.left + this.margin.right,
+                this.viewBox.height + this.margin.top + this.margin.bottom
+            ].join(' '))
             .on('mouseout', function () {
                 // A more sophisticated function to reliably check if mouse outside of or inside
                 // of the wheel/annulus
@@ -43,13 +48,13 @@ define([
                     centerX = that.viewBox.width / 2.0,
                     centerY = that.viewBox.height / 2.0,
                     distance = Math.sqrt(Math.pow(centerX - xy[0], 2) + Math.pow(centerY - xy[1], 2));
-                if (distance > that.radius.max * scale || distance < that.radius.min * scale) {
+                if (distance > that.radius.max || distance < that.radius.min) {
                     that.changeRingSize(null);
                     that.updateLabel(null, null);
                 }
             })
             .append('g')
-            .attr('transform', 'translate(1,1) scale(' + scale + ')');
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
         var ringRadius = (this.radius.max - this.radius.min) / data.length;
         data.forEach(function (item, index) {
@@ -60,6 +65,9 @@ define([
             twr.build(item.data, startRadius, endRadius);
             this.rings.push(twr);
         }, this);
+
+        this.svg.append('text')
+            .attr('id', 'timewheel-label');
     };
 
     timewheel.TimeWheel.prototype.updateRingFill = function (data) {
@@ -114,19 +122,14 @@ define([
     };
 
     timewheel.TimeWheel.prototype.updateLabel = function (ringLabel, arcLabel) {
-        if (ringLabel && arcLabel) {
-            this.notifyListeners('onTimeWheelLabelChanged', {
-                context: this,
-                ringLabel: ringLabel,
-                arcLabel: arcLabel
-            });
-        } else {
-            this.notifyListeners('onTimeWheelLabelChanged', {
-                context: this,
-                ringLabel: '',
-                arcLabel: ''
-            });
-        }
+        var label = (ringLabel && arcLabel) ? ringLabel + ': ' + arcLabel : '',
+            text = this.svg.select('#timewheel-label')
+                .text(label),
+            bbox = text.node().getBBox();
+
+        text
+            .attr('x', this.viewBox.width - bbox.width)
+            .attr('y', -2);
     };
 
     timewheel.TimeWheel.prototype.setCalendarName = function (calendarName) {

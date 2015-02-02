@@ -26,3 +26,7 @@
 .timewheel-arc-background > path:active {
     fill: none;
 }
+
+#timewheel-label {
+    font-size: .35em;
+}

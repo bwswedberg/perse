@@ -202,6 +202,12 @@ define([
             .classed('enabled', isEnabled);
     };
 
+    timewheel.Ring.prototype.setAllEnabled = function () {
+        this.setIsEnabledArc(function (d) {
+            return !d.data.enabled;
+        }, true);
+    };
+
     timewheel.Ring.prototype.registerListener = function (listenerObj) {
         this.listeners.push(listenerObj);
     };

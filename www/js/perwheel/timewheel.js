@@ -167,6 +167,12 @@ define([
         this.build(twBuilder.build());
     };
 
+    timewheel.TimeWheel.prototype.setAllEnabled = function () {
+        this.rings.forEach(function (r) {
+            r.setAllEnabled();
+        });
+    };
+
     timewheel.TimeWheel.prototype.getData = function () {
         var data = {};
         this.rings.forEach(function (ring) {

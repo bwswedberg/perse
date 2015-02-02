@@ -35,6 +35,7 @@ define([
         this.container
             .append(this.createHeader())
             .append(this.createCalendar())
+            .append(this.createResetSpan())
             .append(this.createTimeWheel());
         return this;
     };
@@ -69,7 +70,7 @@ define([
         this.calendarName = newCalendar;
         this.timeWheel.setCalendarName(this.calendarName);
         this.filter.filterOn = function () {return true; }
-        this.notifyListeners('onFilterChanged', {context: this, filter: this.filter });
+        this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
     };
 
     perwheel.PerWheel.prototype.createTimeWheel = function () {
@@ -97,6 +98,20 @@ define([
             .append(timeWheelDiv)
             .append(this.timeWheelDescriptionMajor)
             .append(this.timeWheelDescriptionMinor);
+    };
+
+    perwheel.PerWheel.prototype.createResetSpan = function () {
+        var resetButton = $('<a>')
+                .attr({'class': 'btn btn-link btn-sm', 'role': 'button', 'title': 'Select All Categories'})
+                .text('Reset');
+
+        resetButton.click($.proxy(function () {
+            this.filter.filterOn = function (d) {return true; };
+            this.timeWheel.setAllEnabled();
+            this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
+        }, this));
+
+        return $('<span>').append(resetButton);
     };
 
     perwheel.PerWheel.prototype.getData = function () {

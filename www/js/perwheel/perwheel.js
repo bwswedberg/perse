@@ -98,7 +98,7 @@ define([
             this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
         }, this));
 
-        return $('<span>').append(resetButton);
+        return $('<span>').attr({'class': 'perse-reset-span'}).append(resetButton);
     };
 
     perwheel.PerWheel.prototype.getData = function () {

@@ -67,7 +67,7 @@ define([
     perwheel.PerWheel.prototype.calendarChanged = function (newCalendar) {
         this.calendarName = newCalendar;
         this.timeWheel.setCalendarName(this.calendarName);
-        this.filter.filterOn = function () {return true; }
+        this.filter.filterOn = function () {return true; };
         this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
     };
 
@@ -102,11 +102,10 @@ define([
     };
 
     perwheel.PerWheel.prototype.getData = function () {
-        var data = {
-                calendarName: this.calendarName,
-                periodicity: this.timeWheel.getData()
-            };
-        return data;
+        return {
+            calendarName: this.calendarName,
+            periodicity: this.timeWheel.getData()
+        };
     };
 
     perwheel.PerWheel.prototype.getFilter = function () {

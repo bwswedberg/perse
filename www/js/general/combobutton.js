@@ -40,8 +40,7 @@ define([
                 .attr({'class': 'dropdown-menu', 'role': 'menu'}),
             dropdown = $('<span>')
                 .attr({'class': 'dropdown'})
-                .append(b)
-                .append(menu),
+                .append(b, menu),
             label = $('<span>').attr({'class': 'perse-general-combolabel'}).text(this.params.label);
 
         this.params.values.forEach(function (d) {

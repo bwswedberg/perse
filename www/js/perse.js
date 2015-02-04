@@ -42,8 +42,54 @@ define([
     };
 
     perse.PerSE.prototype.init = function () {
-        this.build();
+        this.buildBigMap();
         this.loadData();
+    };
+
+    perse.PerSE.prototype.buildBigMap = function () {
+        var largeLeft = $('<div>').attr({'class': 'col-md-9', 'id': 'perse-large-left'}),
+            largeRight = $('<div>').attr({'class': 'col-md-3', 'id': 'perse-large-right'}),
+            topRow = $('<div>').attr({'class': 'row'}).append(largeLeft, largeRight),
+            top = $('<div>').attr({'class': 'col-md-12'})
+                .append(topRow),
+            bottom = $('<div>').attr({'class': 'col-md-12'}),
+            main = $('<div>').attr({'class': 'row'})
+                .append(top, bottom);
+
+        this.container.append(main);
+
+        // permap section
+        var perMap = new permap.PerMap()
+            .render(largeLeft)
+            .registerListener(this.coordinator.getCoordinationListener());
+        perMap.makeInteractive();
+        //perMap.registerVoronoiObserver();
+        this.coordinator.registerObserver(perMap);
+
+        // perattr section
+        var perAttr = new perattr.PerAttr()
+            .render(largeRight)
+            .registerListener(this.coordinator.getCoordinationListener());
+        this.coordinator.registerObserver(perAttr);
+
+        // perwheel section
+        var perWheel = new perwheel.PerWheel()
+            .render(largeRight)
+            .registerListener(this.coordinator.getCoordinationListener());
+        this.coordinator.registerObserver(perWheel);
+
+        // perplots section
+        var perPlots = new perplots.PerPlots()
+            .render()
+            .registerListener(this.coordinator.getCoordinationListener());
+        this.coordinator.registerObserver(perPlots);
+
+        // pertimeline section
+        var perTimeline = new pertimeline.PerTimeline()
+            .render(bottom)
+            .registerListener(this.coordinator.getCoordinationListener());
+        this.coordinator.registerObserver(perTimeline);
+
     };
 
     perse.PerSE.prototype.build = function () {

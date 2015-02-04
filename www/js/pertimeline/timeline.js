@@ -22,10 +22,10 @@ define([
         this.listeners = [];
         this.container = $('<div>').attr({'class': 'perse-timeline'});
         this.svg = undefined;
-        this.margin = {left: 30, right: 3, top: 10, bottom: 30};
+        this.margin = {left: 30, right: 3, top: 10, bottom: 15};
         this.size = {
-            width: 1000 + this.margin.right + this.margin.left,
-            height: 50 + this.margin.top + this.margin.bottom
+            width: 900 - this.margin.right - this.margin.left,
+            height: 80 - this.margin.top - this.margin.bottom
         };
         this.xScale = undefined;
         this.yScale = undefined;
@@ -295,13 +295,15 @@ define([
             .attr('class', 'timeline-axis')
             .attr('id', 'timeline-axis-x')
             .attr('transform', 'translate(0,' + (this.size.height + 1) + ')')
-            .call(xAxisBuilder)
+            .call(xAxisBuilder);
+            /*
             .append('text')
             .attr('class', 'timeline-axis-label')
             .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 18 + ')')
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .text("Year");
+            */
     };
 
     timeline.Timeline.prototype.updateLabel = function (label) {

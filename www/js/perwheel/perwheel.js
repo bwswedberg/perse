@@ -17,7 +17,7 @@ define([
     var perwheel = {};
 
     perwheel.PerWheel = function () {
-        this.container = $('<div>').attr({'class': 'container-fluid perse-perwheel'});
+        this.container = $('<div>').attr({'class': 'panel-body'});
         this.calendarName = 'gregorian';
         this.listeners = [];
         this.timeWheel = undefined;
@@ -29,11 +29,16 @@ define([
     };
 
     perwheel.PerWheel.prototype.render = function (parent) {
-        $(parent).append(this.container);
+        var panelHeader = $('<div>')
+                .attr({'class': 'panel-heading'})
+                .append($('<p>').attr({'class': 'panel-title'}).text('Time-Wheel').append(this.createResetSpan())),
+            panel = $('<div>')
+                .attr({'class': 'panel panel-default perse-perwheel'})
+                .append(panelHeader, this.container);
+        $(parent).append(panel);
         this.container
-            .append(this.createHeader())
+            //.append(this.createHeader())
             .append(this.createCalendar())
-            .append(this.createResetSpan())
             .append(this.createTimeWheel());
         return this;
     };
@@ -44,7 +49,7 @@ define([
     };
 
     perwheel.PerWheel.prototype.createCalendar = function () {
-        var row = $('<div>').attr({'class': 'row perse-row perse-perwheel-calendar'}),
+        var row = $('<div>').attr({'class': 'perse-perwheel-calendar'}),
             calendarDropdown = new combobutton.ComboButton({
                 'label': 'Calendar:',
                 'values': [
@@ -72,7 +77,7 @@ define([
     };
 
     perwheel.PerWheel.prototype.createTimeWheel = function () {
-        var timeWheelDiv = $('<div>').attr({'class': 'col-sm-12'});
+        var timeWheelDiv = $('<div>');
 
         this.timeWheel = new timewheel.TimeWheel(this.calendarName, timeWheelDiv.get(0));
 
@@ -83,7 +88,7 @@ define([
             }
         });
         return $('<div>')
-            .attr({'class': 'row perse-row perse-perwheel-timewheel'})
+            .attr({'class': 'perse-perwheel-timewheel'})
             .append(timeWheelDiv);
     };
 

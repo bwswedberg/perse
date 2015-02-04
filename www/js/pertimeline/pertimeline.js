@@ -11,7 +11,7 @@ define([
     var pertimeline = {};
 
     pertimeline.PerTimeline = function () {
-        this.container = $('<div>').attr({'class': 'container-fluid perse-pertimeline'});
+        this.container = $('<div>').attr({'class': 'panel-body'});
         this.calendarName = 'islamic';
         this.resolution = 'week';
         this.metadata = undefined;
@@ -25,22 +25,20 @@ define([
     };
 
     pertimeline.PerTimeline.prototype.render = function (parent) {
-        $(parent).append(this.container);
+        var panelHeader = $('<div>')
+                .attr({'class': 'panel-heading'})
+                .append($('<p>').attr({'class': 'panel-title'}).text('Timeline')),
+            panel = $('<div>')
+                .attr({'class': 'panel panel-default perse-pertimeline'})
+                .append(panelHeader, this.container);
+        $(parent).append(panel);
         this.container
-            .append(this.createHeader())
-            .append(this.createCalendarCombo())
-            .append(this.createResolutionCombo())
-            .append(this.createTimeline());
+            .append(this.createCalendarCombo(), this.createResolutionCombo(), this.createTimeline());
         return this;
     };
 
-    pertimeline.PerTimeline.prototype.createHeader = function () {
-        var h = $('<h3>').attr({'class': 'perse-pertimeline-header'}).text('Timeline');
-        return $('<div>').attr({'class': 'row'}).append(h);
-    };
-
     pertimeline.PerTimeline.prototype.createCalendarCombo = function () {
-        var row = $('<div>').attr({'class': 'row perse-row perse-pertimeline-calendar'}),
+        var row = $('<div>').attr({'class': 'perse-pertimeline-calendar'}),
             calendarDropdown = new combobutton.ComboButton({
                 'label': 'Calendar:',
                 'values': [
@@ -60,7 +58,7 @@ define([
     };
 
     pertimeline.PerTimeline.prototype.createResolutionCombo = function () {
-        var row = $('<div>').attr({'class': 'row perse-row perse-pertimeline-resolution'}),
+        var row = $('<div>').attr({'class': 'perse-pertimeline-resolution'}),
             resolutionDropdown = new combobutton.ComboButton({
                 'label': 'Resolution:',
                 'values': [

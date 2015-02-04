@@ -1,3 +1,17 @@
 .perse-perattr-navtabs li {
     font-size: 9px;
 }
+
+/*
+p.dropdown.perse-perattr {
+    margin-bottom: 0;
+}
+*/
+
+.perse-perattr-title {
+
+}
+
+.perse-perattr-title button {
+    padding: 0;
+}

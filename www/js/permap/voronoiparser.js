@@ -10,8 +10,7 @@ define([
 
     var voronoiparser = {};
 
-    voronoiparser.VoronoiParser = function (metadata) {
-        this.metadata = metadata;
+    voronoiparser.VoronoiParser = function () {
         this.data = undefined;
         this.voronoiPolygonVectorLayer = undefined;
         this.projectionString = undefined;

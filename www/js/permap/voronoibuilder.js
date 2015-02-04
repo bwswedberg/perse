@@ -9,25 +9,24 @@ define([
     'd3'
 ], function (ol, d3) {
 
-    var permap = {};
+    var voronoibuilder = {};
 
-    permap.Voronoi = function (metadata) {
-        this.metadata = metadata;
+    voronoibuilder.VoronoiBuilder = function () {
         this.extent = undefined;
         this.seedCoords = undefined;
     };
 
-    permap.Voronoi.prototype.setExtent = function (extent) {
+    voronoibuilder.VoronoiBuilder.prototype.setExtent = function (extent) {
         this.extent = extent;
         return this;
     };
 
-    permap.Voronoi.prototype.setSeedCoords = function (seedCoords) {
+    voronoibuilder.VoronoiBuilder.prototype.setSeedCoords = function (seedCoords) {
         this.seedCoords = seedCoords;
         return this;
     };
 
-    permap.Voronoi.prototype.createVoronoi = function () {
+    voronoibuilder.VoronoiBuilder.prototype.createVoronoi = function () {
 
         this.seedCoords = this.seedCoords || this.getInitSeedCoords(this.extent);
 
@@ -40,7 +39,7 @@ define([
             )(this.seedCoords);
     };
 
-    permap.Voronoi.prototype.buildVoronoiPointVectorLayer = function () {
+    voronoibuilder.VoronoiBuilder.prototype.buildVoronoiPointVectorLayer = function () {
         var features = [],
             vectorSource,
             fill,
@@ -81,7 +80,7 @@ define([
 
     };
 
-    permap.Voronoi.prototype.buildVoronoiPolygonVectorLayer = function () {
+    voronoibuilder.VoronoiBuilder.prototype.buildVoronoiPolygonVectorLayer = function () {
         var voronoi = this.createVoronoi(),
             features = [],
             vectorSource,
@@ -117,15 +116,15 @@ define([
 
     };
 
-    permap.Voronoi.prototype.getInitSeedCoords = function (extent) {
+    voronoibuilder.VoronoiBuilder.prototype.getInitSeedCoords = function (extent) {
         var xValues = [
                 extent.x.min + (extent.x.dif * (1 / 4)),
                 extent.x.min + (extent.x.dif * (3 / 4))
             ],
             yValues = [
-               extent.y.min + (extent.y.dif * (5 / 6)),
-               extent.y.min + (extent.y.dif * (3 / 6)),
-               extent.y.min + (extent.y.dif * (1 / 6))
+                extent.y.min + (extent.y.dif * (5 / 6)),
+                extent.y.min + (extent.y.dif * (3 / 6)),
+                extent.y.min + (extent.y.dif * (1 / 6))
             ],
             seedCoords = [],
             x,
@@ -139,19 +138,5 @@ define([
         return seedCoords;
     };
 
-    permap.Voronoi.prototype.parseData = function (data) {
-        var voronoiLayer = this.buildVoronoiPolygonVectorLayer(),
-            newData = this.seedCoords.map(function () {return []; }),
-            projection = this.metadata.getMetadata().geospatial.projection;
-
-        data.forEach(function (d) {
-            var coord = ol.proj.transform(d.coord, projection, 'EPSG:3857'),
-                features = voronoiLayer.getSource().getFeaturesAtCoordinate(coord);
-            newData[features[0].getProperties().data.voronoiIndex].push(d);
-        });
-
-        return newData;
-    };
-
-    return permap;
+    return voronoibuilder;
 });

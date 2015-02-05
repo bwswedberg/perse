@@ -37,7 +37,7 @@ define([
                 .text('Map'),
             panelHeader = $('<div>')
                 .attr({'class': 'panel-heading'})
-                .append($('<div>').attr({'class': 'panel-title'}).append(title)),
+                .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-permap'})
                 .append(panelHeader, this.container);
@@ -66,8 +66,6 @@ define([
             .registerListener(this.createPerMapListener());
         this.registerToolbarListener(this.map.createToolbarListener());
         this.map.build({'eventPoints': eventLayer, 'voronoiPoints': voronoiLayerBuilder.buildPointVectorLayer()}, this.metadata);
-
-        this.container.siblings('.panel-heading').find('div').append(this.createControls());
 
         /*
         this.perPlots = new perplots.PerPlots()

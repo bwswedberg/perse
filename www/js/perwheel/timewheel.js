@@ -129,7 +129,7 @@ define([
 
         text
             .attr('x', this.viewBox.width - bbox.width)
-            .attr('y', -2);
+            .attr('y', -3);
     };
 
     timewheel.TimeWheel.prototype.setCalendarName = function (calendarName) {

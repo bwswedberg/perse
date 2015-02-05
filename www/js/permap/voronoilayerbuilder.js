@@ -9,24 +9,24 @@ define([
     'd3'
 ], function (ol, d3) {
 
-    var voronoibuilder = {};
+    var voronoilayerbuilder = {};
 
-    voronoibuilder.VoronoiBuilder = function () {
+    voronoilayerbuilder.VoronoiLayerBuilder = function () {
         this.extent = undefined;
         this.seedCoords = undefined;
     };
 
-    voronoibuilder.VoronoiBuilder.prototype.setExtent = function (extent) {
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.setExtent = function (extent) {
         this.extent = extent;
         return this;
     };
 
-    voronoibuilder.VoronoiBuilder.prototype.setSeedCoords = function (seedCoords) {
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.setSeedCoords = function (seedCoords) {
         this.seedCoords = seedCoords;
         return this;
     };
 
-    voronoibuilder.VoronoiBuilder.prototype.createVoronoi = function () {
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.createVoronoi = function () {
 
         this.seedCoords = this.seedCoords || this.getInitSeedCoords(this.extent);
 
@@ -39,7 +39,7 @@ define([
             )(this.seedCoords);
     };
 
-    voronoibuilder.VoronoiBuilder.prototype.buildVoronoiPointVectorLayer = function () {
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.buildPointVectorLayer = function () {
         var features = [],
             vectorSource,
             fill,
@@ -80,7 +80,7 @@ define([
 
     };
 
-    voronoibuilder.VoronoiBuilder.prototype.buildVoronoiPolygonVectorLayer = function () {
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.buildPolygonVectorLayer = function () {
         var voronoi = this.createVoronoi(),
             features = [],
             vectorSource,
@@ -116,7 +116,7 @@ define([
 
     };
 
-    voronoibuilder.VoronoiBuilder.prototype.getInitSeedCoords = function (extent) {
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.getInitSeedCoords = function (extent) {
         var xValues = [
                 extent.x.min + (extent.x.dif * (1 / 4)),
                 extent.x.min + (extent.x.dif * (3 / 4))
@@ -138,5 +138,5 @@ define([
         return seedCoords;
     };
 
-    return voronoibuilder;
+    return voronoilayerbuilder;
 });

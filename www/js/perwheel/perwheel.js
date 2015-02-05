@@ -18,7 +18,7 @@ define([
 
     perwheel.PerWheel = function () {
         this.container = $('<div>').attr({'class': 'panel-body'});
-        this.calendarName = 'gregorian';
+        this.calendarName = 'Gregorian';
         this.listeners = [];
         this.timeWheel = undefined;
         this.filter = new filter.Filter({
@@ -29,44 +29,79 @@ define([
     };
 
     perwheel.PerWheel.prototype.render = function (parent) {
-        var panelHeader = $('<div>')
+        var title = $('<p>')
+                .attr({'class': 'perse-header-title'})
+                .text('Time-Wheel'),
+            panelHeader = $('<div>')
                 .attr({'class': 'panel-heading'})
-                .append($('<p>').attr({'class': 'panel-title'}).text('Time-Wheel').append(this.createResetSpan())),
+                .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-perwheel'})
                 .append(panelHeader, this.container);
+
         $(parent).append(panel);
-        this.container
-            //.append(this.createHeader())
-            .append(this.createCalendar())
-            .append(this.createTimeWheel());
+        this.container.append(this.createTimeWheel());
         return this;
     };
 
-    perwheel.PerWheel.prototype.createHeader = function () {
-        var h = $('<h3>').attr({'class': 'perse-perwheel-header'}).text('Time-Wheel');
-        return $('<div>').attr({'class': 'row'}).append(h);
+    perwheel.PerWheel.prototype.createControls = function () {
+        var cal = this.createCalendarButtonGroup(),
+            filter = this.createFilterControlButtonGroup();
+        return $('<div>')
+            .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
+            .append(cal, filter);
     };
 
-    perwheel.PerWheel.prototype.createCalendar = function () {
-        var row = $('<div>').attr({'class': 'perse-perwheel-calendar'}),
-            calendarDropdown = new combobutton.ComboButton({
-                'label': 'Calendar:',
-                'values': [
-                    {'alias': 'Gregorian', id: 'gregorian'},
-                    {'alias': 'Islamic', id: 'islamic'}
-                ],
-                'active': this.calendarName
-            });
-        calendarDropdown.registerListener({
-            context: this,
-            onComboChanged: function (event) {
-                this.calendarName = event.active;
-                this.calendarChanged(event.active);
-            }
-        });
-        calendarDropdown.render(row);
-        return row;
+    perwheel.PerWheel.prototype.createFilterControlButtonGroup = function () {
+        var filterIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-filter', 'aria-hidden': 'true'}),
+            filterButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
+                .append(filterIcon);
+
+        filterButton.on('mouseup', $.proxy(function () {
+            this.filter.filterOn = function (d) {return true; };
+            this.timeWheel.setAllEnabled();
+            this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
+        }, this));
+
+        return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(filterButton);
+    };
+
+    perwheel.PerWheel.prototype.createCalendarButtonGroup = function () {
+        var // menu
+            calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Calendar'),
+            gregorian = $('<a>').attr({'role': 'menuitem'}).text('Gregorian ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
+            islamic = $('<a>').attr({'role': 'menuitem'}).text('Islamic '),
+            menu = $('<ul>')
+            .attr({'class': 'dropdown-menu', 'role': 'menu'})
+            .append([
+                calendarHeader,
+                $('<li>').attr({'role': 'presentation'}).append(gregorian),
+                $('<li>').attr({'role': 'presentation'}).append(islamic)
+            ]),
+        // button
+            calendarIcon = $('<span>').attr({'class': 'glyphicon glyphicon-calendar', 'aria-hidden': 'true'}),
+            calendarButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Calendar System'})
+                .append(calendarIcon, ' ' + this.calendarName + ' ', $('<span>').attr({'class': 'caret'}));
+
+        // add events here
+        gregorian.on('mouseup', $.proxy(function () {
+            this.calendarName = 'Gregorian';
+            this.calendarChanged('Gregorian');
+            menu.find('li a span').remove();
+            gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        islamic.on('mouseup', $.proxy(function () {
+            this.calendarName = 'Islamic';
+            this.calendarChanged('Islamic');
+            menu.find('li a span').remove();
+            islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
     };
 
     perwheel.PerWheel.prototype.calendarChanged = function (newCalendar) {

@@ -13,7 +13,6 @@ define([
     'permap/permap',
     'perwheel/perwheel',
     'perattr/perattr',
-    'perplots/perplots',
     'pertimeline/pertimeline',
     // No namespace
     'bootstrap'
@@ -26,7 +25,6 @@ define([
     permap,
     perwheel,
     perattr,
-    perplots,
     pertimeline
 ) {
 
@@ -62,8 +60,6 @@ define([
         var perMap = new permap.PerMap()
             .render(largeLeft)
             .registerListener(this.coordinator.getCoordinationListener());
-        perMap.makeInteractive();
-        //perMap.registerVoronoiObserver();
         this.coordinator.registerObserver(perMap);
 
         // perattr section
@@ -77,12 +73,6 @@ define([
             .render(largeRight)
             .registerListener(this.coordinator.getCoordinationListener());
         this.coordinator.registerObserver(perWheel);
-
-        // perplots section
-        var perPlots = new perplots.PerPlots()
-            .render()
-            .registerListener(this.coordinator.getCoordinationListener());
-        this.coordinator.registerObserver(perPlots);
 
         // pertimeline section
         var perTimeline = new pertimeline.PerTimeline()

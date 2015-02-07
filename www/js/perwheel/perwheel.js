@@ -60,6 +60,7 @@ define([
                 .append(filterIcon);
 
         filterButton.on('mouseup', $.proxy(function () {
+            $(filterButton).blur();
             this.filter.filterOn = function (d) {return true; };
             this.timeWheel.setAllEnabled();
             this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
@@ -125,20 +126,6 @@ define([
         return $('<div>')
             .attr({'class': 'perse-perwheel-timewheel'})
             .append(timeWheelDiv);
-    };
-
-    perwheel.PerWheel.prototype.createResetSpan = function () {
-        var resetButton = $('<a>')
-                .attr({'class': 'btn btn-link btn-sm', 'role': 'button', 'title': 'Select All Categories'})
-                .text('Reset');
-
-        resetButton.click($.proxy(function () {
-            this.filter.filterOn = function (d) {return true; };
-            this.timeWheel.setAllEnabled();
-            this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
-        }, this));
-
-        return $('<span>').attr({'class': 'perse-reset-span'}).append(resetButton);
     };
 
     perwheel.PerWheel.prototype.getData = function () {

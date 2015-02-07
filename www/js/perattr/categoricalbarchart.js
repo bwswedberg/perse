@@ -33,27 +33,6 @@ define([
         return this;
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.createAllNoneSpan = function () {
-        var noneButton = $('<a>')
-                .attr({'class': 'btn btn-link btn-sm', 'role': 'button', 'title': 'Deselect All Categories'})
-                .text('Clear'),
-            allButton = $('<a>')
-                .attr({'class': 'btn btn-link btn-sm', 'role': 'button', 'title': 'Select All Categories'})
-                .text('Reset');
-
-        noneButton.click($.proxy(function () {
-            this.deselected = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues);
-            this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
-        }, this));
-
-       allButton.click($.proxy(function () {
-            this.deselected = [];
-            this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
-        }, this));
-
-        return $('<span>').append(allButton, noneButton);
-    };
-
     categoricalbarchart.CategoricalBarChart.prototype.build = function (data) {
         var chartContainer = $('<div>').attr({'class': 'categoricalbarchart-chart'}),
             axisContainer = $('<div>').attr({'class': 'categoricalbarchart-axis'});
@@ -95,6 +74,16 @@ define([
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .text("Frequency");
+
+        /// build y axis here
+        /*
+        .append('text')
+            .attr('class', 'timeline-axis-label')
+            .attr('transform', 'translate(-' + (this.margin.left * 0.95) + ',' + (this.size.height / 2) + ') rotate(-90)')
+            .attr('dy', '.71em')
+            .style('text-anchor', 'middle')
+            .text('Categories');
+        */
     };
 
     categoricalbarchart.CategoricalBarChart.prototype.buildChart = function (container, data) {
@@ -190,6 +179,16 @@ define([
             .attr("transform", "translate(-2, 0)")
             .call(yAxisBuilder);
 
+    };
+
+    categoricalbarchart.CategoricalBarChart.prototype.deselectAll = function () {
+        this.deselected = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues);
+        this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
+    };
+
+    categoricalbarchart.CategoricalBarChart.prototype.selectAll = function () {
+        this.deselected = [];
+        this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
     };
 
     categoricalbarchart.CategoricalBarChart.prototype.update = function (data) {

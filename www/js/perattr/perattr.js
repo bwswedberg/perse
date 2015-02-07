@@ -21,28 +21,34 @@ define([
     };
 
     perattr.PerAttr.prototype.render = function (parent) {
-        var panelHeader = $('<div>')
+        var title = $('<p>')
+                .attr({'class': 'perse-header-title'})
+                .text('Attributes'),
+            panelHeader = $('<div>')
                 .attr({'class': 'panel-heading'})
-                .append($('<p>').attr({'class': 'panel-title'}).text('Attributes')),
+                .append($('<div>').attr({'class': 'panel-title'}).append(title)),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-perattr'})
                 .append(panelHeader, this.container);
-        $(parent).append(panel);
+
+        parent.append(panel);
+
         return this;
     };
 
     perattr.PerAttr.prototype.build = function (data) {
         var cardContainer = $('<div>').attr({'class': 'perse-perattr-cardcontainer'}),
             b = $('<button>')
-                .attr({'class': 'btn-link dropdown-toggle', 'data-toggle': 'dropdown'}),
+                .attr({'class': 'btn btn-link btn-md dropdown-toggle', 'data-toggle': 'dropdown'}),
             menu = $('<ul>')
                 .attr({'class': 'dropdown-menu', 'role': 'menu'}),
-            dropdown = $('<p>')
-                .attr({'class': 'dropdown perse-perattr panel-title perse-perattr-title'})
+            dropdown = $('<div>')
+                .attr({'class': 'dropdown perse-header-title perse-perattr-title'})
                 .append(b, menu);
 
         this.container
             .siblings('.panel-heading')
+            .find('.panel-title ')
             .empty()
             .append(dropdown);
 
@@ -50,23 +56,27 @@ define([
 
         this.metadata.getMetadata().attribute.attributeKeys.forEach(function (attributeName, i) {
             var id = 'perse-perattr-card-' + attributeName,
-                label = this.metadata.getMetadata().attribute.attributes[attributeName].label,
+                label = this.metadata.getMetadata().attribute.attributes[attributeName].label + ' ',
                 card = $('<div>').hide().attr({'class': 'perse-perattr-card', id: id}),
                 button = $('<a>').attr({'role': 'menuitem'}).text(label),
                 li = $('<li>').attr({'role': 'presentation', 'id': id}).append(button),
                 hist;
 
+            //this.container.append(card);
+            hist = new histogram.Histogram(attributeName)
+                .render(card)
+                .registerListener(this.createFilterChangedListener());
+            hist.onDataSetChanged(data, this.metadata);
+
             if (i === 0) {
                 b.text(label).append($('<span>').attr({'class': 'caret'}));
                 card.addClass('active').show();
                 li.addClass('active');
+                this.container
+                    .siblings('.panel-heading')
+                    .find('.panel-title')
+                    .append(hist.getToolbar());
             }
-
-            //this.container.append(card);
-            hist = new histogram.Histogram(attributeName)
-                .render(card)
-                .registerListener(this.createFilterChangedListener())
-            hist.onDataSetChanged(data, this.metadata);
 
             this.histograms.push(hist);
 
@@ -76,6 +86,15 @@ define([
                 cardContainer.find('div#' + id).addClass('active').show();
                 menu.find('.active').removeClass('active');
                 menu.find('li#' + id).addClass('active');
+
+                this.container
+                    .siblings('.panel-heading')
+                    .find('.panel-title .perse-header-toolbar')
+                    .remove();
+                this.container
+                    .siblings('.panel-heading')
+                    .find('.panel-title')
+                    .append(hist.getToolbar());
             }, this));
             menu.append(li);
             cardContainer.append(card);

@@ -185,10 +185,18 @@ define([
     };
 
     rugplot.RugPlot.prototype.validateRangeInput = function () {
-        console.log([this.toInput.value, this.fromInput.value]);
         this.brush.extent([this.toInput.val(), this.fromInput.val()]);
         this.svg.selectAll(".brush").call(this.brush);
         this.brush.event(this.svg.selectAll(".brush"));
+    };
+
+    rugplot.RugPlot.prototype.reset = function () {
+        var min = this.xScale.domain()[0],
+            max = this.xScale.domain()[1];
+        this.toInput.attr({'value': min});
+        this.toInput.attr({'value': max});
+        this.validateRangeInput();
+        //this.notifyListeners('onRugPlotSelectionChanged', {context: this});
     };
 
     rugplot.RugPlot.prototype.update = function (data) {

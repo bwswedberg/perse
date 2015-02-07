@@ -36,6 +36,7 @@ define([
             property: this.attribute,
             filterOn: function (d) {return true; }
         });
+        this.toolbar = undefined;
     };
 
     histogram.Histogram.prototype.render = function (container) {
@@ -84,6 +85,8 @@ define([
             $('<span>').text('Histogram:'),
             barChartDiv
         );
+
+        this.toolbar = this.createNumericalControls();
     };
 
     histogram.Histogram.prototype.buildCategorical = function (data) {
@@ -101,11 +104,69 @@ define([
 
         this.categoricalBarChart.onDataSetChanged(data, this.metadata);
 
-        this.container.append(
-            $('<span>').text('Categories:'),
-            this.categoricalBarChart.createAllNoneSpan(),
-            categoricalBarChartDiv
-        );
+        this.container.append(categoricalBarChartDiv);
+
+        this.toolbar = this.createCategoricalControls();
+    };
+
+    histogram.Histogram.prototype.createNumericalControls = function () {
+        var filter = $('<div>')
+            .attr({'class': 'btn-group', 'role': 'group'})
+            .append(this.createFilterControlButton());
+        return $('<div>')
+            .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
+            .append(filter);
+    };
+
+    histogram.Histogram.prototype.createCategoricalControls = function () {
+        var none = this.createNoneControlButton(),
+            filter = this.createFilterControlButton(),
+            g = $('<div>')
+                .attr({'class': 'btn-group', 'role': 'group'})
+                .append(none, filter);
+        return $('<div>')
+            .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
+            .append(g);
+    };
+
+    histogram.Histogram.prototype.createFilterControlButton = function () {
+        var filterIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-filter', 'aria-hidden': 'true'}),
+            filterButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
+                .append(filterIcon);
+
+        filterButton.on('mouseup', $.proxy(function () {
+            $(filterButton).blur();
+            if (this.categoricalBarChart) {
+                this.categoricalBarChart.selectAll();
+            } else {
+                this.rugPlot.reset();
+            }
+            this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
+        }, this));
+
+        return filterButton;
+    };
+
+    histogram.Histogram.prototype.createNoneControlButton = function () {
+        var that = this,
+            filterIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-ban-circle', 'aria-hidden': 'true'}),
+            filterButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
+                .append(filterIcon);
+
+        filterButton.on('mouseup', function () {
+            $(filterButton).blur();
+            that.categoricalBarChart.deselectAll();
+        });
+
+        return filterButton;
+    };
+
+    histogram.Histogram.prototype.getToolbar = function () {
+        return this.toolbar;
     };
 
     histogram.Histogram.prototype.getFilter = function () {

@@ -12,6 +12,11 @@ p.dropdown.perse-perattr {
 
 }
 
-.perse-perattr-title button {
+.perse-perattr-title button,
+.perse-perattr-title button:hover {
+    margin-top: -.1em;
+    font-size: 1em;
     padding: 0;
+    color: black;
 }
+

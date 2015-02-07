@@ -193,16 +193,16 @@ define([
     pertimelinedatasetbuilder.PerTimelineDataSetBuilder.prototype.build = function () {
         var newData = [];
         switch (this.resolution) {
-        case ('year'):
+        case ('Year'):
             newData = this.buildYearlyDataSet();
             break;
-        case ('month'):
+        case ('Month'):
             newData = this.buildMonthlyDataSet();
             break;
-        case ('week'):
+        case ('Week'):
             newData = this.buildWeeklyDataSet();
             break;
-        case ('day'):
+        case ('Day'):
             newData = this.buildDailyDataSet();
             break;
         default:

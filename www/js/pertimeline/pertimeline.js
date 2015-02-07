@@ -12,8 +12,8 @@ define([
 
     pertimeline.PerTimeline = function () {
         this.container = $('<div>').attr({'class': 'panel-body'});
-        this.calendarName = 'islamic';
-        this.resolution = 'week';
+        this.calendarName = 'Gregorian';
+        this.resolution = 'Week';
         this.metadata = undefined;
         this.listeners = [];
         this.filter = new filter.Filter({
@@ -25,36 +25,135 @@ define([
     };
 
     pertimeline.PerTimeline.prototype.render = function (parent) {
-        var panelHeader = $('<div>')
+        var title = $('<p>')
+                .attr({'class': 'perse-header-title'})
+                .text('Timeline'),
+            panelHeader = $('<div>')
                 .attr({'class': 'panel-heading'})
-                .append($('<p>').attr({'class': 'panel-title'}).text('Timeline')),
+                .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-pertimeline'})
                 .append(panelHeader, this.container);
+
         $(parent).append(panel);
-        this.container
-            .append(this.createCalendarCombo(), this.createResolutionCombo(), this.createTimeline());
+        this.container.append(this.createTimeline());
         return this;
     };
 
-    pertimeline.PerTimeline.prototype.createCalendarCombo = function () {
-        var row = $('<div>').attr({'class': 'perse-pertimeline-calendar'}),
-            calendarDropdown = new combobutton.ComboButton({
-                'label': 'Calendar:',
-                'values': [
-                    {'alias': 'Gregorian', id: 'gregorian'},
-                    {'alias': 'Islamic', id: 'islamic'}
-                ],
-                'active': this.calendarName
-            });
-        calendarDropdown.registerListener({
-            context: this,
-            onComboChanged: function (event) {
-                this.calendarChanged(event.active);
-            }
-        });
-        calendarDropdown.render(row);
-        return row;
+    pertimeline.PerTimeline.prototype.createControls = function () {
+        var resolution = this.createResolutionButtonGroup(),
+            cal = this.createCalendarButtonGroup(),
+            filter = this.createFilterButtonGroup();
+        return $('<div>')
+            .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
+            .append(resolution, cal, filter);
+    };
+
+    pertimeline.PerTimeline.prototype.createFilterButtonGroup = function () {
+        var filterIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-filter', 'aria-hidden': 'true'}),
+            filterButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
+                .append(filterIcon);
+
+        filterButton.on('mouseup', $.proxy(function () {
+            $(filterButton).blur();
+            this.filter.filterOn = function (d) {return true; };
+            this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
+        }, this));
+
+        return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(filterButton);
+    };
+
+    pertimeline.PerTimeline.prototype.createCalendarButtonGroup = function () {
+        var // menu
+            calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Calendar'),
+            gregorian = $('<a>').attr({'role': 'menuitem'}).text('Gregorian ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
+            islamic = $('<a>').attr({'role': 'menuitem'}).text('Islamic '),
+            menu = $('<ul>')
+                .attr({'class': 'dropdown-menu', 'role': 'menu'})
+                .append([
+                    calendarHeader,
+                    $('<li>').attr({'role': 'presentation'}).append(gregorian),
+                    $('<li>').attr({'role': 'presentation'}).append(islamic)
+                ]),
+        // button
+            calendarIcon = $('<span>').attr({'class': 'glyphicon glyphicon-calendar', 'aria-hidden': 'true'}),
+            calendarButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Calendar System'})
+                .append(calendarIcon, ' ' + this.calendarName + ' ', $('<span>').attr({'class': 'caret'}));
+
+        // add events here
+        gregorian.on('mouseup', $.proxy(function () {
+            this.calendarName = 'Gregorian';
+            this.calendarChanged('Gregorian');
+            menu.find('li a span').remove();
+            gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        islamic.on('mouseup', $.proxy(function () {
+            this.calendarName = 'Islamic';
+            this.calendarChanged('Islamic');
+            menu.find('li a span').remove();
+            islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
+    };
+
+    pertimeline.PerTimeline.prototype.createResolutionButtonGroup = function () {
+        var // menu
+            calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Cycle'),
+            year = $('<a>').attr({'role': 'menuitem'}).text('Year '),
+            month = $('<a>').attr({'role': 'menuitem'}).text('Month '),
+            week = $('<a>').attr({'role': 'menuitem'}).text('Week ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
+            day = $('<a>').attr({'role': 'menuitem'}).text('Day '),
+            menu = $('<ul>')
+                .attr({'class': 'dropdown-menu', 'role': 'menu'})
+                .append([
+                    calendarHeader,
+                    $('<li>').attr({'role': 'presentation'}).append(year),
+                    $('<li>').attr({'role': 'presentation'}).append(month),
+                    $('<li>').attr({'role': 'presentation'}).append(week),
+                    $('<li>').attr({'role': 'presentation'}).append(day)
+
+                ]),
+        // button
+            resIcon = $('<span>').attr({'class': 'glyphicon glyphicon-stats', 'aria-hidden': 'true'}),
+            resButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Temporal Resolution'})
+                .append(resIcon, ' ' + this.resolution + ' ', $('<span>').attr({'class': 'caret'}));
+
+        // add events here
+        year.on('mouseup', $.proxy(function () {
+            this.resolutionChanged('Year');
+            resButton.empty().append(resIcon, ' Year ', $('<span>').attr({'class': 'caret'}));
+            menu.find('li a span').remove();
+            year.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        month.on('mouseup', $.proxy(function () {
+            this.resolutionChanged('Month');
+            resButton.empty().append(resIcon, ' Month ', $('<span>').attr({'class': 'caret'}));
+            menu.find('li a span').remove();
+            month.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        week.on('mouseup', $.proxy(function () {
+            this.resolutionChanged('Week');
+            resButton.empty().append(resIcon, ' Week ', $('<span>').attr({'class': 'caret'}));
+            menu.find('li a span').remove();
+            week.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        day.on('mouseup', $.proxy(function () {
+            this.resolutionChanged('Day');
+            resButton.empty().append(resIcon, ' Day ', $('<span>').attr({'class': 'caret'}));
+            menu.find('li a span').remove();
+            day.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+        }, this));
+
+        return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(resButton, menu);
     };
 
     pertimeline.PerTimeline.prototype.createResolutionCombo = function () {

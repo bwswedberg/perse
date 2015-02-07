@@ -7,9 +7,10 @@
 define([
     'jquery',
     'ol',
+    'permap/draginteraction',
     // no namespace
     'bootstrap'
-], function ($, ol) {
+], function ($, ol, draginteraction) {
 
     var map = {};
 
@@ -23,7 +24,13 @@ define([
             voronoiPolygons: undefined,
             voronoiPoints: undefined
         };
-        this.filterShapeInteractionMode = 'move';
+        this.interactions = {
+            select: undefined,
+            draw: undefined,
+            drag: undefined,
+            modify: undefined
+        };
+        this.filterShapeInteractionMode = 'none';
     };
 
     map.Map.prototype.render = function (parent) {
@@ -77,6 +84,10 @@ define([
             onDrawShape: function (event) {
                 this.addDrawInteraction(event.shape);
             },
+            onPointer: function (event) {
+                this.filterShapeInteractionMode = 'none';
+                this.updateFilterShapeInteractionMode();
+            },
             onMoveShape: function (event) {
                 this.filterShapeInteractionMode = 'move';
                 this.updateFilterShapeInteractionMode();
@@ -87,6 +98,8 @@ define([
             },
             onRemoveShape: function (event) {
                 if (this.layers.filterPolygon) {
+                    this.interactions.select.getFeatures().clear();
+                    this.clearInteractions();
                     this.theMap.removeLayer(this.layers.filterPolygon);
                     this.layers.filterPolygon = undefined;
                     this.notifyListeners('onFilterChanged', {'context': this});
@@ -96,41 +109,72 @@ define([
         };
     };
 
-    map.Map.prototype.updateFilterShapeInteractionMode = function () {
-        var modify, move, that = this;
+    map.Map.prototype.clearInteractions = function () {
+        if (this.interactions.select) {
+            this.theMap.removeInteraction(this.interactions.select);
+        }
+        if (this.interactions.modify) {
+            this.theMap.removeInteraction(this.interactions.modify);
+        }
+        if (this.interactions.drag) {
+            this.theMap.removeInteraction(this.interactions.drag);
+        }
+    };
 
+    map.Map.prototype.addInteractionListener = function () {
+        $(this.theMap.getTarget()).on('mouseup', $.proxy(function () {
+            this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
+        }, this));
+    };
+
+    map.Map.prototype.removeInteractionListener = function () {
+        $(this.theMap.getTarget()).off('mouseup');
+    };
+
+    map.Map.prototype.updateFilterShapeInteractionMode = function () {
+        var that = this;
+
+        this.removeInteractionListener();
         if (this.layers.filterPolygon) {
+
+            this.clearInteractions();
+
+            this.interactions.select = new ol.interaction.Select({
+                layers: function (vLayer) {
+                    return vLayer === that.layers.filterPolygon;
+                }
+            });
+
+            this.layers.filterPolygon.getSource().getFeatures().forEach(function (f) {
+                this.interactions.select.getFeatures().push(f);
+            }, this);
+
+            this.theMap.addInteraction(this.interactions.select);
+
+            this.addInteractionListener();
+
             switch (this.filterShapeInteractionMode) {
             case ('modify'):
-
-                var select = new ol.interaction.Select({
-                    // make sure only the desired layer can be selected
-                    layers: function (vLayer) {
-                        return vLayer === that.layers.filterPolygon;
-                    }
-                });
-
-                this.theMap.addInteraction(select);
-                //console.log(this.layers.filterPolygon.getSource().getFeatures());
-                var modify = new ol.interaction.Modify({
-                    features: select.getFeatures(),//select.getFeatures(),
+                this.interactions.modify = new ol.interaction.Modify({
+                    features: that.interactions.select.getFeatures(),
                     deleteCondition: function (event) {
                         return ol.events.condition.shiftKeyOnly(event) &&
                             ol.events.condition.singleClick(event);
                     }
                 });
 
-                modify.on('change', function () {
-                    this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
-                }, this);
-
-
-                console.log('modify');
-                this.theMap.addInteraction(modify);
+                this.theMap.addInteraction(this.interactions.modify);
                 break;
             case ('move'):
-                //var drag = new draginteraction.Drag();
-                //this.theMap.addInteraction(drag);
+                this.interactions.drag = new draginteraction.Drag({
+                    features: that.interactions.select.getFeatures()
+                });
+                this.theMap.addInteraction(this.interactions.drag);
+                break;
+            case ('none'):
+                this.interactions.select.getFeatures().clear();
+                this.removeInteractionListener();
+                this.clearInteractions();
                 break;
             default:
                 console.warn('Case Not Supported');
@@ -139,11 +183,10 @@ define([
     };
 
     map.Map.prototype.addDrawInteraction = function (geomType) {
-        var type = geomType || 'Polygon',
-            draw;
-        this.theMap.getInteractions().forEach(function (inter) {
-            this.theMap.removeInteraction(inter);
-        }, this);
+        var type = geomType || 'Polygon';
+
+        this.removeInteractionListener();
+        this.clearInteractions();
 
         if (!this.layers.filterPolygon) {
             this.layers.filterPolygon = new ol.layer.Vector({
@@ -168,19 +211,19 @@ define([
             //this.layers.filterPolygon.setMap(this.theMap);
         }
 
-        draw = new ol.interaction.Draw({
+        this.interactions.draw = new ol.interaction.Draw({
             source: this.layers.filterPolygon.getSource(),
             //features: this.layers.filterPolygon.getFeatures(),
             type: type
         });
 
-        draw.on('drawend', function (event) {
-            this.theMap.removeInteraction(draw);
+        this.interactions.draw.on('drawend', function (event) {
+            this.theMap.removeInteraction(this.interactions.draw);
             this.updateFilterShapeInteractionMode();
             this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
         }, this);
 
-        this.theMap.addInteraction(draw);
+        this.theMap.addInteraction(this.interactions.draw);
     };
 
     map.Map.prototype.getFilter = function () {

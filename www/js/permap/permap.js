@@ -6,14 +6,13 @@
 
 define([
     'jquery',
-    'ol',
     'permap/eventlayerbuilder',
     'permap/map',
     'permap/voronoilayerbuilder',
     'permap/voronoidataparser',
     'perplots/perplots',
     'data/filter'
-], function ($, ol, eventlayerbuilder, map, voronoilayerbuilder, voronoidataparser, perplots, filter) {
+], function ($, eventlayerbuilder, map, voronoilayerbuilder, voronoidataparser, perplots, filter) {
 
     var permap = {};
 
@@ -126,6 +125,7 @@ define([
                 .append(filterIcon);
 
         filterButton.on('mouseup', $.proxy(function () {
+            $(filterButton).blur();
             this.notifyToolbarListeners('onRemoveShape', {'context': this});
         }, this));
 
@@ -140,7 +140,7 @@ define([
             divider1 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
             actionHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Edit'),
             modify = $('<a>').attr({'role': 'menuitem'}).text('Modify '),
-            move = $('<a>').attr({'role': 'menuitem'}).text('Move ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
+            move = $('<a>').attr({'role': 'menuitem'}).text('Move '),
             divider2 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
             remove = $('<a>').attr({'role': 'menuitem'}).text('Remove'),
             menu = $('<ul>')
@@ -172,15 +172,26 @@ define([
         }, this));
 
         modify.on('mouseup', $.proxy(function () {
-            this.notifyToolbarListeners('onModifyShape', {'context': this});
-            menu.find('li a span').remove();
-            modify.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+            if (modify.find('.glyphicon').length) {
+                modify.find('.glyphicon').remove();
+                this.notifyToolbarListeners('onPointer', {'context': this});
+            } else {
+                menu.find('li a span').remove();
+                modify.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+                this.notifyToolbarListeners('onModifyShape', {'context': this});
+            }
         }, this));
 
         move.on('mouseup', $.proxy(function () {
-            this.notifyToolbarListeners('onMoveShape', {'context': this});
-            menu.find('li a span').remove();
-            move.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+
+            if (move.find('.glyphicon').length) {
+                move.find('.glyphicon').remove();
+                this.notifyToolbarListeners('onPointer', {'context': this});
+            } else {
+                menu.find('li a span').remove();
+                move.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+                this.notifyToolbarListeners('onMoveShape', {'context': this});
+            }
         }, this));
 
         remove.on('mouseup', $.proxy(function () {

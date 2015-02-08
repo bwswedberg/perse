@@ -32,7 +32,7 @@ define([], function () {
                 day: 'DAY',
                 latDD: 'LATITUDE',
                 lonDD: 'LONGITUDE',
-                attributes: ['EVENT_TYPE', 'ACTOR1', 'FATALITIES']
+                attributes: ['Event Type', 'Actor', 'Fatalities']
             }
         };
     };

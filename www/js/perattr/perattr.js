@@ -14,7 +14,7 @@ define([
     var perattr = {};
 
     perattr.PerAttr = function (container) {
-        this.container = $('<div>').attr({'class': 'panel-body'});
+        this.container = $('<div>').attr({'class': 'panel-body perse-perattr perse-panel-body'});
         this.listeners = [];
         this.metadata = undefined;
         this.histograms = [];
@@ -25,7 +25,7 @@ define([
                 .attr({'class': 'perse-header-title'})
                 .text('Attributes'),
             panelHeader = $('<div>')
-                .attr({'class': 'panel-heading'})
+                .attr({'class': 'panel-heading perse-panel-heading'})
                 .append($('<div>').attr({'class': 'panel-title'}).append(title)),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-perattr'})
@@ -101,41 +101,6 @@ define([
         }, this);
 
         this.container.append(cardContainer);
-    };
-
-    perattr.PerAttr.prototype.build_dep = function (data) {
-        var tabPanel = $('<div>').attr({'role': 'tabpanel'}),
-            navTabs = $('<ul>').attr({'class': 'nav nav-tabs perse-perattr-navtabs', 'role': 'tablist'}),
-            tabContent = $('<div>').attr({'class': 'tab-content'});
-
-        tabPanel.append(navTabs, tabContent);
-
-        this.histograms = [];
-
-        this.metadata.getMetadata().attribute.attributeKeys.forEach(function (attributeName, i) {
-            var id = 'perse-perattr-tab-' + attributeName,
-                label = this.metadata.getMetadata().attribute.attributes[attributeName].label,
-                panel = $('<div>').attr({'class': 'tab-pane', 'role': 'tabpanel', 'id': id}),
-                a = $('<a>').attr({'href': '#' + id, 'aria-controls': id, 'role': 'tab', 'data-toggle': 'tab'}).text(label),
-                li = $('<li>').attr({'role': 'presentation'}).append(a),
-                hist;
-
-            if (i === 0) {
-                panel.addClass('active')
-                li.addClass('active')
-            }
-
-            navTabs.append(li);
-            tabContent.append(panel);
-            hist = new histogram.Histogram(attributeName)
-                .render(panel)
-                .registerListener(this.createFilterChangedListener())
-            hist.onDataSetChanged(data, this.metadata);
-            //this.registerListener(hist);
-            this.histograms.push(hist);
-        }, this);
-
-        this.container.append(tabPanel);
     };
 
     perattr.PerAttr.prototype.notifyListeners = function (callbackStr, event) {

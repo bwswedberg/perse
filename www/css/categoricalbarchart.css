@@ -1,6 +1,7 @@
 .perse-perattr-categoricalbarchart {
-    width: 200px;
+    width: 150px;
     height: 210px;
+    margin: 0 auto;
 }
 
 .categoricalbarchart-chart,
@@ -9,7 +10,7 @@
  }
 
 .categoricalbarchart-chart {
-    width: 200px;
+    width: 150px;
     max-height: 170px;
     overflow: auto;
 }

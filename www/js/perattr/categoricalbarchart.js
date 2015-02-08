@@ -20,7 +20,7 @@ define([
         this.svg = undefined;
         this.margin = {top: 1, right: 3, bottom: 1, left: 3};
         this.size = {
-            width: 200 - this.margin.left - this.margin.right,
+            width: 150 - this.margin.left - this.margin.right,
             height: 170 - this.margin.top - this.margin.bottom
         };
         this.metadata = undefined;
@@ -48,7 +48,7 @@ define([
             xAxisBuilder;
 
         axisSvg = d3.select(container).append('svg')
-            .attr('height', '40px')
+            .attr('height', '35px')
             .attr('width', this.size.width + this.margin.left + this.margin.right + 'px')
             .append('g')
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -59,10 +59,10 @@ define([
 
         xAxisBuilder = d3.svg.axis()
             .scale(xScale)
-            .ticks(5)
+            .ticks(4)
             .innerTickSize(5)
             .outerTickSize(5)
-            .tickPadding(7)
+            .tickPadding(5)
             .orient("bottom");
 
         axisSvg.append("g")
@@ -70,7 +70,7 @@ define([
             .call(xAxisBuilder)
             .append('text')
             .attr('class', 'categoricalbarchart-axis-label')
-            .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 27 + ')')
+            .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 23 + ')')
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .text("Frequency");
@@ -150,8 +150,8 @@ define([
 
         bars.append('text')
             .text(function (d) {
-                var shortName = d.name.substring(35, 0);
-                shortName = (d.name.length > 35) ? shortName + '...' : shortName;
+                var shortName = d.name.substring(25, 0);
+                shortName = (d.name.length > 25) ? shortName + '...' : shortName;
                 return shortName;
             })
             .attr('x', '1em')

@@ -17,7 +17,7 @@ define([
     var perwheel = {};
 
     perwheel.PerWheel = function () {
-        this.container = $('<div>').attr({'class': 'panel-body'});
+        this.container = $('<div>').attr({'class': 'panel-body perse-panel-body'});
         this.calendarName = 'Gregorian';
         this.listeners = [];
         this.timeWheel = undefined;
@@ -33,7 +33,7 @@ define([
                 .attr({'class': 'perse-header-title'})
                 .text('Time-Wheel'),
             panelHeader = $('<div>')
-                .attr({'class': 'panel-heading'})
+                .attr({'class': 'panel-heading perse-panel-heading'})
                 .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-perwheel'})
@@ -85,7 +85,7 @@ define([
             calendarIcon = $('<span>').attr({'class': 'glyphicon glyphicon-calendar', 'aria-hidden': 'true'}),
             calendarButton = $('<button>')
                 .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Calendar System'})
-                .append(calendarIcon, ' ' + this.calendarName + ' ', $('<span>').attr({'class': 'caret'}));
+                .append(calendarIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
         gregorian.on('mouseup', $.proxy(function () {

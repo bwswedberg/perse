@@ -20,11 +20,11 @@ define([
         this.resolution = resolution;
         this.metadata = undefined;
         this.listeners = [];
-        this.container = $('<div>').attr({'class': 'perse-timeline'});
+        this.container = $('<div>').attr({'class': 'timeline'});
         this.svg = undefined;
         this.margin = {left: 30, right: 3, top: 10, bottom: 15};
         this.size = {
-            width: 900 - this.margin.right - this.margin.left,
+            width: 1125 - this.margin.right - this.margin.left,
             height: 80 - this.margin.top - this.margin.bottom
         };
         this.xScale = undefined;

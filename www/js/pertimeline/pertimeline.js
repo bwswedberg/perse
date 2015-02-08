@@ -11,7 +11,7 @@ define([
     var pertimeline = {};
 
     pertimeline.PerTimeline = function () {
-        this.container = $('<div>').attr({'class': 'panel-body'});
+        this.container = $('<div>').attr({'class': 'panel-body perse-panel-body'});
         this.calendarName = 'Gregorian';
         this.resolution = 'Week';
         this.metadata = undefined;
@@ -29,7 +29,7 @@ define([
                 .attr({'class': 'perse-header-title'})
                 .text('Timeline'),
             panelHeader = $('<div>')
-                .attr({'class': 'panel-heading'})
+                .attr({'class': 'panel-heading perse-panel-heading'})
                 .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-pertimeline'})
@@ -81,7 +81,7 @@ define([
             calendarIcon = $('<span>').attr({'class': 'glyphicon glyphicon-calendar', 'aria-hidden': 'true'}),
             calendarButton = $('<button>')
                 .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Calendar System'})
-                .append(calendarIcon, ' ' + this.calendarName + ' ', $('<span>').attr({'class': 'caret'}));
+                .append(calendarIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
         gregorian.on('mouseup', $.proxy(function () {
@@ -122,60 +122,34 @@ define([
             resIcon = $('<span>').attr({'class': 'glyphicon glyphicon-stats', 'aria-hidden': 'true'}),
             resButton = $('<button>')
                 .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Temporal Resolution'})
-                .append(resIcon, ' ' + this.resolution + ' ', $('<span>').attr({'class': 'caret'}));
+                .append(resIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
         year.on('mouseup', $.proxy(function () {
             this.resolutionChanged('Year');
-            resButton.empty().append(resIcon, ' Year ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             year.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         month.on('mouseup', $.proxy(function () {
             this.resolutionChanged('Month');
-            resButton.empty().append(resIcon, ' Month ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             month.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         week.on('mouseup', $.proxy(function () {
             this.resolutionChanged('Week');
-            resButton.empty().append(resIcon, ' Week ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             week.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         day.on('mouseup', $.proxy(function () {
             this.resolutionChanged('Day');
-            resButton.empty().append(resIcon, ' Day ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             day.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(resButton, menu);
-    };
-
-    pertimeline.PerTimeline.prototype.createResolutionCombo = function () {
-        var row = $('<div>').attr({'class': 'perse-pertimeline-resolution'}),
-            resolutionDropdown = new combobutton.ComboButton({
-                'label': 'Resolution:',
-                'values': [
-                    {'alias': 'Year', id: 'year'},
-                    {'alias': 'Month', id: 'month'},
-                    {'alias': 'Week', id: 'week'},
-                    {'alias': 'Day', id: 'day'}
-                ],
-                'active': this.resolution
-            });
-        resolutionDropdown.registerListener({
-            context: this,
-            onComboChanged: function (event) {
-                this.resolutionChanged(event.active);
-            }
-        });
-        resolutionDropdown.render(row);
-        return row;
     };
 
     pertimeline.PerTimeline.prototype.createTimeline = function () {

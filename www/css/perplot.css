@@ -9,7 +9,21 @@
     height: 100%;
 }
 
-.mg-main-line {
+.perplot-path {
+    fill: none;
     stroke: #000;
-    stroke-opacity: 0.2;
+    stroke-width: .5;
+}
+
+.perplot-axis path,
+.perplot-axis line {
+    fill: none;
+    stroke: #000;
+    /*shape-rendering: crispEdges;*/
+    stroke-width: 1;
+
+}
+
+.perplot-axis text {
+    font-size: .50em;
 }

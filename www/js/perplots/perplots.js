@@ -37,33 +37,10 @@ define([
                     .registerListener(this.createPerPlotListener())
                     .setCalendarName(this.calendarName)
                     .setCycleName(this.cycleName);
-
+            plot.build();
             this.plots[d.id] = plot;
         }, this);
         this.update(data);
-    };
-
-    perplots.PerPlots.prototype.createPerPlotListener = function () {
-        return {
-            context: this,
-            onFilterChanged: function (event) {
-                console.log('filter changed');
-            }
-        };
-    };
-
-    perplots.PerPlots.prototype.getExtent = function (dataObj) {
-        var extent = {
-            max: dataObj.data[0].partitions[0].events.length,
-            min: dataObj.data[0].partitions[0].events.length
-        };
-        dataObj.data.forEach(function (part) {
-            part.partitions.forEach(function (member) {
-                extent.max = Math.max(extent.max, member.events.length);
-                extent.min = Math.min(extent.min, member.events.length);
-            });
-        });
-        return extent;
     };
 
     perplots.PerPlots.prototype.update = function (data) {
@@ -78,17 +55,53 @@ define([
                     return elem;
                 }),
             yExtent = positionedData
-                .map(this.getExtent)
+                .map(this.getYExtent)
                 .reduce(function (prev, cur) {
                     prev.max = Math.max(prev.max, cur.max);
                     prev.min = Math.min(prev.min, cur.min);
                     return prev;
-                });
+                }),
+            xExtent = this.getXExtent(positionedData[0]),
+            extent = {'x': xExtent, 'y': yExtent};
 
         positionedData.forEach(function (elem) {
-            this.plots[elem.id].update(elem.data, yExtent);
+            this.plots[elem.id].update(elem.data, extent);
             this.plots[elem.id].setPosition(elem.position);
         }, this);
+    };
+
+    perplots.PerPlots.prototype.createPerPlotListener = function () {
+        return {
+            context: this,
+            onFilterChanged: function (event) {
+                console.log('filter changed');
+            }
+        };
+    };
+
+    perplots.PerPlots.prototype.getYExtent = function (dataObj) {
+        var extent = {
+            max: dataObj.data[0].partitions[0].events.length,
+            min: dataObj.data[0].partitions[0].events.length
+        };
+        dataObj.data.forEach(function (part) {
+            part.partitions.forEach(function (member) {
+                extent.max = Math.max(extent.max, member.events.length);
+                extent.min = Math.min(extent.min, member.events.length);
+            });
+        });
+        return extent;
+    };
+
+    perplots.PerPlots.prototype.getXExtent = function (dataObj) {
+        var extent = {min: dataObj.data[0].partitions[0].value, max: dataObj.data[0].partitions[0].value};
+        dataObj.data.forEach(function (d) {
+            d.partitions.forEach(function (p) {
+                extent.min = Math.min(extent.min, p.value);
+                extent.max = Math.max(extent.max, p.value);
+            });
+        });
+        return extent;
     };
 
     perplots.PerPlots.prototype.createFilterChangedListener = function () {

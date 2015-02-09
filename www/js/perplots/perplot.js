@@ -1,17 +1,17 @@
 /**
- *  This file is part of PerSE. PerSE is a visual analytics app for
- *  event periodicity detection and analysis.
- *  Copyright (C) 2015  Brian Swedberg
- */
+*  This file is part of PerSE. PerSE is a visual analytics app for
+*  event periodicity detection and analysis.
+*  Copyright (C) 2015  Brian Swedberg
+*/
 
 define([
     'jquery',
-    'metricsgraphics',
+    'd3',
     'data/filter',
     // no namespace
     '$.calendars',
     'bootstrap'
-], function ($, MG, filter) {
+], function ($, d3, filter) {
 
     var perplot = {};
 
@@ -19,15 +19,22 @@ define([
         this.id = uniqueId;
         this.container = $('<div>').attr({'class': 'perse-perplot', 'id': 'perse-perplot-' + uniqueId});
         this.listeners = [];
-        //this.metadata = undefined;
+        this.svg = undefined;
+        this.calendarName = 'Gregorian';
+        this.cycleName = 'MonthOfYear';
+        this.margin = {'top': 0, 'bottom': 10, 'left': 15, 'right': 0};
+        this.viewBox = {'width': 150, 'height': 100};
+        this.size = {
+            'width': this.viewBox.width - this.margin.left - this.margin.right,
+            'height': this.viewBox.height - this.margin.top - this.margin.top
+        };
         this.filter = new filter.Filter({
             uniqueId: 'perse-perplot-' + uniqueId,
             property: 'coord',
-            filterOn: function (d) {return true; }
+            filterOn: function (d) {
+                return true;
+            }
         });
-        this.plot = undefined;
-        this.calendarName = 'Gregorian';
-        this.cycleName = 'MonthOfYear';
     };
 
     perplot.PerPlot.prototype.render = function (parent) {
@@ -35,31 +42,78 @@ define([
         return this;
     };
 
+    perplot.PerPlot.prototype.build = function () {
+        this.svg = d3.select(this.container.get(0))
+            .append('svg')
+            .attr('viewBox', '0 0 ' + this.viewBox.width + ' ' + this.viewBox.height)
+            .append('g')
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+    };
+
     perplot.PerPlot.prototype.update = function (data, extent) {
-        var legendData = data.map(function (d) {return d.label; });
-        var xLabels = data[0].partitions.map(function (d) {return d.label; });
-        var chartData =  data.map(function (d) {return d.partitions; })
-            .map(function (d) {
-                return d.map(function (p) {return {x: p.value, y: p.events.length}; });
-            });
-        var cal = $.calendars.instance(this.calendarName);
-        MG.data_graphic({
-            data: chartData,
-            full_height: true,
-            /*full_width: true,*/
-            top: 15,
-            left: 20,
-            right: 0,
-            chart_type: 'line',
-            max_y: extent.max,
-            min_y: extent.min,
-            target: '#perse-perplot-' + this.id,//this.container.get(0),
-            x_accessor: 'x',
-            y_accessor: 'y',
-            xax_format: function (d) {return xLabels[d]; },
-            interpolate: 'monotone'
-            //legend: legendData
-        });
+        var xScale,
+            yScale,
+            xAxisBuilder,
+            yAxisBuilder,
+            xLabels = data[0].partitions.map(function (d) {return d.label; }),
+            line,
+            pathsG,
+            tickStep = Math.round(xLabels.length / 6);
+
+        xScale = d3.scale.ordinal()
+            .domain(d3.range(extent.x.max + 1))
+            .rangePoints([0, this.size.width]);
+
+        yScale = d3.scale.linear()
+            .domain([extent.y.min, extent.y.max])
+            .range([this.size.height, 0]);
+
+        line = d3.svg.line()
+            .interpolate('monotone')
+            .x(function (d) { return xScale(d.value); })
+            .y(function (d) {return yScale(d.events.length); });
+
+        pathsG = this.svg.selectAll('path.perplot-path')
+            .data(data);
+
+        pathsG.enter().append('path');
+
+        pathsG.transition()
+            .duration(500)
+            .attr('d', function (d) {return line(d.partitions); })
+            .attr('class', 'perplot-path');
+
+        pathsG.exit().remove();
+
+        this.svg.selectAll('.perplot-axis').remove();
+
+        xAxisBuilder = d3.svg.axis()
+            .scale(xScale)
+            .tickFormat(function (v) {
+                if (!(v % tickStep)) {
+                    return xLabels[v];
+                }
+            })
+            .innerTickSize(2)
+            .outerTickSize(2)
+            .orient('bottom');
+
+        this.svg.append("g")
+            .attr('class', 'perplot-axis')
+            .attr('transform', 'translate(0,' + (this.size.height - 1) + ')')
+            .call(xAxisBuilder);
+
+        yAxisBuilder = d3.svg.axis()
+            .scale(yScale)
+            .innerTickSize(2)
+            .outerTickSize(2)
+            .orient('left');
+
+        this.svg.append("g")
+            .attr('class', 'perplot-axis')
+            .attr('transform', 'translate(-1, 0)')
+            .call(yAxisBuilder);
+
     };
 
     perplot.PerPlot.prototype.getId = function () {

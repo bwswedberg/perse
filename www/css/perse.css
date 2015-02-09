@@ -2,23 +2,6 @@
     padding-top: 70px;
 }
 
-#perse-large {
-
-}
-
-#perse-medium {
-
-}
-
-#perse-smleft {
-
-}
-
-#perse-smright {
-
-}
-
-
 .perse-btn {
     background: #FFFFFF;
     border-color: #FAFAFA;
@@ -46,6 +29,14 @@
     margin-bottom: .5em;
 }
 
+#perse-top-row {
+
+}
+
+#perse-bottom-row {
+
+}
+
 .perse-general-combobutton {
 
 }
@@ -56,10 +47,19 @@
 
 .perse-header-title {
     display: inline;
+    font-size: .9em;
 }
 
 .perse-header-toolbar {
     display: inline;
     float: right;
+}
+
+.perse-panel-body {
+    padding: 3px;
+}
+
+.perse-panel-heading {
+    padding: 4px 8px;
 }
 

@@ -6,23 +6,23 @@
 
 define([
     'jquery',
-    'calendar/calendarbutton',
     'general/combobutton',
     'perplots/perplot',
     'perplots/perplotsdatasetbuilder',
+    'perplots/perplotspositioncalculator',
     // no namespace
     'bootstrap'
-], function ($, calendarbutton, combobutton, perplot, perplotsdatasetbuilder) {
+], function ($, combobutton, perplot, perplotsdatasetbuilder, perplotspositioncalculator) {
 
     var perplots = {};
 
     perplots.PerPlots = function () {
-        this.container = $('<div>').attr({'class': 'perse-perplots container-fluid'});
+        this.container = $('<div>').attr({'class': 'perse-perplots'});
         this.listeners = [];
         this.metadata = undefined;
         this.calendarName = 'islamic';
         this.cycleName = 'MonthOfYear';
-        this.plots = [];
+        this.plots = {};
     };
 
     perplots.PerPlots.prototype.render = function (parent) {
@@ -31,86 +31,16 @@ define([
     };
 
     perplots.PerPlots.prototype.build = function (data) {
-        var calendarButtonRow = $('<div>').attr({'class': 'row perse-row'}),
-            calendarComboButton = this.createCalendarDropdown(),
-            cycleComboButton = this.createCycleComboButton(),
-            row;
-        calendarComboButton.render(calendarButtonRow);
-        cycleComboButton.render(calendarButtonRow);
-
-        this.container.append(calendarButtonRow);
-
-        // make this more dynamic
-        [ [], [], [], [], [], []].forEach(function (d, i) {
-            var plotContainer = $('<div>').attr({'class': 'col-sm-6'}),
-                plot = new perplot.PerPlot('0')
-                    .render(plotContainer)
+        data.forEach(function (d, i) {
+            var plot = new perplot.PerPlot(i)
+                    .render(this.container)
                     .registerListener(this.createPerPlotListener())
                     .setCalendarName(this.calendarName)
-                    .setCycleName(this.cycleName),
-                initData = new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
-                    .setCalendarName(this.calendarName)
-                    .setCycleName(this.cycleName)
-                    .setData(data)
-                    .build();
+                    .setCycleName(this.cycleName);
 
-
-            if (i % 2 === 0) {
-                row = $('<div>').attr({'class': 'row'});
-                row.append(plotContainer);
-            } else {
-                row.append(plotContainer);
-                this.container.append(row);
-            }
-            plot.onDataSetChanged(initData, this.metadata);
-            this.plots.push(plot);
+            this.plots[d.id] = plot;
         }, this);
-    };
-
-    perplots.PerPlots.prototype.createCalendarDropdown = function () {
-        var calendarDropdown = new combobutton.ComboButton({
-            'label': 'Calendar:',
-            'values': [
-                {'alias': 'Gregorian', id: 'gregorian'},
-                {'alias': 'Islamic', id: 'islamic'}
-            ],
-            'active': this.calendarName
-        });
-        calendarDropdown.registerListener({
-            context: this,
-            onComboChanged: function (event) {
-                this.calendarName = event.active;
-                this.plots.forEach(function (p) {
-                    p.setCalendarName(event.active);
-                });
-                this.notifyListeners('onRefresh', {context: this, view: this});
-            }
-        });
-        return calendarDropdown;
-    };
-
-    perplots.PerPlots.prototype.createCycleComboButton = function () {
-        var cycleDropdown = new combobutton.ComboButton({
-            'label': 'Cycle:',
-            'values': [
-                {'alias': 'Month of Year', 'id': 'MonthOfYear'},
-                {'alias': 'Day of Week', 'id': 'DayOfWeek'},
-                {'alias': 'Day of Month', 'id': 'DayOfMonth'},
-                {'alias': 'Week of Year', 'id': 'WeekOfYear'}
-            ],
-            'active': this.cycleName
-        });
-        cycleDropdown.registerListener({
-            context: this,
-            onComboChanged: function (event) {
-                this.cycleName = event.active;
-                this.plots.forEach(function (p) {
-                    p.setCycleName(event.active);
-                });
-                this.notifyListeners('onRefresh', {context: this, view: this});
-            }
-        });
-        return cycleDropdown;
+        this.update(data);
     };
 
     perplots.PerPlots.prototype.createPerPlotListener = function () {
@@ -118,6 +48,74 @@ define([
             context: this,
             onFilterChanged: function (event) {
                 console.log('filter changed');
+            }
+        };
+    };
+
+    perplots.PerPlots.prototype.getExtent = function (dataObj) {
+        var extent = {
+            max: dataObj.data[0].partitions[0].events.length,
+            min: dataObj.data[0].partitions[0].events.length
+        };
+        dataObj.data.forEach(function (part) {
+            part.partitions.forEach(function (member) {
+                extent.max = Math.max(extent.max, member.events.length);
+                extent.min = Math.min(extent.min, member.events.length);
+            });
+        });
+        return extent;
+    };
+
+    perplots.PerPlots.prototype.update = function (data) {
+        var builder = new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
+                .setCalendarName(this.calendarName)
+                .setCycleName(this.cycleName),
+            positionedData = new perplotspositioncalculator.PerPlotsPositionCalculator()
+                .setData(data)
+                .calculate()
+                .map(function (elem) {
+                    elem.data = builder.setData(elem.data).build();
+                    return elem;
+                }),
+            yExtent = positionedData
+                .map(this.getExtent)
+                .reduce(function (prev, cur) {
+                    prev.max = Math.max(prev.max, cur.max);
+                    prev.min = Math.min(prev.min, cur.min);
+                    return prev;
+                });
+
+        positionedData.forEach(function (elem) {
+            this.plots[elem.id].update(elem.data, yExtent);
+            this.plots[elem.id].setPosition(elem.position);
+        }, this);
+    };
+
+    perplots.PerPlots.prototype.createFilterChangedListener = function () {
+        return {
+            context: this,
+            onFilterChanged: function (event) {
+                this.notifyListeners('onFilterChanged', {context: this, filter: event.filter });
+            }
+        };
+    };
+
+    perplots.PerPlots.prototype.createToolbarListener = function () {
+        return {
+            context: this,
+            onCalendarChanged: function (event) {
+                this.calendarName = event.calendarName;
+                Object.keys(this.plots).forEach(function (k) {
+                    this.plots[k].setCalendarName(event.calendarName);
+                }, this);
+                this.notifyListeners('onDataSetRequested', {context: this});
+            },
+            onCycleChanged: function (event) {
+                this.cycleName = event.cycleName;
+                Object.keys(this.plots).forEach(function (k) {
+                    this.plots[k].setCycleName(event.cycleName);
+                }, this);
+                this.notifyListeners('onDataSetRequested', {context: this});
             }
         };
     };
@@ -135,53 +133,6 @@ define([
 
     perplots.PerPlots.prototype.onSelectionChanged = function (data) {
         // blank because perplots updates from permap data
-    };
-
-    perplots.PerPlots.prototype.getExtent = function (data) {
-        var extent = {
-            max: data[0].partitions[0].events.length,
-            min: data[0].partitions[0].events.length
-        };
-        data.forEach(function (part) {
-            part.partitions.forEach(function (member) {
-                extent.max = Math.max(extent.max, member.events.length);
-                extent.min = Math.min(extent.min, member.events.length);
-            });
-        });
-        return extent;
-    };
-
-    perplots.PerPlots.prototype.onVoronoiChanged = function (data) {
-        var newData = data.map(function (d) {
-            return new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
-                .setCalendarName(this.calendarName)
-                .setCycleName(this.cycleName)
-                .setData(d)
-                .build();
-        }, this);
-
-        var yExtent = newData
-            .map(this.getExtent)
-            .reduce(function (prev, cur) {
-                prev.max = Math.max(prev.max, cur.max);
-                prev.min = Math.min(prev.min, cur.min);
-                return prev;
-            });
-
-        newData.forEach(function (d, i) {
-            if (this.plots[i]) {
-                this.plots[i].update(newData[i], yExtent);
-            }
-        }, this);
-    };
-
-    perplots.PerPlots.prototype.createFilterChangedListener = function () {
-        return {
-            context: this,
-            onFilterChanged: function (event) {
-                this.notifyListeners('onFilterChanged', {context: this, filter: event.filter });
-            }
-        };
     };
 
     perplots.PerPlots.prototype.onDataSetChanged = function (data, metadata) {

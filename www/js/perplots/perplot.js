@@ -7,22 +7,21 @@
 define([
     'jquery',
     'metricsgraphics',
-    'perplots/perplotsdatasetbuilder',
     'data/filter',
     // no namespace
     '$.calendars',
     'bootstrap'
-], function ($, MG, perplotsdatasetbuilder, filter) {
+], function ($, MG, filter) {
 
     var perplot = {};
 
     perplot.PerPlot = function (uniqueId) {
-        var id = 'perse-perplot-' + uniqueId;
-        this.container = $('<div>').attr({'class': 'perse-perplot', 'id': id});
+        this.id = uniqueId;
+        this.container = $('<div>').attr({'class': 'perse-perplot', 'id': 'perse-perplot-' + uniqueId});
         this.listeners = [];
-        this.metadata = undefined;
+        //this.metadata = undefined;
         this.filter = new filter.Filter({
-            uniqueId: id,
+            uniqueId: 'perse-perplot-' + uniqueId,
             property: 'coord',
             filterOn: function (d) {return true; }
         });
@@ -33,11 +32,6 @@ define([
 
     perplot.PerPlot.prototype.render = function (parent) {
         $(parent).append(this.container);
-        this.plot = MG.data_graphic({
-            chart_type: 'missing-data',
-            show_missing_background: true,
-            target: this.container.get(0)
-        });
         return this;
     };
 
@@ -49,25 +43,27 @@ define([
                 return d.map(function (p) {return {x: p.value, y: p.events.length}; });
             });
         var cal = $.calendars.instance(this.calendarName);
-        this.plot = MG.data_graphic({
+        MG.data_graphic({
             data: chartData,
             full_height: true,
-            full_width: true,
+            /*full_width: true,*/
+            top: 15,
+            left: 20,
+            right: 0,
             chart_type: 'line',
-            buffer: 0,
             max_y: extent.max,
             min_y: extent.min,
-            width: 200,
-            height: 150,
-            left: 20,
-            top: 15,
-            target: this.container.get(0),
+            target: '#perse-perplot-' + this.id,//this.container.get(0),
             x_accessor: 'x',
             y_accessor: 'y',
             xax_format: function (d) {return xLabels[d]; },
-            interpolate: "monotone",
-            legend: legendData
+            interpolate: 'monotone'
+            //legend: legendData
         });
+    };
+
+    perplot.PerPlot.prototype.getId = function () {
+        return this.id;
     };
 
     perplot.PerPlot.prototype.setCalendarName = function (calendarName) {
@@ -77,6 +73,11 @@ define([
 
     perplot.PerPlot.prototype.setCycleName = function (cycleName) {
         this.cycleName = cycleName;
+        return this;
+    };
+
+    perplot.PerPlot.prototype.setPosition = function (positionObj) {
+        this.container.animate(positionObj, 'slow');
         return this;
     };
 
@@ -100,7 +101,7 @@ define([
     };
 
     perplot.PerPlot.prototype.onDataSetChanged = function (data, metadata) {
-        this.metadata = metadata;
+        //this.metadata = metadata;
         //this.update(data);
     };
 

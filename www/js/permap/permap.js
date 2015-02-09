@@ -9,15 +9,15 @@ define([
     'permap/eventlayerbuilder',
     'permap/map',
     'permap/voronoilayerbuilder',
-    'permap/voronoidataparser',
+    'permap/voronoidatasetbuilder',
     'perplots/perplots',
     'data/filter'
-], function ($, eventlayerbuilder, map, voronoilayerbuilder, voronoidataparser, perplots, filter) {
+], function ($, eventlayerbuilder, map, voronoilayerbuilder, voronoidatasetbuilder, perplots, filter) {
 
     var permap = {};
 
     permap.PerMap = function () {
-        this.container = $('<div>').attr({'class': 'panel-body perse-permap'});
+        this.container = $('<div>').attr({'class': 'panel-body perse-panel-body'});
         this.metadata = undefined;
         this.listeners = [];
         this.toolbarListeners = [];
@@ -35,7 +35,7 @@ define([
                 .attr({'class': 'perse-header-title'})
                 .text('Map'),
             panelHeader = $('<div>')
-                .attr({'class': 'panel-heading'})
+                .attr({'class': 'panel-heading perse-panel-heading'})
                 .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),
             panel = $('<div>')
                 .attr({'class': 'panel panel-default perse-permap'})
@@ -55,10 +55,12 @@ define([
             extent = this.formatExtent(eventLayer.getSource().getExtent()), // [minx, miny, maxx, maxy]
             voronoiLayerBuilder = new voronoilayerbuilder.VoronoiLayerBuilder()
                 .setExtent(extent),
-            voronoiParsedData = new voronoidataparser.VoronoiDataParser()
+            voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
                 .setProjection(projection)
                 .setPolygonVectorLayer(voronoiLayerBuilder.buildPolygonVectorLayer())
-                .setData(data);
+                .setData(data)
+                .build()
+                .map(function (d) {d.extent = this.formatExtent(d.extent); return d; }, this);
 
         this.map = new map.Map()
             .render(this.container)
@@ -66,13 +68,13 @@ define([
         this.registerToolbarListener(this.map.createToolbarListener());
         this.map.build({'eventPoints': eventLayer, 'voronoiPoints': voronoiLayerBuilder.buildPointVectorLayer()}, this.metadata);
 
-        /*
+
         this.perPlots = new perplots.PerPlots()
             .render(this.container)
             .registerListener(this.createPerMapListener());
-         this.registerToolbarListener(this.perPlots.createToolbarListener());
-        //this.perPlots.build(voronoiParsedData, this.metadata);
-        */
+        this.registerToolbarListener(this.perPlots.createToolbarListener());
+        this.perPlots.onDataSetChanged(voronoiData, this.metadata);
+
     };
 
     permap.PerMap.prototype.update = function (data) {
@@ -81,8 +83,17 @@ define([
                 .setProjection(projection)
                 .setData(data)
                 .buildPointVectorLayer(),
-            extent = this.formatExtent(eventLayer.getSource().getExtent());
+            extent = this.formatExtent(eventLayer.getSource().getExtent()), // [minx, miny, maxx, maxy]
+            voronoiLayerBuilder = new voronoilayerbuilder.VoronoiLayerBuilder()
+                .setExtent(extent),
+            voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
+                .setProjection(projection)
+                .setPolygonVectorLayer(voronoiLayerBuilder.buildPolygonVectorLayer())
+                .setData(data)
+                .build()
+                .map(function (d) {d.extent = this.formatExtent(d.extent); return d; }, this);
         this.map.update({'eventPoints': eventLayer});
+        this.perPlots.update(voronoiData);
     };
 
     permap.PerMap.prototype.createPerMapListener = function () {
@@ -93,6 +104,9 @@ define([
             },
             onRemoveFilter: function (event) {
                 this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()});
+            },
+            onDataSetRequested: function (event) {
+                this.notifyListeners('onDataSetRequested', {context: this, callback: this.onSelectionChanged});
             }
         };
     };
@@ -244,7 +258,8 @@ define([
             calendarIcon = $('<span>').attr({'class': 'glyphicon glyphicon-calendar', 'aria-hidden': 'true'}),
             calendarButton = $('<button>')
             .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Calendar System'})
-            .append(calendarIcon, ' Gregorian ', $('<span>').attr({'class': 'caret'}));
+            //.append(calendarIcon, ' Gregorian ', $('<span>').attr({'class': 'caret'}));
+            .append(calendarIcon, ' ',  $('<span>').attr({'class': 'caret'}));
 
         // add events here
         gregorian.on('mouseup', $.proxy(function () {
@@ -279,36 +294,32 @@ define([
                 $('<li>').attr({'role': 'presentation'}).append(dayOfWeek)
             ]),
         // button
-            cycleIcon = $('<span>').attr({'class': 'glyphicon glyphicon-repeat', 'aria-hidden': 'true'}),
+            cycleIcon = $('<span>').attr({'class': 'glyphicon glyphicon-stats', 'aria-hidden': 'true'}),
             cycleButton = $('<button>')
             .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Temporal Cycle'})
-            .append(cycleIcon, ' Month of Year ', $('<span>').attr({'class': 'caret'}));
+            .append(cycleIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
         monthOfYear.on('mouseup', $.proxy(function () {
             this.notifyToolbarListeners('onCycleChanged', {'context': this, 'cycleName': 'MonthOfYear'});
-            cycleButton.empty().append(cycleIcon, ' Month of Year ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             monthOfYear.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         weekOfYear.on('mouseup', $.proxy(function () {
             this.notifyToolbarListeners('onCycleChanged', {'context': this, 'cycleName': 'WeekOfYear'});
-            cycleButton.empty().append(cycleIcon, ' Week of Year ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             weekOfYear.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         dayOfMonth.on('mouseup', $.proxy(function () {
             this.notifyToolbarListeners('onCycleChanged', {'context': this, 'cycleName': 'DayOfMonth'});
-            cycleButton.empty().append(cycleIcon, ' Day of Month ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             dayOfMonth.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         dayOfWeek.on('mouseup', $.proxy(function () {
             this.notifyToolbarListeners('onCycleChanged', {'context': this, 'cycleName': 'DayOfWeek'});
-            cycleButton.empty().append(cycleIcon, ' Day of Week ', $('<span>').attr({'class': 'caret'}));
             menu.find('li a span').remove();
             dayOfWeek.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
@@ -390,7 +401,7 @@ define([
 
     permap.PerMap.prototype.notifyToolbarListeners = function (callbackStr, event) {
         this.toolbarListeners.forEach(function (listenerObj) {
-            if (listenerObj[callbackStr]) {
+            if (listenerObj.hasOwnProperty(callbackStr)) {
                 listenerObj[callbackStr].call(listenerObj.context, event);
             }
         }, this);

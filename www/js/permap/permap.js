@@ -245,8 +245,8 @@ define([
     permap.PerMap.prototype.createCalendarButtonGroup = function () {
         var // menu
             calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Calendar'),
-            gregorian = $('<a>').attr({'role': 'menuitem'}).text('Gregorian ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
-            islamic = $('<a>').attr({'role': 'menuitem'}).text('Islamic '),
+            gregorian = $('<a>').attr({'role': 'menuitem'}).text('Gregorian '),
+            islamic = $('<a>').attr({'role': 'menuitem'}).text('Islamic ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
             menu = $('<ul>')
             .attr({'class': 'dropdown-menu', 'role': 'menu'})
             .append([

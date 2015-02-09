@@ -198,6 +198,7 @@ define([
         this.svg.selectAll('.categoricalbarchart-category')
             .data(data, function (d) {return d.name; })
             .select('.categoricalbarchart-bar')
+            .transition()
             .attr('width', function (d) {return xScale(d.count); });
     };
 

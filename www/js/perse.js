@@ -31,9 +31,7 @@ define([
     var perse = {};
 
     perse.PerSE = function (parent) {
-        this.container = $('<div>').addClass('container');
-        $(parent)
-            .append(this.container);
+        this.container = $(parent).addClass('container');
         this.coordinator = new coordination.Coordinator(this);
         this.dataSetAdapter = undefined;
 
@@ -45,9 +43,9 @@ define([
     };
 
     perse.PerSE.prototype.buildBigMap = function () {
-        var largeLeft = $('<div>').attr({'class': 'col-md-9', 'id': 'perse-large-left'}),
-            largeRight = $('<div>').attr({'class': 'col-md-3', 'id': 'perse-large-right'}),
-            topRow = $('<div>').attr({'class': 'row'}).append(largeLeft, largeRight),
+        var largeLeft = $('<div>').attr({'class': 'col-md-10', 'id': 'perse-large-left'}),
+            largeRight = $('<div>').attr({'class': 'col-md-2', 'id': 'perse-large-right'}),
+            topRow = $('<div>').attr({'class': 'row', 'id': 'perse-top-row'}).append(largeLeft, largeRight),
             top = $('<div>').attr({'class': 'col-md-12'})
                 .append(topRow),
             bottom = $('<div>').attr({'class': 'col-md-12'}),

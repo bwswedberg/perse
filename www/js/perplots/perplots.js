@@ -75,6 +75,11 @@ define([
             context: this,
             onFilterChanged: function (event) {
                 console.log('filter changed');
+            },
+            onHoverEvent: function (event) {
+                Object.keys(this.plots).forEach(function (k) {
+                    this.plots[k].onHover(event);
+                }, this);
             }
         };
     };

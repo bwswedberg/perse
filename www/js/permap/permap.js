@@ -6,13 +6,10 @@
 
 define([
     'jquery',
-    'permap/eventlayerbuilder',
     'permap/map',
-    'permap/voronoilayerbuilder',
-    'permap/voronoidatasetbuilder',
     'perplots/perplots',
     'data/filter'
-], function ($, eventlayerbuilder, map, voronoilayerbuilder, voronoidatasetbuilder, perplots, filter) {
+], function ($, map, perplots, filter) {
 
     var permap = {};
 
@@ -47,53 +44,25 @@ define([
     };
 
     permap.PerMap.prototype.build = function (data) {
-        var projection = this.metadata.getMetadata().geospatial.projection,
-            eventLayer = new eventlayerbuilder.EventLayerBuilder()
-                .setProjection(projection)
-                .setData(data)
-                .buildPointVectorLayer(),
-            extent = this.formatExtent(eventLayer.getSource().getExtent()), // [minx, miny, maxx, maxy]
-            voronoiLayerBuilder = new voronoilayerbuilder.VoronoiLayerBuilder()
-                .setExtent(extent),
-            voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
-                .setProjection(projection)
-                .setPolygonVectorLayer(voronoiLayerBuilder.buildPolygonVectorLayer())
-                .setData(data)
-                .build()
-                .map(function (d) {d.extent = this.formatExtent(d.extent); return d; }, this);
-
         this.map = new map.Map()
             .render(this.container)
             .registerListener(this.createPerMapListener());
         this.registerToolbarListener(this.map.createToolbarListener());
-        this.map.build({'eventPoints': eventLayer, 'voronoiPoints': voronoiLayerBuilder.buildPointVectorLayer()}, this.metadata);
-
 
         this.perPlots = new perplots.PerPlots()
             .render(this.container)
             .registerListener(this.createPerMapListener());
         this.registerToolbarListener(this.perPlots.createToolbarListener());
-        this.perPlots.onDataSetChanged(voronoiData, this.metadata);
 
+        this.map.onDataSetChanged(data, this.metadata);
+        this.perPlots.setVoronoiPolygons(this.map.getVoronoiPolygonLayer());
+        this.perPlots.onDataSetChanged(data, this.metadata);
     };
 
     permap.PerMap.prototype.update = function (data) {
-        var projection = this.metadata.getMetadata().geospatial.projection,
-            eventLayer = new eventlayerbuilder.EventLayerBuilder()
-                .setProjection(projection)
-                .setData(data)
-                .buildPointVectorLayer(),
-            extent = this.formatExtent(eventLayer.getSource().getExtent()), // [minx, miny, maxx, maxy]
-            voronoiLayerBuilder = new voronoilayerbuilder.VoronoiLayerBuilder()
-                .setExtent(extent),
-            voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
-                .setProjection(projection)
-                .setPolygonVectorLayer(voronoiLayerBuilder.buildPolygonVectorLayer())
-                .setData(data)
-                .build()
-                .map(function (d) {d.extent = this.formatExtent(d.extent); return d; }, this);
-        this.map.update({'eventPoints': eventLayer});
-        this.perPlots.update(voronoiData);
+        this.map.onSelectionChanged(data);
+        this.perPlots.setVoronoiPolygons(this.map.getVoronoiPolygonLayer());
+        this.perPlots.onSelectionChanged(data);
     };
 
     permap.PerMap.prototype.createPerMapListener = function () {
@@ -352,18 +321,20 @@ define([
         // add events here
         fixed.on('mouseup', $.proxy(function () {
             // make seeds stay at the same location regardless of extent of what is selected
+            this.notifyToolbarListeners('onVoronoiPositioningChanged', {'context': this, 'positioning': 'fixed'});
             menu.find('li a span').remove();
             fixed.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         auto.on('mouseup', $.proxy(function () {
             // make seeds change based on the extent of what is selected
+            this.notifyToolbarListeners('onVoronoiPositioningChanged', {'context': this, 'positioning': 'auto'});
             menu.find('li a span').remove();
             auto.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         reset.on('mouseup', $.proxy(function () {
-            // make seeds grided
+            this.notifyToolbarListeners('onVoronoiPositioningReset', {'context': this});
         }, this));
 
 
@@ -372,14 +343,6 @@ define([
 
     permap.PerMap.prototype.createPointerControlButtonGroup = function () {
         var pointerIcon = $('<span>').attr({'class': 'glyphicon glyphicon-asterisk', 'aria-hidden': 'true'});
-    };
-
-    permap.PerMap.prototype.formatExtent = function (olExtentObj) {
-        // olExtentObj = [minx, miny, maxx, maxy]
-        return {
-            x: {max: olExtentObj[2], min: olExtentObj[0], dif: (olExtentObj[2] - olExtentObj[0])},
-            y: {max: olExtentObj[3], min: olExtentObj[1], dif: (olExtentObj[3] - olExtentObj[1])}
-        };
     };
 
     permap.PerMap.prototype.getFilter = function () {

@@ -6,13 +6,13 @@
 
 define([
     'jquery',
-    'general/combobutton',
     'perplots/perplot',
     'perplots/perplotsdatasetbuilder',
     'perplots/perplotspositioncalculator',
+    'perplots/voronoidatasetbuilder',
     // no namespace
     'bootstrap'
-], function ($, combobutton, perplot, perplotsdatasetbuilder, perplotspositioncalculator) {
+], function ($, perplot, perplotsdatasetbuilder, perplotspositioncalculator, voronoidatasetbuilder) {
 
     var perplots = {};
 
@@ -22,7 +22,8 @@ define([
         this.metadata = undefined;
         this.calendarName = 'islamic';
         this.cycleName = 'MonthOfYear';
-        this.plots = {};
+        this.voronoiPolygons = undefined;
+        this.plots = [];
     };
 
     perplots.PerPlots.prototype.render = function (parent) {
@@ -30,44 +31,89 @@ define([
         return this;
     };
 
-    perplots.PerPlots.prototype.build = function (data) {
-        data.forEach(function (d, i) {
-            var plot = new perplot.PerPlot(i)
-                    .render(this.container)
-                    .registerListener(this.createPerPlotListener())
-                    .setCalendarName(this.calendarName)
-                    .setCycleName(this.cycleName);
-            plot.build();
-            this.plots[d.id] = plot;
-        }, this);
-        this.update(data);
+    perplots.PerPlots.prototype.addNewPlot = function (plotData, extent) {
+        var plot = new perplot.PerPlot(plotData.id)
+            .render(this.container)
+            .registerListener(this.createPerPlotListener())
+            .setCalendarName(this.calendarName)
+            .setCycleName(this.cycleName)
+            .setPlotExtent(extent)
+            .setPosition(plotData.position);
+
+        this.plots.push(plot);
+        plot.onDataSetChanged(plotData.data, this.metadata);
+        return plot;
+    };
+
+    perplots.PerPlots.prototype.updatePlot = function (plot, plotData, extent) {
+        //plot.setPlotExtent(extent);
+        plot.setPlotExtent(extent)
+            .setPosition(plotData.position)
+            .onSelectionChanged(plotData.data);
+        return plot;
+    };
+
+    perplots.PerPlots.prototype.removePlot = function (plot) {
+        plot.destroy();
+        this.plots.splice(this.plots.indexOf(plot), 1);
     };
 
     perplots.PerPlots.prototype.update = function (data) {
-        var builder = new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
+        var processedData = this.getData(data),
+            updatedPlots = [],
+            extent = {
+                'x': this.getXExtent(processedData[0]),
+                'y': this.getYExtent(processedData)
+            };
+
+        // add and update plots
+        processedData.forEach(function (d) {
+            var id = d.id,
+                matches = this.plots.filter(function (plot) {
+                    return plot.getId() === id;
+                }),
+                newPlot;
+            if (matches.length === 0) {
+                newPlot = this.addNewPlot(d, extent);
+                updatedPlots.push(newPlot);
+            } else if (matches.length === 1) {
+
+                this.updatePlot(matches[0], d, extent);
+                updatedPlots.push(matches[0]);
+            } else {
+                console.warn('Unexpected amount of matches.');
+            }
+        }, this);
+
+        // remove
+        this.plots
+            .filter(function (p) {return updatedPlots.indexOf(p) < 0; })
+            .forEach(this.removePlot);
+    };
+
+    perplots.PerPlots.prototype.getData = function (data) {
+        var voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
+                .setProjection(this.metadata.getMetadata().geospatial.projection)
+                .setPolygonVectorLayer(this.voronoiPolygons)
+                .setData(data)
+                .build(),
+                //.map(function (d) {d.extent = this.formatExtent(d.extent); return d; }, this),
+            builder = new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
                 .setCalendarName(this.calendarName)
                 .setCycleName(this.cycleName),
             positionedData = new perplotspositioncalculator.PerPlotsPositionCalculator()
-                .setData(data)
+                .setData(voronoiData)
+                .setPolygonVectorLayer(this.voronoiPolygons)
                 .calculate()
                 .map(function (elem) {
                     elem.data = builder.setData(elem.data).build();
                     return elem;
-                }),
-            yExtent = positionedData
-                .map(this.getYExtent)
-                .reduce(function (prev, cur) {
-                    prev.max = Math.max(prev.max, cur.max);
-                    prev.min = Math.min(prev.min, cur.min);
-                    return prev;
-                }),
-            xExtent = this.getXExtent(positionedData[0]),
-            extent = {'x': xExtent, 'y': yExtent};
+                });
+        return positionedData;
+    };
 
-        positionedData.forEach(function (elem) {
-            this.plots[elem.id].update(elem.data, extent);
-            this.plots[elem.id].setPosition(elem.position);
-        }, this);
+    perplots.PerPlots.prototype.setVoronoiPolygons = function (voronoiPolygons) {
+        this.voronoiPolygons = voronoiPolygons;
     };
 
     perplots.PerPlots.prototype.createPerPlotListener = function () {
@@ -84,18 +130,29 @@ define([
         };
     };
 
-    perplots.PerPlots.prototype.getYExtent = function (dataObj) {
-        var extent = {
-            max: dataObj.data[0].partitions[0].events.length,
-            min: dataObj.data[0].partitions[0].events.length
-        };
-        dataObj.data.forEach(function (part) {
-            part.partitions.forEach(function (member) {
-                extent.max = Math.max(extent.max, member.events.length);
-                extent.min = Math.min(extent.min, member.events.length);
+    perplots.PerPlots.prototype.getYExtent = function (data) {
+        var innerFunction = function (dataObj) {
+            var extent = {
+                max: dataObj.data[0].partitions[0].events.length,
+                min: dataObj.data[0].partitions[0].events.length
+            };
+
+            dataObj.data.forEach(function (part) {
+                part.partitions.forEach(function (member) {
+                    extent.max = Math.max(extent.max, member.events.length);
+                    extent.min = Math.min(extent.min, member.events.length);
+                });
             });
-        });
-        return extent;
+
+            return extent;
+        };
+
+        return data.map(innerFunction)
+            .reduce(function (prev, cur) {
+                prev.max = Math.max(prev.max, cur.max);
+                prev.min = Math.min(prev.min, cur.min);
+                return prev;
+            });
     };
 
     perplots.PerPlots.prototype.getXExtent = function (dataObj) {
@@ -150,12 +207,12 @@ define([
     };
 
     perplots.PerPlots.prototype.onSelectionChanged = function (data) {
-        // blank because perplots updates from permap data
+        this.update(data);
     };
 
     perplots.PerPlots.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
-        this.build(data);
+        this.update(data);
     };
 
     return perplots;

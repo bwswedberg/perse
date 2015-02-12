@@ -31,14 +31,23 @@ define([
         return this;
     };
 
+    voronoidatasetbuilder.VoronoiDataSetBuilder.prototype.formatExtent = function (olExtentObj) {
+        // olExtentObj = [minx, miny, maxx, maxy]
+        return {
+            x: {max: olExtentObj[2], min: olExtentObj[0], dif: (olExtentObj[2] - olExtentObj[0])},
+            y: {max: olExtentObj[3], min: olExtentObj[1], dif: (olExtentObj[3] - olExtentObj[1])}
+        };
+    };
+
     voronoidatasetbuilder.VoronoiDataSetBuilder.prototype.build = function () {
-        var newData = this.polygonVectorLayer.getSource().getFeatures().map(function (feature) {
-            return {
-                id: feature.getProperties().data.voronoiIndex,
-                extent: feature.getGeometry().getExtent(),
-                data: []
-            };
-        });
+        var that = this,
+            newData = this.polygonVectorLayer.getSource().getFeatures().map(function (feature) {
+                return {
+                    id: feature.getProperties().data.voronoiIndex,
+                    extent: that.formatExtent(feature.getGeometry().getExtent()),
+                    data: []
+                };
+            });
 
         this.data.forEach(function (d) {
             var coord = ol.proj.transform(d.coord, this.projectionString, 'EPSG:3857'),

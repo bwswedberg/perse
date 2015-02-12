@@ -35,6 +35,7 @@ define([
                 return true;
             }
         });
+        this.plotExtent = undefined;
         this.xScale = undefined;
         this.yScale = undefined;
     };
@@ -44,7 +45,7 @@ define([
         return this;
     };
 
-    perplot.PerPlot.prototype.build = function () {
+    perplot.PerPlot.prototype.build = function (data) {
         var that = this;
         this.svg = d3.select(this.container.get(0))
             .append('svg')
@@ -60,9 +61,11 @@ define([
 
         this.svg.append('text')
             .attr('class', 'perplot-label');
+
+        this.update(data);
     };
 
-    perplot.PerPlot.prototype.update = function (data, extent) {
+    perplot.PerPlot.prototype.update = function (data) {
         var that = this,
             xAxisBuilder,
             yAxisBuilder,
@@ -72,11 +75,11 @@ define([
             tickStep = Math.round(xLabels.length / 6);
 
         this.xScale = d3.scale.ordinal()
-            .domain(d3.range(extent.x.max + 1))
+            .domain(d3.range(this.plotExtent.x.max + 1))
             .rangePoints([0, this.size.width]);
 
         this.yScale = d3.scale.linear()
-            .domain([extent.y.min, extent.y.max])
+            .domain([this.plotExtent.y.min, this.plotExtent.y.max])
             .range([this.size.height, 0]);
 
         line = d3.svg.line()
@@ -227,7 +230,9 @@ define([
     perplot.PerPlot.prototype.setCalendarName = function (calendarName) {
         this.calendarName = calendarName;
         if (this.svg) {
-            this.svg.select('#perplot-voronoi').selectAll('*')
+            this.svg.select('#perplot-voronoi')
+                .selectAll('*')
+                .on('mouseover', null)
                 .remove();
         }
         return this;
@@ -236,7 +241,9 @@ define([
     perplot.PerPlot.prototype.setCycleName = function (cycleName) {
         this.cycleName = cycleName;
         if (this.svg) {
-            this.svg.select('#perplot-voronoi').selectAll('*')
+            this.svg.select('#perplot-voronoi')
+                .selectAll('*')
+                .on('mouseover', null)
                 .remove();
         }
         return this;
@@ -247,8 +254,21 @@ define([
         return this;
     };
 
+    perplot.PerPlot.prototype.setPlotExtent = function (plotExtent) {
+        this.plotExtent = plotExtent;
+        return this;
+    };
+
     perplot.PerPlot.prototype.getFilter = function () {
         return this.filter;
+    };
+
+    perplot.PerPlot.prototype.destroy = function () {
+        this.svg.select('#perplot-voronoi')
+            .selectAll('*')
+            .on('mouseover', null);
+        this.container.remove();
+        this.listeners = null;
     };
 
     perplot.PerPlot.prototype.notifyListeners = function (callbackStr, event) {
@@ -263,12 +283,12 @@ define([
     };
 
     perplot.PerPlot.prototype.onSelectionChanged = function (data) {
-        //this.update(data);
+        this.update(data);
     };
 
     perplot.PerPlot.prototype.onDataSetChanged = function (data, metadata) {
-        //this.metadata = metadata;
-        //this.update(data);
+        this.metadata = metadata;
+        this.build(data);
     };
 
     return perplot;

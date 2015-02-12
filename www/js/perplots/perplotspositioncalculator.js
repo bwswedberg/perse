@@ -12,12 +12,18 @@ define([
 
     calc.PerPlotsPositionCalculator = function () {
         this.data = undefined;
+        this.polygonLayer = undefined;
         this.padding = 1;
         this.width = 20;
     };
 
     calc.PerPlotsPositionCalculator.prototype.setData = function (data) {
         this.data = data;
+        return this;
+    };
+
+    calc.PerPlotsPositionCalculator.prototype.setPolygonVectorLayer = function (polygonLayer) {
+        this.polygonLayer = polygonLayer;
         return this;
     };
 

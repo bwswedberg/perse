@@ -17,13 +17,21 @@ define([
     };
 
     voronoilayerbuilder.VoronoiLayerBuilder.prototype.setExtent = function (extent) {
-        this.extent = extent;
+        this.extent = this.formatExtent(extent);
         return this;
     };
 
     voronoilayerbuilder.VoronoiLayerBuilder.prototype.setSeedCoords = function (seedCoords) {
         this.seedCoords = seedCoords;
         return this;
+    };
+
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.formatExtent = function (olExtentObj) {
+        // olExtentObj = [minx, miny, maxx, maxy]
+        return {
+            x: {max: olExtentObj[2], min: olExtentObj[0], dif: (olExtentObj[2] - olExtentObj[0])},
+            y: {max: olExtentObj[3], min: olExtentObj[1], dif: (olExtentObj[3] - olExtentObj[1])}
+        };
     };
 
     voronoilayerbuilder.VoronoiLayerBuilder.prototype.createVoronoi = function () {

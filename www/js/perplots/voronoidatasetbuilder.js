@@ -43,8 +43,8 @@ define([
         var that = this,
             newData = this.polygonVectorLayer.getSource().getFeatures().map(function (feature) {
                 return {
-                    id: feature.getProperties().data.voronoiIndex,
-                    extent: that.formatExtent(feature.getGeometry().getExtent()),
+                    id: feature.getProperties().data.voronoiId,
+                    feature: feature,
                     data: []
                 };
             });
@@ -52,7 +52,7 @@ define([
         this.data.forEach(function (d) {
             var coord = ol.proj.transform(d.coord, this.projectionString, 'EPSG:3857'),
                 features = this.polygonVectorLayer.getSource().getFeaturesAtCoordinate(coord);
-            newData[features[0].getProperties().data.voronoiIndex].data.push(d);
+            newData[features[0].getProperties().data.voronoiId].data.push(d);
         }, this);
 
         return newData;

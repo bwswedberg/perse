@@ -65,7 +65,6 @@ define([
                 'x': this.getXExtent(processedData[0]),
                 'y': this.getYExtent(processedData)
             };
-
         // add and update plots
         processedData.forEach(function (d) {
             var id = d.id,
@@ -103,7 +102,7 @@ define([
                 .setCycleName(this.cycleName),
             positionedData = new perplotspositioncalculator.PerPlotsPositionCalculator()
                 .setData(voronoiData)
-                .setPolygonVectorLayer(this.voronoiPolygons)
+                .setExtent(this.voronoiPolygons.getSource().getExtent())
                 .calculate()
                 .map(function (elem) {
                     elem.data = builder.setData(elem.data).build();

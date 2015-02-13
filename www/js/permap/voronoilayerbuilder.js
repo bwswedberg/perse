@@ -26,6 +26,20 @@ define([
         return this;
     };
 
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.getExtent = function () {
+        var extent = {
+            x: {min: this.seedCoords[0][0], max: this.seedCoords[0][0]},
+            y: {min: this.seedCoords[0][1], max: this.seedCoords[0][1]}
+        };
+        this.seedCoords.forEach(function (s) {
+            extent.x.min = Math.min(extent.x.min, s[0]);
+            extent.x.min = Math.max(extent.x.max, s[0]);
+            extent.y.min = Math.min(extent.y.min, s[1]);
+            extent.y.min = Math.max(extent.y.max, s[1]);
+        });
+        return extent;
+    };
+
     voronoilayerbuilder.VoronoiLayerBuilder.prototype.formatExtent = function (olExtentObj) {
         // olExtentObj = [minx, miny, maxx, maxy]
         return {
@@ -35,16 +49,14 @@ define([
     };
 
     voronoilayerbuilder.VoronoiLayerBuilder.prototype.createVoronoi = function () {
-
-        this.seedCoords = this.seedCoords || this.getInitSeedCoords(this.extent);
-
         return d3.geom.voronoi()
-                .clipExtent(
-                [
+                .clipExtent([
                     [this.extent.x.min - 1, this.extent.y.min - 1],
                     [this.extent.x.max + 1, this.extent.y.max + 1]
-                ]
-            )(this.seedCoords);
+                ])
+                .x(function (d) {return d.coord[0]; })
+                .y(function (d) {return d.coord[1]; })
+        (this.seedCoords);
     };
 
     voronoilayerbuilder.VoronoiLayerBuilder.prototype.buildPointVectorLayer = function () {
@@ -53,12 +65,9 @@ define([
             fill,
             stroke,
             styles;
-
-        this.seedCoords = this.seedCoords || this.getInitSeedCoords(this.extent);
-
         this.seedCoords.forEach(function (obj) {
             var feature = new ol.Feature({
-                geometry: new ol.geom.Point(obj),
+                geometry: new ol.geom.Point(obj.coord),
                 data: obj
             });
             features.push(feature);
@@ -95,11 +104,10 @@ define([
             fill,
             stroke,
             styles;
-
         voronoi.forEach(function (polyPoints, i) {
             var feature = new ol.Feature({
                     geometry: new ol.geom.Polygon([polyPoints]),
-                    data: {voronoiIndex: i}
+                    data: polyPoints.point
                 });
             features.push(feature);
         });
@@ -122,28 +130,6 @@ define([
 
         return new ol.layer.Vector({source: vectorSource, style: styles});
 
-    };
-
-    voronoilayerbuilder.VoronoiLayerBuilder.prototype.getInitSeedCoords = function (extent) {
-        var xValues = [
-                extent.x.min + (extent.x.dif * (1 / 4)),
-                extent.x.min + (extent.x.dif * (3 / 4))
-            ],
-            yValues = [
-                extent.y.min + (extent.y.dif * (5 / 6)),
-                extent.y.min + (extent.y.dif * (3 / 6)),
-                extent.y.min + (extent.y.dif * (1 / 6))
-            ],
-            seedCoords = [],
-            x,
-            y;
-
-        for (y = 0; y < yValues.length; y += 1) {
-            for (x = 0; x < xValues.length; x += 1) {
-                seedCoords.push([xValues[x], yValues[y]]);
-            }
-        }
-        return seedCoords;
     };
 
     return voronoilayerbuilder;

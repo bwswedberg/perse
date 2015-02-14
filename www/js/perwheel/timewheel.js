@@ -19,7 +19,7 @@ define([
         this.calendarName = calendarName;
         this.wrapper = container;
         this.svg = undefined;
-        this.margin = {left: 4, right: 4, top: 7, bottom: 1};
+        this.margin = {left: 4.5, right: 4.5, top: 8, bottom: 1};
         this.viewBox = {width: 100 - this.margin.left - this.margin.right, height: 100 - this.margin.top - this.margin.bottom};
         this.radius = {
             max: this.viewBox.width / 2.0,

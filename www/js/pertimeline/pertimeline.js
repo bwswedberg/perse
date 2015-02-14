@@ -1,12 +1,11 @@
 define([
     'jquery',
     'data/filter',
-    'general/combobutton',
     'pertimeline/timeline',
     // no namespace
     '$.calendars',
     'bootstrap'
-], function ($, filter, combobutton, timeline) {
+], function ($, filter, timeline) {
 
     var pertimeline = {};
 
@@ -19,7 +18,7 @@ define([
         this.filter = new filter.Filter({
             uniqueId: 'perse-pertimeline',
             property: 'julianDate',
-            filterOn: function (d) {return true; }
+            filterOn: function () {return true; }
         });
         this.timeline = undefined;
     };

@@ -44,8 +44,9 @@ define([
                 x: this.getXExtent(),
                 y: this.getYExtent(data)
             },
-            brushmove,
-            brushend;
+            brushMove,
+            brushEnd,
+            brushG;
 
         this.xScale = d3.scale.linear()
             .domain([extent.x.min, extent.x.max])
@@ -67,59 +68,45 @@ define([
             .domain([0, this.size.width])
             .range([extent.x.min, extent.x.max]);
 
-        this.svg.on('mousemove', function () {
-            var cal = $.calendars.instance(that.calendarName),
-                myDate = cal.fromJD(that.dateScale(d3.mouse(that.svg.node())[0]));
-
-            that.updateLabel([myDate.day(), cal.local.monthNames[myDate.month() - 1], myDate.year()].join(' '));
-                })
-                .on('mouseout', function () {
+        this.svg
+            .on('mousemove', function () {
+                var cal = $.calendars.instance(that.calendarName),
+                    myDate = cal.fromJD(that.dateScale(d3.mouse(that.svg.node())[0]));
+                that.updateLabel([myDate.day(), cal.local.monthNames[myDate.month() - 1], myDate.year()].join(' '));
+            })
+            .on('mouseout', function () {
                 that.updateLabel('');
-                });
+            });
 
         this.updateResolution(data);
 
-        brushmove = function () {
-            var extent = that.brush.extent();
-            var cal = $.calendars.instance(that.calendarName),
-                bDate = cal.fromJD(extent[0]),
-                eDate = cal.fromJD(extent[1]);
+        brushMove = function () {
+            var bExtent = that.brush.extent(),
+                cal = $.calendars.instance(that.calendarName),
+                bDate = cal.fromJD(bExtent[0]),
+                eDate = cal.fromJD(bExtent[1]);
 
             that.updateLabel([
                 [bDate.day(), cal.local.monthNamesShort[bDate.month() - 1], bDate.year()].join('-'),
                 [eDate.day(), cal.local.monthNamesShort[eDate.month() - 1], eDate.year()].join('-')
             ].join(' to '));
-
-            //barsG.classed("selected", function (d) { return (extent[0] <= d.dateRange.begin) && (d.dateRange.end <= extent[1]); });
-            //that.toInput.value = extent[0];
-            //that.fromInput.value = extent[1];
-
         };
 
-        brushend = function () {
-            var extent = that.brush.extent();
-            //that.svg.classed("selecting", !d3.event.target.empty());
-            if (extent[0] === extent[1]) {
-                //that.toInput.value = that.toInput.min;
-                //that.fromInput.value = that.fromInput.max;
-                //barsG.classed("selected", true);
-            }
+        brushEnd = function () {
             that.notifyListeners('onTimelineSelectionChanged', {context: that});
         };
 
         this.brush = d3.svg.brush()
             .x(this.xScale)
-            .on('brush', brushmove)
-            .on('brushend', brushend);
+            .on('brush', brushMove)
+            .on('brushend', brushEnd);
 
-        var brushg = this.svg.insert('g', '.timeline-bars')
+        brushG = this.svg.insert('g', '.timeline-bars')
             .attr('class', 'brush')
             .call(this.brush);
 
-        brushg.selectAll("rect")
+        brushG.selectAll("rect")
             .attr("height", this.size.height);
-
-        // TODO: add text to handles for extent of rectangle
 
         this.svg.append('text')
             .attr('id', 'timeline-label');
@@ -132,7 +119,6 @@ define([
                 x: this.getXExtent(),
                 y: this.getYExtent(data)
             },
-            yScale,
             barsG;
 
         this.yScale = d3.scale.linear()
@@ -145,14 +131,6 @@ define([
             .data(data);
 
         barsG.enter().append('g')
-            /*
-            .on('mouseover', function (d) {
-                that.updateLabel(d.label);
-            })
-            .on('mouseout', function () {
-                that.updateLabel('');
-            })
-            */
             .attr('class', 'timeline-bars selected')
             .append('rect');
 
@@ -163,10 +141,10 @@ define([
             .attr('width', function (d) {
                 return that.xScale(d.dateRange.end) - that.xScale(d.dateRange.begin);
             })
-            .attr('y', function (d) {
+            .attr('y', function () {
                 return that.yScale(0);
             })
-            .attr('height', function (d) {
+            .attr('height', function () {
                 return that.size.height - that.yScale(0);
             })
             .transition()
@@ -190,7 +168,6 @@ define([
                 x: this.getXExtent(),
                 y: this.getYExtent(data)
             },
-            yScale,
             barsG;
 
         this.yScale = d3.scale.linear()
@@ -202,14 +179,6 @@ define([
             .data(data);
 
         barsG.enter().append('g')
-            /*
-            .on('mouseover', function (d) {
-                that.updateLabel(d.label);
-            })
-            .on('mouseout', function () {
-                that.updateLabel('');
-            })
-            */
             .attr('class', 'timeline-bars selected')
             .append('rect');
 
@@ -244,8 +213,6 @@ define([
             .tickPadding(3)
             .orient('left');
 
-        // TODO: make responsive to the real data
-
         this.svg.select('#timeline-axis-y').remove();
         this.svg.append('g')
             .attr('class', 'timeline-axis')
@@ -254,7 +221,8 @@ define([
             .call(yAxisBuilder)
             .append('text')
             .attr('class', 'timeline-axis-label')
-            .attr('transform', 'translate(-' + (this.margin.left * 0.95) + ',' + (this.size.height / 2) + ') rotate(-90)')
+            .attr('transform', 'translate(-' +
+                (this.margin.left * 0.95) + ',' + (this.size.height / 2) + ') rotate(-90)')
             .attr('dy', '.71em')
             .style('text-anchor', 'middle')
             .text('Frequency');
@@ -297,14 +265,6 @@ define([
             .attr('id', 'timeline-axis-x')
             .attr('transform', 'translate(0,' + (this.size.height + 1) + ')')
             .call(xAxisBuilder);
-            /*
-            .append('text')
-            .attr('class', 'timeline-axis-label')
-            .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 18 + ')')
-            .attr("dy", ".71em")
-            .style("text-anchor", "middle")
-            .text("Year");
-            */
     };
 
     timeline.Timeline.prototype.updateLabel = function (label) {
@@ -328,9 +288,8 @@ define([
         function f(prev, cur) {
             if (cur.isLeaf) {
                 return prev + cur.composite.length;
-            } else {
-                return cur.composite.reduce(f, 0);
             }
+            return cur.composite.reduce(f, 0);
         }
         return f(prev, cur);
     };

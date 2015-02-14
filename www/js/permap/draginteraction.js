@@ -14,7 +14,7 @@ define([
      * @constructor
      * @extends {ol.interaction.Pointer}
      */
-    drag.Drag = function () {
+    drag.Drag = function (obj) {
 
         ol.interaction.Pointer.call(this, {
             handleDownEvent: drag.Drag.prototype.handleDownEvent,
@@ -22,6 +22,8 @@ define([
             handleMoveEvent: drag.Drag.prototype.handleMoveEvent,
             handleUpEvent: drag.Drag.prototype.handleUpEvent
         });
+
+        this.layerFilter_ = obj.layerFilter || function () {return false; };
 
         /**
          * @type {ol.Pixel}
@@ -33,7 +35,7 @@ define([
          * @type {string|undefined}
          * @private
          */
-        this.cursor_ = 'pointer';
+        this.cursor_ = 'move';
 
         /**
          * @type {ol.Feature}
@@ -59,10 +61,14 @@ define([
     drag.Drag.prototype.handleDownEvent = function(evt) {
         var map = evt.map;
 
-        var feature = map.forEachFeatureAtPixel(evt.pixel,
+        var feature = map.forEachFeatureAtPixel(
+            evt.pixel,
             function(feature, layer) {
                 return feature;
-            });
+            },
+            this,
+            this.layerFilter_
+        );
 
         if (feature) {
             this.coordinate_ = evt.coordinate;
@@ -79,10 +85,14 @@ define([
     drag.Drag.prototype.handleDragEvent = function(evt) {
         var map = evt.map;
 
-        var feature = map.forEachFeatureAtPixel(evt.pixel,
+        var feature = map.forEachFeatureAtPixel(
+            evt.pixel,
             function(feature, layer) {
                 return feature;
-            });
+            },
+            this,
+            this.layerFilter_
+        );
 
         var deltaX = evt.coordinate[0] - this.coordinate_[0];
         var deltaY = evt.coordinate[1] - this.coordinate_[1];
@@ -103,10 +113,14 @@ define([
     drag.Drag.prototype.handleMoveEvent = function(evt) {
         if (this.cursor_) {
             var map = evt.map;
-            var feature = map.forEachFeatureAtPixel(evt.pixel,
+            var feature = map.forEachFeatureAtPixel(
+                evt.pixel,
                 function(feature, layer) {
                     return feature;
-                });
+                },
+                this,
+                this.layerFilter_
+            );
             var element = evt.map.getTargetElement();
             if (feature) {
                 if (element.style.cursor != this.cursor_) {

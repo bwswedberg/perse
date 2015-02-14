@@ -109,11 +109,11 @@ define([
 
         this.brush = d3.svg.brush()
             .x(this.xScale)
-            .on("brush", brushmove)
-            .on("brushend", brushend);
+            .on('brush', brushmove)
+            .on('brushend', brushend);
 
         var brushg = this.svg.insert('g', '.timeline-bars')
-            .attr("class", "brush")
+            .attr('class', 'brush')
             .call(this.brush);
 
         brushg.selectAll("rect")
@@ -372,6 +372,11 @@ define([
             return {begin: m.beginJulianDate, end: m.endJulianDate};
         }
         return {begin: extent[0], end: extent[1]};
+    };
+
+    timeline.Timeline.prototype.clearBrush = function () {
+        this.svg.selectAll('.brush').call(this.brush.clear());
+        this.notifyListeners('onTimelineSelectionChanged', {context: this});
     };
 
     timeline.Timeline.prototype.notifyListeners = function (callbackStr, event) {

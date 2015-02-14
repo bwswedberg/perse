@@ -43,10 +43,10 @@ define([
     pertimeline.PerTimeline.prototype.createControls = function () {
         var resolution = this.createResolutionButtonGroup(),
             cal = this.createCalendarButtonGroup(),
-            filter = this.createFilterButtonGroup();
+            filterC = this.createFilterButtonGroup();
         return $('<div>')
             .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(resolution, cal, filter);
+            .append(resolution, cal, filterC);
     };
 
     pertimeline.PerTimeline.prototype.createFilterButtonGroup = function () {
@@ -58,8 +58,7 @@ define([
 
         filterButton.on('mouseup', $.proxy(function () {
             $(filterButton).blur();
-            this.filter.filterOn = function (d) {return true; };
-            this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
+            this.timeline.clearBrush();
         }, this));
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(filterButton);

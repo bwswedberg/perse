@@ -192,11 +192,11 @@ define([
             },
             yScale,
             barsG;
-        /*
-        yScale = d3.scale.linear()
+
+        this.yScale = d3.scale.linear()
             .domain([0, extent.y.max])
             .range([this.size.height, 0]);
-        */
+
 
         barsG = this.svg.selectAll('g.timeline-bars')
             .data(data);

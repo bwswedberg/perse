@@ -13,7 +13,6 @@ define([
     calc.PerPlotsPositionCalculator = function () {
         this.data = undefined;
         this.extent = undefined;
-        this.padding = 1;
         this.width = 20;
     };
 
@@ -36,7 +35,7 @@ define([
     };
 
     calc.PerPlotsPositionCalculator.prototype.getPositions = function () {
-        var height = 100 / 3,
+        var height = 100 / 3, // this is a percent
             leftSide,
             rightSide;
 
@@ -46,20 +45,20 @@ define([
                 coord: [this.extent.x.min, (this.extent.y.max - (i * this.extent.y.dif / 2))],
                 position: {
                     top: (height * i) + '%',
-                    left: this.padding + '%',
+                    left: 0,
                     width: this.width + '%',
                     height: height + '%'
                 }
             };
         }, this);
 
-        rightSide = ['topright', 'midright', 'bottomright'].map(function (name, i, list) {
+        rightSide = ['topright', 'midright', 'bottomright'].map(function (name, i) {
             return {
                 name: name,
                 coord: [this.extent.x.max, (this.extent.y.max - (i * this.extent.y.dif / 2))],
                 position: {
                     top: (height * i) + '%',
-                    right: this.padding + '%',
+                    right: 0,
                     width: this.width + '%',
                     height: height + '%'
                 }
@@ -72,7 +71,6 @@ define([
     calc.PerPlotsPositionCalculator.prototype.calculate = function () {
         var positionsTaken = [],
             getDistance;
-        console.log(this.getPositions());
         getDistance = function (p1, p2) {
             // this is euclidean but shouldn't be
             return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
@@ -98,50 +96,6 @@ define([
 
             return d;
         }, this);
-    };
-
-    calc.PerPlotsPositionCalculator.prototype.calculate_dep = function () {
-        var height = 100 / 3,
-            leftSide,
-            rightSide;
-
-        // TODO: Write a more sophisticated layout algorithm
-        this.data.sort(function (a, b) {
-            return a.extent.x.min -  b.extent.x.min;
-        });
-
-        leftSide = this.data.slice(0, 3);
-        rightSide = this.data.slice(3, 6);
-
-        leftSide.sort(function (a, b) {
-            return b.extent.y.max - a.extent.y.max;
-        });
-
-        rightSide.sort(function (a, b) {
-            return b.extent.y.max - a.extent.y.max;
-        });
-
-        leftSide = leftSide.map(function (obj, i) {
-            obj.position = {
-                top: (height * i) + '%',
-                left: this.padding + '%',
-                width: this.width + '%',
-                height: height + '%'
-            };
-            return obj;
-        }, this);
-
-        rightSide = rightSide.map(function (obj, i) {
-            obj.position = {
-                top: (height * i) + '%',
-                right: this.padding + '%',
-                width: this.width + '%',
-                height: height + '%'
-            };
-            return obj;
-        }, this);
-
-        return leftSide.concat(rightSide);
     };
 
     return calc;

@@ -97,7 +97,7 @@ define([
             .data(this.data)
             .enter().append('g')
             .classed({'enabled': true, 'timewheel-arc': true, 'timewheel-arc-background': true})
-            .on('mouseover', function (d) {
+            .on('mouseenter', function (d) {
                 that.notifyListeners('onMouseOver', {
                     context: that,
                     ring: that,
@@ -124,6 +124,10 @@ define([
         this.updateRing();
     };
 
+    timewheel.Ring.prototype.getDistance = function (p1, p2) {
+        return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+    };
+
     timewheel.Ring.prototype.updateRing = function (isBigOne) {
         var arc = d3.svg.arc(),
             g1 = this.ring.selectAll('g.timewheel-arc-background')
@@ -135,19 +139,16 @@ define([
 
         g2.select('path')
             .transition()
-            .delay(200)
             .duration(200)
             .attr('d', arc);
 
         g1.select('path')
             .transition()
-            .delay(200)
             .duration(200)
             .attr('d', arc);
 
         g1.select('text')
             .transition()
-            .delay(200)
             .duration(200)
             .attr('transform', function (d) {
                 return 'translate(' + arc.centroid(d) + ')';

@@ -72,10 +72,10 @@ define([
                 myDate = cal.fromJD(that.dateScale(d3.mouse(that.svg.node())[0]));
 
             that.updateLabel([myDate.day(), cal.local.monthNames[myDate.month() - 1], myDate.year()].join(' '));
-            })
-            .on('mouseout', function () {
+                })
+                .on('mouseout', function () {
                 that.updateLabel('');
-            });
+                });
 
         this.updateResolution(data);
 
@@ -83,7 +83,7 @@ define([
             var extent = that.brush.extent();
             var cal = $.calendars.instance(that.calendarName),
                 bDate = cal.fromJD(extent[0]),
-                eDate = cal.fromJD(extent[1])
+                eDate = cal.fromJD(extent[1]);
 
             that.updateLabel([
                 [bDate.day(), cal.local.monthNamesShort[bDate.month() - 1], bDate.year()].join('-'),
@@ -135,7 +135,7 @@ define([
             yScale,
             barsG;
 
-        yScale = d3.scale.linear()
+        this.yScale = d3.scale.linear()
             .domain([0, extent.y.max])
             .range([this.size.height, 0]);
 
@@ -164,17 +164,17 @@ define([
                 return that.xScale(d.dateRange.end) - that.xScale(d.dateRange.begin);
             })
             .attr('y', function (d) {
-                return yScale(0);
+                return that.yScale(0);
             })
             .attr('height', function (d) {
-                return that.size.height - yScale(0);
+                return that.size.height - that.yScale(0);
             })
             .transition()
             .attr('y', function (d) {
-                return yScale(d.composite.length);
+                return that.yScale(d.composite.length);
             })
             .attr('height', function (d) {
-                return that.size.height - yScale(d.composite.length);
+                return that.size.height - that.yScale(d.composite.length);
             });
 
         barsG.exit().remove();
@@ -192,10 +192,11 @@ define([
             },
             yScale,
             barsG;
-
+        /*
         yScale = d3.scale.linear()
             .domain([0, extent.y.max])
             .range([this.size.height, 0]);
+        */
 
         barsG = this.svg.selectAll('g.timeline-bars')
             .data(data);
@@ -221,10 +222,10 @@ define([
             })
             .transition()
             .attr('y', function (d) {
-                return yScale(d.composite.length);
+                return that.yScale(d.composite.length);
             })
             .attr('height', function (d) {
-                return that.size.height - yScale(d.composite.length);
+                return that.size.height - that.yScale(d.composite.length);
             });
 
         // make the values for other stuff 0
@@ -341,29 +342,8 @@ define([
     };
 
     timeline.Timeline.prototype.getYExtent = function (data) {
-        var e = d3.extent(data, function (d) {return d.composite.length; })
+        var e = d3.extent(data, function (d) {return d.composite.length; });
         return {min: e[0], max: e[1]};
-    };
-
-    timeline.Timeline.prototype.getYExtent_dep = function (data) {
-        var initObj = {
-                isLeaf: false,
-                min: data[0].composite[0].composite.length,
-                max: data[0].composite[0].composite.length
-            };
-
-        function hellYeah(prev, cur) {
-            if (cur.isLeaf) {
-                return {
-                    min: Math.min(cur.composite.length, prev.min),
-                    max: Math.max(cur.composite.length, prev.max)
-                };
-            } else {
-                return cur.composite.reduce(hellYeah, prev);
-            }
-        }
-        var out = data.reduce(hellYeah, initObj);
-        return out;
     };
 
     timeline.Timeline.prototype.getData = function (data) {

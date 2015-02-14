@@ -85,10 +85,10 @@ define([
             cycle = this.createCycleButtonGroup(),
             cal = this.createCalendarButtonGroup(),
             seed = this.createSeedControlButtonGroup(),
-            filter = this.createFilterControlButtonGroup();
+            filterC = this.createFilterControlButtonGroup();
         return $('<div>')
             .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(zoom, cycle, cal, seed, filter);
+            .append(zoom, cycle, cal, seed, filterC);
     };
 
     permap.PerMap.prototype.createFilterControlButtonGroup = function () {
@@ -142,7 +142,12 @@ define([
         // button
             pencilIcon = $('<span>').attr({'class': 'glyphicon glyphicon-pencil', 'aria-hidden': 'true'}),
             pencilButton = $('<button>')
-            .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Draw Geospatial Filter'})
+            .attr({
+                'class': 'btn btn-default btn-xs dropdown-toggle',
+                'type': 'button',
+                'data-toggle': 'dropdown',
+                'title': 'Draw Geospatial Filter'
+            })
             .append(pencilIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
@@ -225,9 +230,12 @@ define([
             ]),
         // button
             calendarIcon = $('<span>').attr({'class': 'glyphicon glyphicon-calendar', 'aria-hidden': 'true'}),
-            calendarButton = $('<button>')
-            .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Calendar System'})
-            //.append(calendarIcon, ' Gregorian ', $('<span>').attr({'class': 'caret'}));
+            calendarButton = $('<button>').attr({
+                'class': 'btn btn-default btn-xs dropdown-toggle',
+                'type': 'button',
+                'data-toggle': 'dropdown',
+                'title': 'Change Calendar System'
+            })
             .append(calendarIcon, ' ',  $('<span>').attr({'class': 'caret'}));
 
         // add events here
@@ -265,7 +273,12 @@ define([
         // button
             cycleIcon = $('<span>').attr({'class': 'glyphicon glyphicon-stats', 'aria-hidden': 'true'}),
             cycleButton = $('<button>')
-            .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Temporal Cycle'})
+            .attr({
+                'class': 'btn btn-default btn-xs dropdown-toggle',
+                'type': 'button',
+                'data-toggle': 'dropdown',
+                'title': 'Change Temporal Cycle'
+            })
             .append(cycleIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
@@ -341,13 +354,8 @@ define([
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(seedButton, menu);
     };
 
-    permap.PerMap.prototype.createPointerControlButtonGroup = function () {
-        var pointerIcon = $('<span>').attr({'class': 'glyphicon glyphicon-asterisk', 'aria-hidden': 'true'});
-    };
-
     permap.PerMap.prototype.getFilter = function () {
         // get filter from perplots
-
         this.filter.filterOn = this.map.getFilter();
 
         return this.filter;

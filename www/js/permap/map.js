@@ -49,12 +49,14 @@ define([
                 zoom: 5
             }),
             renderer: 'canvas',
+
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 })
             ],
             /* For Mapbox stuff
+
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.XYZ({
@@ -236,8 +238,6 @@ define([
             this.addInteractionListener();
             break;
         case ('none'):
-            //this.interactions.filter.select.getFeatures().clear();
-            //this.removeFilterInteractions();
             break;
         default:
             console.warn('Case Not Supported');
@@ -271,16 +271,14 @@ define([
                 })
             });
             this.theMap.addLayer(this.layers.filterPolygon);
-            //this.layers.filterPolygon.setMap(this.theMap);
         }
 
         this.interactions.filter.draw = new ol.interaction.Draw({
             source: this.layers.filterPolygon.getSource(),
-            //features: this.layers.filterPolygon.getFeatures(),
             type: type
         });
 
-        this.interactions.filter.draw.on('drawend', function (event) {
+        this.interactions.filter.draw.on('drawend', function () {
             this.theMap.removeInteraction(this.interactions.filter.draw);
             this.updateFilterShapeInteractionMode();
             this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
@@ -353,13 +351,13 @@ define([
                 y: {max: olExtentObj[3], min: olExtentObj[1], dif: (olExtentObj[3] - olExtentObj[1])}
             };
             xValues = [
-                    extent.x.min + (extent.x.dif * (1 / 4)),
-                    extent.x.min + (extent.x.dif * (3 / 4))
+                extent.x.min + (extent.x.dif * (1 / 4)),
+                extent.x.min + (extent.x.dif * (3 / 4))
             ];
             yValues = [
-                    extent.y.min + (extent.y.dif * (5 / 6)),
-                    extent.y.min + (extent.y.dif * (3 / 6)),
-                    extent.y.min + (extent.y.dif * (1 / 6))
+                extent.y.min + (extent.y.dif * (5 / 6)),
+                extent.y.min + (extent.y.dif * (3 / 6)),
+                extent.y.min + (extent.y.dif * (1 / 6))
             ];
 
             for (y = 0; y < yValues.length; y += 1) {

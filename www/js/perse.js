@@ -14,6 +14,7 @@ define([
     'perwheel/perwheel',
     'perattr/perattr',
     'pertimeline/pertimeline',
+    'pertable/pertable',
     // No namespace
     'bootstrap'
 ], function (
@@ -25,7 +26,8 @@ define([
     permap,
     perwheel,
     perattr,
-    pertimeline
+    pertimeline,
+    pertable
 ) {
 
     //localhost:8080/WebStormProjects/perse-two/www/index.html
@@ -39,19 +41,20 @@ define([
     };
 
     perse.PerSE.prototype.init = function () {
-        this.buildBigMap();
+        this.build();
         this.loadData();
     };
 
-    perse.PerSE.prototype.buildBigMap = function () {
+    perse.PerSE.prototype.build = function () {
         var largeLeft = $('<div>').attr({'class': 'col-md-10', 'id': 'perse-large-left'}),
             largeRight = $('<div>').attr({'class': 'col-md-2', 'id': 'perse-large-right'}),
             topRow = $('<div>').attr({'class': 'row', 'id': 'perse-top-row'}).append(largeLeft, largeRight),
             top = $('<div>').attr({'class': 'col-md-12'})
                 .append(topRow),
+            middle = $('<div>').attr({'class': 'col-md-12'}),
             bottom = $('<div>').attr({'class': 'col-md-12'}),
             main = $('<div>').attr({'class': 'row'})
-                .append(top, bottom);
+                .append(top, middle, bottom);
 
         this.container.append(main);
 
@@ -75,57 +78,15 @@ define([
 
         // pertimeline section
         var perTimeline = new pertimeline.PerTimeline()
+            .render(middle)
+            .registerListener(this.coordinator.getCoordinationListener());
+        this.coordinator.registerObserver(perTimeline);
+
+        // pertable section
+        var perTable = new pertable.PerTable()
             .render(bottom)
             .registerListener(this.coordinator.getCoordinationListener());
-        this.coordinator.registerObserver(perTimeline);
-
-    };
-
-    perse.PerSE.prototype.build = function () {
-        var mainRow = $('<div>').attr({'class': 'row'}),
-            largeLeft = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-large'}),
-            largeRight = $('<div>').attr({'class': 'col-md-6'}),
-            longSkinny = $('<div>').attr({'class': 'col-md-12', 'id': 'perse-longskinny'}),
-            largeRightRow = $('<div>').attr({'class': 'container-fluid'}),
-            mediumRightTop = $('<div>').attr({'class': 'col-md-12', 'id': 'perse-medium'}),
-            smRightBottomLeft = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-smleft'}),
-            smRightBottomRight = $('<div>').attr({'class': 'col-md-6', 'id': 'perse-smright'});
-        this.container.append(mainRow);
-        mainRow.append(largeLeft, largeRight, longSkinny);
-        largeRight.append(largeRightRow);
-        largeRightRow.append(mediumRightTop, smRightBottomLeft, smRightBottomRight);
-
-        // perwheel section
-        var perWheel = new perwheel.PerWheel()
-            .render(smRightBottomLeft)
-            .registerListener(this.coordinator.getCoordinationListener());
-        this.coordinator.registerObserver(perWheel);
-
-        // perattr section
-        var perAttr = new perattr.PerAttr()
-            .render(smRightBottomRight)
-            .registerListener(this.coordinator.getCoordinationListener());
-        this.coordinator.registerObserver(perAttr);
-
-        // perplots section
-        var perPlots = new perplots.PerPlots()
-            .render(largeLeft)
-            .registerListener(this.coordinator.getCoordinationListener());
-        this.coordinator.registerObserver(perPlots);
-
-        // permap section
-        var perMap = new permap.PerMap()
-            .render(mediumRightTop)
-            .registerListener(this.coordinator.getCoordinationListener());
-        perMap.makeInteractive();
-        perMap.registerVoronoiObserver(perPlots);
-        this.coordinator.registerObserver(perMap);
-
-        // pertimeline section
-        var perTimeline = new pertimeline.PerTimeline()
-            .render(longSkinny)
-            .registerListener(this.coordinator.getCoordinationListener());
-        this.coordinator.registerObserver(perTimeline);
+        this.coordinator.registerObserver(perTable);
 
     };
 

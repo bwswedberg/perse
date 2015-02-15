@@ -26,6 +26,25 @@ define([
         return this;
     };
 
+    calc.PerPlotsPositionCalculator.prototype.getExtent = function () {
+        // olExtentObj = [minx, miny, maxx, maxy]
+        var first = this.data[0].feature.getProperties().data.coord,
+            extent = {
+            x: {max: first[0], min: first[0], dif: 0},
+            y: {max: first[1], min: first[1], dif: 0}
+        };
+        this.data.forEach(function (d) {
+            var coord = d.feature.getProperties().data.coord;
+            extent.x.max = Math.max(extent.x.max, coord[0]);
+            extent.x.min = Math.min(extent.x.min, coord[0]);
+            extent.y.max = Math.max(extent.y.max, coord[1]);
+            extent.y.min = Math.min(extent.y.min, coord[1]);
+        });
+        extent.x.dif = extent.x.max - extent.x.min;
+        extent.y.dif = extent.y.max - extent.y.min;
+        return extent;
+    };
+
     calc.PerPlotsPositionCalculator.prototype.formatExtent = function (olExtentObj) {
         // olExtentObj = [minx, miny, maxx, maxy]
         return {
@@ -37,15 +56,17 @@ define([
     calc.PerPlotsPositionCalculator.prototype.getPositions = function () {
         var height = 100 / 3, // this is a percent
             leftSide,
-            rightSide;
+            rightSide,
+            extent = this.getExtent();
 
         leftSide = ['topleft', 'midleft', 'bottomleft'].map(function (name, i) {
             return {
                 name: name,
-                coord: [this.extent.x.min, (this.extent.y.max - (i * this.extent.y.dif / 2))],
+                coord: [extent.x.min, (extent.y.max - (i * extent.y.dif / 2))],
                 position: {
                     top: (height * i) + '%',
                     left: 0,
+                    right: 'auto',
                     width: this.width + '%',
                     height: height + '%'
                 }
@@ -55,9 +76,10 @@ define([
         rightSide = ['topright', 'midright', 'bottomright'].map(function (name, i) {
             return {
                 name: name,
-                coord: [this.extent.x.max, (this.extent.y.max - (i * this.extent.y.dif / 2))],
+                coord: [extent.x.max, (extent.y.max - (i * extent.y.dif / 2))],
                 position: {
                     top: (height * i) + '%',
+                    left: 'auto',
                     right: 0,
                     width: this.width + '%',
                     height: height + '%'
@@ -69,6 +91,71 @@ define([
     };
 
     calc.PerPlotsPositionCalculator.prototype.calculate = function () {
+        var getDistance = function (p1, p2) {
+            // this is euclidean but shouldn't be
+            return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+        };
+        console.log(this.data);
+
+        // Each data point ranks them
+        var rankings = this.data.map(function (d) {
+            var rank, seedCoord;
+
+            seedCoord = d.feature.getProperties().data.coord;
+
+            rank = this.getPositions();
+
+            rank.sort(function (a, b) {
+                return getDistance(seedCoord, a.coord) - getDistance(seedCoord, b.coord);
+            });
+
+            return {data: d, rank: rank, seedCoord: seedCoord};
+        }, this);
+
+        var getClosestToAnyPosition = function (dataList) {
+            return dataList.reduce(function (pData, cData) {
+                if (getDistance(pData.seedCoord, pData.rank[0].coord) > getDistance(cData.seedCoord, cData.rank[0].coord)) {
+                    return cData;
+                }
+                return pData;
+            });
+        };
+        console.log(' -------------------------- ');
+        function positionData(notPositionedData, positionedData) {
+            var closestData = getClosestToAnyPosition(notPositionedData),
+                takenPosition = closestData.rank[0].name;
+            closestData.data.position = closestData.rank[0].position;
+
+            positionedData.push(closestData.data);
+
+            notPositionedData.splice(notPositionedData.indexOf(closestData), 1);
+
+            notPositionedData = notPositionedData.map(function (d) {
+                var match = d.rank.filter(function (f) {return f.name === takenPosition; })[0];
+
+                d.rank.splice(d.rank.indexOf(match), 1);
+                return d;
+            });
+
+            return {notPositionedData: notPositionedData, positionedData: positionedData};
+        }
+
+        var notPositionedData = rankings,
+            positionedData = [],
+            out;
+
+        while (notPositionedData.length > 0) {
+            out = positionData(notPositionedData, positionedData);
+
+            notPositionedData = out.notPositionedData;
+            positionedData = out.positionedData;
+        }
+        console.log(positionedData);
+        return positionedData;
+
+    };
+
+    calc.PerPlotsPositionCalculator.prototype.calculate_dep = function () {
         var positionsTaken = [],
             getDistance;
         getDistance = function (p1, p2) {
@@ -76,7 +163,7 @@ define([
             return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
         };
 
-        return this.data.map(function (d) {
+        var d = this.data.map(function (d) {
             var i = 0, rank, seedCoord;
 
             seedCoord = d.feature.getProperties().data.coord;
@@ -96,6 +183,8 @@ define([
 
             return d;
         }, this);
+        console.log(d);
+        return d;
     };
 
     return calc;

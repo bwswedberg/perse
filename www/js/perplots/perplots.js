@@ -62,7 +62,7 @@ define([
         var processedData = this.getData(data),
             updatedPlots = [],
             extent = {
-                'x': this.getXExtent(processedData[0]),
+                'x': this.getXExtent(processedData),
                 'y': this.getYExtent(processedData)
             };
         // add and update plots
@@ -132,8 +132,8 @@ define([
     perplots.PerPlots.prototype.getYExtent = function (data) {
         var innerFunction = function (dataObj) {
             var extent = {
-                max: dataObj.data[0].partitions[0].events.length,
-                min: dataObj.data[0].partitions[0].events.length
+                max: dataObj.data[0].partitions[0].events.length || 0,
+                min: dataObj.data[0].partitions[0].events.length || 0
             };
 
             dataObj.data.forEach(function (part) {
@@ -154,8 +154,12 @@ define([
             });
     };
 
-    perplots.PerPlots.prototype.getXExtent = function (dataObj) {
-        var extent = {min: dataObj.data[0].partitions[0].value, max: dataObj.data[0].partitions[0].value};
+    perplots.PerPlots.prototype.getXExtent = function (data) {
+        var dataObj = data[0],
+            extent = {
+                min: dataObj.data[0].partitions[0].value,
+                max: dataObj.data[0].partitions[0].value
+            };
         dataObj.data.forEach(function (d) {
             d.partitions.forEach(function (p) {
                 extent.min = Math.min(extent.min, p.value);

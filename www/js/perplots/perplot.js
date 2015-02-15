@@ -250,6 +250,7 @@ define([
     };
 
     perplot.PerPlot.prototype.setPosition = function (positionObj) {
+        console.log(positionObj);
         this.container.animate(positionObj, 'slow');
         return this;
     };

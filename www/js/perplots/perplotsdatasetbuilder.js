@@ -37,7 +37,6 @@ define([
     };
 
     perplots.PerPlotsDataSetBuilder.prototype.createMonthOfYearData = function () {
-
         var cal = $.calendars.instance(this.calendarName),
             newData = [],
             extent = this.getJulianDateExtent(),
@@ -61,7 +60,6 @@ define([
             myDate.year += 1;
             newData.push(item);
         }
-
         this.data.forEach(function (d) {
             var date = cal.fromJD(d.julianDate),
                 m = newData[date.year() - minDate.year].partitions[0].value;
@@ -97,7 +95,7 @@ define([
         }
 
         // adds the real data
-        this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
+        //this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
         i = 0;
         endD = cal.fromJD(extent.min)
             .add(-(cal.fromJD(extent.min).dayOfWeek()), 'd')
@@ -138,7 +136,7 @@ define([
             newData.push(item);
         }
 
-        this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
+        //this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
         i = 0;
         endD = cal.fromJD(extent.min)
             .add((-cal.fromJD(extent.min).day()) + 1, 'd')
@@ -166,9 +164,7 @@ define([
             myDate = cal.fromJD(extent.min)
                 .add((-cal.fromJD(extent.min).weekOfYear()) + 1, 'w'),
             item,
-            endD,
             i,
-            y,
             w;
 
         // builds the structure
@@ -185,10 +181,12 @@ define([
 
 
 
-        this.data = this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
+        //this.data = this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
 
         i = 0;
-        w = cal.fromJD(this.data[0].julianDate).weekOfYear();
+        if (this.data.length < 0) {
+            w = cal.fromJD(this.data[0].julianDate).weekOfYear();
+        }
         this.data.forEach(function (d) {
             var date = cal.fromJD(d.julianDate);
             if (date.weekOfYear() < w) {
@@ -242,6 +240,7 @@ define([
 
     perplots.PerPlotsDataSetBuilder.prototype.build = function () {
         var newData;
+
         switch (this.cycleName) {
         case ('MonthOfYear'):
             newData = this.createMonthOfYearData();

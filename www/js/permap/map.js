@@ -72,8 +72,15 @@ define([
     };
 
     map.Map.prototype.build = function (data) {
+        var extent;
         this.update(data);
-        this.theMap.getView().fitExtent(this.layers.eventPoints.getSource().getExtent(), this.theMap.getSize());
+        extent = this.layers.eventPoints.getSource().getExtent();
+        this.layers.voronoi.points = new voronoilayerbuilder.VoronoiLayerBuilder()
+            .setExtent(extent)
+            .setSeedCoords(this.calculateNewSeedCoords(extent))
+            .buildPointVectorLayer();
+        this.theMap.addLayer(this.layers.voronoi.points);
+        this.theMap.getView().fitExtent(extent, this.theMap.getSize());
         this.maxPointsExtent = this.layers.eventPoints.getSource().getExtent();
         this.addInteractionListener();
     };
@@ -82,9 +89,9 @@ define([
         this.theMap.removeLayer(this.layers.eventPoints);
         this.layers.eventPoints = this.createEventPointsLayer(data);
         this.theMap.addLayer(this.layers.eventPoints);
-        this.theMap.removeLayer(this.layers.voronoi.points);
-        this.layers.voronoi.points = this.getVoronoiPointsLayer();
-        this.theMap.addLayer(this.layers.voronoi.points);
+        if (this.voronoiPositioning === 'auto') {
+            this.setVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+        }
         this.shouldUpdate = false;
     };
 
@@ -104,9 +111,13 @@ define([
             },
             onVoronoiPositioningChanged: function (event) {
                 this.voronoiPositioning = event.positioning;
+                if (this.voronoiPositioning === 'auto') {
+                    this.setVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+                    this.notifyListeners('onDataSetRequested', {'context': this});
+                }
             },
             onVoronoiPositioningReset: function (event) {
-                this.removeVoronoi();
+                this.setVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
                 this.notifyListeners('onDataSetRequested', {'context': this});
             },
             onPointer: function (event) {
@@ -191,14 +202,6 @@ define([
                 this.theMap.removeInteraction(this.interactions.voronoi[interaction]);
                 this.interactions.voronoi[interaction] = undefined;
             }
-        }, this);
-    };
-
-    map.Map.prototype.removeVoronoi = function () {
-        this.removeVoronoiInteractions();
-        ['points', 'polygons'].forEach(function (k) {
-            this.theMap.removeLayer(this.voronoi[k]);
-            this.layers.voronoi[k] = undefined;
         }, this);
     };
 
@@ -340,22 +343,6 @@ define([
     };
 
     map.Map.prototype.getVoronoiPointsLayer = function () {
-        var voronoiLayer, extent;
-        if (!this.layers.voronoi.points || this.voronoiPositioning === 'auto') {
-            this.removeVoronoiInteractions();
-            extent = this.layers.eventPoints.getSource().getExtent();
-            voronoiLayer = new voronoilayerbuilder.VoronoiLayerBuilder()
-                .setExtent(extent)
-                .setSeedCoords(this.getSeedCoords(extent))
-                .buildPointVectorLayer();
-
-            //this.interactions.voronoi.select = this.createSelectInteraction(voronoiLayer);
-            //this.interactions.voronoi.modify = this.createModifyInteraction(this.interactions.voronoi.select);
-            //this.theMap.addInteraction(this.interactions.voronoi.select);
-            //this.theMap.addInteraction(this.interactions.voronoi.modify);
-
-            return voronoiLayer;
-        }
         return this.layers.voronoi.points;
     };
 
@@ -373,35 +360,41 @@ define([
         return id;
     };
 
-    map.Map.prototype.getSeedCoords = function (olExtentObj) {
+    map.Map.prototype.setVoronoiPoints = function (seedCoords) {
+        this.layers.voronoi.points.getSource().getFeatures().forEach(function (feature, i) {
+            feature.setGeometry(new ol.geom.Point(seedCoords[i].coord));
+        });
+    };
+
+    map.Map.prototype.getSeedCoords = function () {
+        return this.layers.voronoi.points.getSource().getFeatures().map(function (f) {
+            return {'coord': f.getGeometry().getCoordinates(), 'voronoiId': f.getProperties().data.voronoiId};
+        });
+    };
+
+    map.Map.prototype.calculateNewSeedCoords = function (olExtentObj) {
         var extent, xValues, yValues, seedCoords = [], x, y;
 
-        if (!this.layers.voronoi.points || this.voronoiPositioning === 'auto') {
-            extent = {
-                x: {max: olExtentObj[2], min: olExtentObj[0], dif: (olExtentObj[2] - olExtentObj[0])},
-                y: {max: olExtentObj[3], min: olExtentObj[1], dif: (olExtentObj[3] - olExtentObj[1])}
-            };
-            xValues = [
-                extent.x.min + (extent.x.dif * (1 / 4)),
-                extent.x.min + (extent.x.dif * (3 / 4))
-            ];
-            yValues = [
-                extent.y.min + (extent.y.dif * (5 / 6)),
-                extent.y.min + (extent.y.dif * (3 / 6)),
-                extent.y.min + (extent.y.dif * (1 / 6))
-            ];
+        extent = {
+            x: {max: olExtentObj[2], min: olExtentObj[0], dif: (olExtentObj[2] - olExtentObj[0])},
+            y: {max: olExtentObj[3], min: olExtentObj[1], dif: (olExtentObj[3] - olExtentObj[1])}
+        };
+        xValues = [
+            extent.x.min + (extent.x.dif * (1 / 4)),
+            extent.x.min + (extent.x.dif * (3 / 4))
+        ];
+        yValues = [
+            extent.y.min + (extent.y.dif * (5 / 6)),
+            extent.y.min + (extent.y.dif * (3 / 6)),
+            extent.y.min + (extent.y.dif * (1 / 6))
+        ];
 
-            for (y = 0; y < yValues.length; y += 1) {
-                for (x = 0; x < xValues.length; x += 1) {
-                    seedCoords.push({'coord': [xValues[x], yValues[y]], 'voronoiId': this.getUniqueVoronoiId()});
-                }
+        for (y = 0; y < yValues.length; y += 1) {
+            for (x = 0; x < xValues.length; x += 1) {
+                seedCoords.push({'coord': [xValues[x], yValues[y]], 'voronoiId': this.getUniqueVoronoiId()});
             }
-
-        } else {
-            seedCoords = this.layers.voronoi.points.getSource().getFeatures().map(function (f) {
-                return f.getProperties().data;
-            });
         }
+
         return seedCoords;
     };
 

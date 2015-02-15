@@ -32,7 +32,8 @@ define([], function () {
                 day: 'DAY',
                 latDD: 'LATITUDE',
                 lonDD: 'LONGITUDE',
-                attributes: ['Event Type', 'Actor', 'Fatalities']
+                attributes: ['Event Type', 'Actor', 'Fatalities'],
+                description: 'Notes'
             }
         };
     };

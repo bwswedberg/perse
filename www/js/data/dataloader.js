@@ -32,6 +32,9 @@ define([
                 rawData[index][columns.day]
             ).toJD();
 
+            // add description
+            processedObj.description = dataObj[columns.description];
+
             // stored as [lon, lat]
             processedObj.coord = [dataObj[columns.lonDD], dataObj[columns.latDD]];
 
@@ -59,6 +62,7 @@ define([
         });
         builder.setTemporal({beginJulianDate: beginDate, endJulianDate: endDate, id: 'julianDate'});
         builder.setGeospatial({id: 'coord'});
+        builder.setDescriptionAttribute({id: 'description', label: columns.description});
         columns.attributes.forEach(function (a) {
             attributes[a] = {
                 label: a,

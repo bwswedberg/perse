@@ -39,6 +39,15 @@ define(['data/metadata/metadata'], function (metadata) {
         return this;
     };
 
+    metadata.MetadataBuilder.prototype.setDescriptionAttribute = function (descriptionParameters) {
+        var description = {};
+        this.metadata.attribute = this.metadata.attribute || {};
+        description.id = descriptionParameters.id || 'description';
+        description.label = descriptionParameters.label || 'Description';
+        this.metadata.attribute.description = description;
+        return this;
+    };
+
     metadata.MetadataBuilder.prototype.addAttribute = function (attributeParameters) {
         var attribute = {};
         this.metadata.attribute.attributes = this.metadata.attribute.attributes || {};

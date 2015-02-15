@@ -10,10 +10,9 @@ define([
     'permap/eventlayerbuilder',
     'permap/voronoilayerbuilder',
     'permap/draginteraction',
-    'permap/modifyinteraction',
     // no namespace
     'bootstrap'
-], function ($, ol, eventlayerbuilder, voronoilayerbuilder, draginteraction, modifyinteraction) {
+], function ($, ol, eventlayerbuilder, voronoilayerbuilder, draginteraction) {
 
     var map = {};
 

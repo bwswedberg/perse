@@ -95,7 +95,6 @@ define([
             // this is euclidean but shouldn't be
             return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
         };
-        console.log(this.data);
 
         // Each data point ranks them
         var rankings = this.data.map(function (d) {
@@ -120,7 +119,7 @@ define([
                 return pData;
             });
         };
-        console.log(' -------------------------- ');
+
         function positionData(notPositionedData, positionedData) {
             var closestData = getClosestToAnyPosition(notPositionedData),
                 takenPosition = closestData.rank[0].name;
@@ -150,7 +149,6 @@ define([
             notPositionedData = out.notPositionedData;
             positionedData = out.positionedData;
         }
-        console.log(positionedData);
         return positionedData;
 
     };

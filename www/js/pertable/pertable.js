@@ -99,6 +99,8 @@ define([
             headers.append($('<th>').text(attrMetadata.attributes[key].label));
         }, this);
 
+        headers.append($('<th>').text(attrMetadata.description.label));
+
         this.container.append(table);
 
         this.update(data);
@@ -112,13 +114,18 @@ define([
 
         tbody.find('.pertable-datarow').remove();
 
-        data.splice(0, 100).forEach(function (d) {
+        // TODO: update rows rather than delete and add
+
+        // TODO: add paging so that people can see more than top 50 events
+
+        data.splice(0, 50).forEach(function (d) {
             var row = $('<tr>').attr({'class': 'pertable-datarow'}),
                 date = cal.fromJD(d.julianDate);
             row.append($('<td>').text([date.day(), months[date.month() - 1], date.year()].join(' ')));
             attrMetadata.attributeKeys.forEach(function (key) {
                 row.append($('<td>').text(d[key]));
             }, this);
+            row.append($('<td>').text(d.description));
             tbody.append(row);
         });
     };

@@ -65,6 +65,7 @@ define([
                 'x': this.getXExtent(processedData),
                 'y': this.getYExtent(processedData)
             };
+
         // add and update plots
         processedData.forEach(function (d) {
             var id = d.id,
@@ -87,7 +88,7 @@ define([
         // remove
         this.plots
             .filter(function (p) {return updatedPlots.indexOf(p) < 0; })
-            .forEach(this.removePlot);
+            .forEach(this.removePlot, this);
     };
 
     perplots.PerPlots.prototype.getData = function (data) {

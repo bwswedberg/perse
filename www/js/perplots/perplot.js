@@ -250,6 +250,9 @@ define([
     };
 
     perplot.PerPlot.prototype.setPosition = function (positionObj) {
+        var cssObj = this.container.prop('style');
+        cssObj.removeProperty('left');
+        cssObj.removeProperty('right');
         this.container.animate(positionObj, 'slow');
         return this;
     };

@@ -40,22 +40,26 @@ define([
     };
 
     voronoidatasetbuilder.VoronoiDataSetBuilder.prototype.build = function () {
-        var that = this,
-            newData = this.polygonVectorLayer.getSource().getFeatures().map(function (feature) {
+        var newData = this.polygonVectorLayer.getSource().getFeatures()
+            .map(function (feature) {
                 return {
                     id: feature.getProperties().data.voronoiId,
                     feature: feature,
                     data: []
                 };
-            });
-
+            })
+            .reduce(function (p, c) {p[c.id] = c; return p; }, {});
         this.data.forEach(function (d) {
             var coord = ol.proj.transform(d.coord, this.projectionString, 'EPSG:3857'),
                 features = this.polygonVectorLayer.getSource().getFeaturesAtCoordinate(coord);
-            newData[features[0].getProperties().data.voronoiId].data.push(d);
+            try {
+                newData[features[0].getProperties().data.voronoiId].data.push(d);
+            } catch (err) {
+                console.log(d, features[0].getProperties());
+            }
         }, this);
 
-        return newData;
+        return Object.keys(newData).map(function (key) {return newData[key]; });
     };
 
     return voronoidatasetbuilder;

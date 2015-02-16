@@ -65,7 +65,7 @@ define([
                 coord: [extent.x.min, (extent.y.max - (i * extent.y.dif / 2))],
                 position: {
                     top: (height * i) + '%',
-                    left: 0,
+                    left: '0px',
                     right: 'auto',
                     width: this.width + '%',
                     height: height + '%'
@@ -80,7 +80,7 @@ define([
                 position: {
                     top: (height * i) + '%',
                     left: 'auto',
-                    right: 0,
+                    right: '0px',
                     width: this.width + '%',
                     height: height + '%'
                 }

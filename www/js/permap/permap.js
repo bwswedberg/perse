@@ -152,37 +152,39 @@ define([
 
         // add events here
         polygon.on('mouseup', $.proxy(function () {
-            this.notifyToolbarListeners('onDrawShape', {'context': this, 'shape': 'Polygon'});
+            this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'drawFilter', 'shape': 'Polygon'});
         }, this));
 
         circle.on('mouseup', $.proxy(function () {
-            this.notifyToolbarListeners('onDrawShape', {'context': this, 'shape': 'Circle'});
+            this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'drawFilter', 'shape': 'Circle'});
         }, this));
 
         modify.on('mouseup', $.proxy(function () {
             if (modify.find('.glyphicon').length) {
                 modify.find('.glyphicon').remove();
-                this.notifyToolbarListeners('onPointer', {'context': this});
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             } else {
                 menu.find('li a span').remove();
                 modify.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
-                this.notifyToolbarListeners('onModifyShape', {'context': this});
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'modifyFilter'});
             }
         }, this));
 
         move.on('mouseup', $.proxy(function () {
-
             if (move.find('.glyphicon').length) {
                 move.find('.glyphicon').remove();
-                this.notifyToolbarListeners('onPointer', {'context': this});
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             } else {
                 menu.find('li a span').remove();
                 move.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
-                this.notifyToolbarListeners('onMoveShape', {'context': this});
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'moveFilter'});
             }
         }, this));
 
         remove.on('mouseup', $.proxy(function () {
+            move.find('.glyphicon').remove();
+            modify.find('.glyphicon').remove();
+            this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             this.notifyToolbarListeners('onRemoveShape', {'context': this});
         }, this));
 
@@ -314,7 +316,12 @@ define([
             positioningHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Positioning'),
             fixed = $('<a>').attr({'role': 'menuitem'}).text('Fixed ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
             auto = $('<a>').attr({'role': 'menuitem'}).text('Auto '),
-            divider = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
+            divider1 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
+            editHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Edit'),
+            add = $('<a>').attr({'role': 'menuitem'}).text('Add '),
+            move = $('<a>').attr({'role': 'menuitem'}).text('Move '),
+            remove = $('<a>').attr({'role': 'menuitem'}).text('Remove '),
+            divider2 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
             reset = $('<a>').attr({'role': 'menuitem'}).text('Reset'),
             menu = $('<ul>')
             .attr({'class': 'dropdown-menu', 'role': 'menu'})
@@ -322,7 +329,12 @@ define([
                 positioningHeader,
                 $('<li>').attr({'role': 'presentation'}).append(fixed),
                 $('<li>').attr({'role': 'presentation'}).append(auto),
-                divider,
+                divider1,
+                editHeader,
+                $('<li>').attr({'role': 'presentation'}).append(add),
+                $('<li>').attr({'role': 'presentation'}).append(move),
+                    $('<li>').attr({'role': 'presentation'}).append(remove),
+                divider2,
                 $('<li>').attr({'role': 'presentation'}).append(reset)
             ]),
         // button
@@ -335,18 +347,59 @@ define([
         fixed.on('mouseup', $.proxy(function () {
             // make seeds stay at the same location regardless of extent of what is selected
             this.notifyToolbarListeners('onVoronoiPositioningChanged', {'context': this, 'positioning': 'fixed'});
-            menu.find('li a span').remove();
+            auto.find('span').remove();
             fixed.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         auto.on('mouseup', $.proxy(function () {
             // make seeds change based on the extent of what is selected
             this.notifyToolbarListeners('onVoronoiPositioningChanged', {'context': this, 'positioning': 'auto'});
-            menu.find('li a span').remove();
+            fixed.find('span').remove();
             auto.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
+        add.on('mouseup', $.proxy(function () {
+            if (add.find('.glyphicon').length) {
+                add.find('.glyphicon').remove();
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
+            } else {
+                move.find('span').remove();
+                remove.find('span').remove();
+                add.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'addVoronoi'});
+            }
+        }, this));
+
+        move.on('mouseup', $.proxy(function () {
+
+            if (move.find('.glyphicon').length) {
+                move.find('.glyphicon').remove();
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
+            } else {
+                add.find('span').remove();
+                remove.find('span').remove();
+                move.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'moveVoronoi'});
+            }
+        }, this));
+
+        remove.on('mouseup', $.proxy(function () {
+            if (remove.find('.glyphicon').length) {
+                remove.find('.glyphicon').remove();
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
+            } else {
+                add.find('span').remove();
+                move.find('span').remove();
+                remove.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+                this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'removeVoronoi'});
+            }
+        }, this));
+
         reset.on('mouseup', $.proxy(function () {
+            add.find('.glyphicon').remove();
+            move.find('.glyphicon').remove();
+            remove.find('.glyphicon').remove();
+            this.notifyToolbarListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             this.notifyToolbarListeners('onVoronoiPositioningReset', {'context': this});
         }, this));
 

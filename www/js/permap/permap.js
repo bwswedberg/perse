@@ -25,6 +25,7 @@ define([
             property: 'coord',
             filterOn: function () {return true; }
         });
+        this.controls = {};
     };
 
     permap.PerMap.prototype.render = function (container) {
@@ -314,8 +315,8 @@ define([
     permap.PerMap.prototype.createSeedControlButtonGroup = function () {
         var // menu
             positioningHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Positioning'),
-            fixed = $('<a>').attr({'role': 'menuitem'}).text('Fixed ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
-            auto = $('<a>').attr({'role': 'menuitem'}).text('Auto '),
+            auto = $('<a>').attr({'role': 'menuitem'}).text('Auto ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
+            fixed = $('<a>').attr({'role': 'menuitem'}).text('Fixed '),
             divider1 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
             editHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Edit'),
             add = $('<a>').attr({'role': 'menuitem'}).text('Add '),
@@ -327,8 +328,8 @@ define([
             .attr({'class': 'dropdown-menu', 'role': 'menu'})
             .append([
                 positioningHeader,
-                $('<li>').attr({'role': 'presentation'}).append(fixed),
                 $('<li>').attr({'role': 'presentation'}).append(auto),
+                $('<li>').attr({'role': 'presentation'}).append(fixed),
                 divider1,
                 editHeader,
                 $('<li>').attr({'role': 'presentation'}).append(add),

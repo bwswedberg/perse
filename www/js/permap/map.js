@@ -26,6 +26,14 @@ define([
             voronoi: {polygons: undefined, points: undefined}
         };
         this.interactions = {
+            select: undefined,
+            modify: undefined,
+            drag: undefined,
+            remove: undefined,
+            draw: undefined
+        };
+        /*
+
             voronoi: {
                 select: undefined,
                 modify: undefined,
@@ -40,8 +48,8 @@ define([
                 drag: undefined
             }
         };
-        this.voronoiPositioning = 'fixed';
-        this.filterShapeInteractionMode = 'none';
+        */
+        this.voronoiPositioning = 'auto';
         this.voronoiCount = 0;
         this.maxPointsExtent = undefined;
         this.shouldUpdate = true;
@@ -99,9 +107,27 @@ define([
         }
         this.shouldUpdate = false;
 
-        //this.update(data);
+        this.layers.filterPolygon = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ffcc33',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ffcc33'
+                    })
+                })
+            })
+        });
 
-        //this.addInteractionListener();
+        this.theMap.addLayer(this.layers.filterPolygon);
+
     };
 
     map.Map.prototype.update = function (data) {
@@ -152,6 +178,7 @@ define([
             onRemoveShape: function (event) {
                 if (this.layers.filterPolygon) {
                     this.removeFilterShape();
+                    this.updateInteractionMode('none');
                     this.notifyListeners('onFilterChanged', {'context': this});
                 }
 
@@ -172,59 +199,36 @@ define([
         $(this.theMap.getViewport()).off('click');
     };
 
-    map.Map.prototype.removeInteractions = function () {
-        this.removeFilterInteractions();
-        this.removeVoronoiInteractions();
-    };
-
     map.Map.prototype.removeFilterShape = function () {
-        if (this.layers.filterPolygon) {
-            this.removeFilterInteractions();
-            this.theMap.removeLayer(this.layers.filterPolygon);
-            this.layers.filterPolygon = undefined;
-        }
+        this.layers.filterPolygon.getSource().clear();
     };
 
-    map.Map.prototype.removeFilterInteractions = function () {
-        this.removeFilterSelectInteraction();
-        ['modify', 'drag', 'draw'].forEach(function (interaction) {
-            if (this.interactions.filter[interaction]) {
-                this.theMap.removeInteraction(this.interactions.filter[interaction]);
-                this.interactions.filter[interaction] = undefined;
+    map.Map.prototype.removeInteractions = function () {
+        ['select', 'remove'].forEach(function (interaction) {
+            if (this.interactions[interaction]) {
+                this.theMap.removeInteraction(this.interactions[interaction]);
+                this.interactions[interaction].getFeatures().clear();
+                this.interactions[interaction] = undefined;
             }
         }, this);
-    };
-
-    map.Map.prototype.removeFilterSelectInteraction = function () {
-        if (this.interactions.filter.select) {
-            this.theMap.removeInteraction(this.interactions.filter.select);
-            this.interactions.filter.select.getFeatures().clear();
-            this.interactions.filter.select = undefined;
-        }
-    };
-
-    map.Map.prototype.removeVoronoiInteractions = function () {
-        this.removeVoronoiSelectInteraction();
-        ['modify', 'draw', 'drag', 'remove'].forEach(function (interaction) {
-            if (this.interactions.voronoi[interaction]) {
-                this.theMap.removeInteraction(this.interactions.voronoi[interaction]);
-                this.interactions.voronoi[interaction] = undefined;
+        ['modify', 'draw', 'drag'].forEach(function (interaction) {
+            if (this.interactions[interaction]) {
+                this.theMap.removeInteraction(this.interactions[interaction]);
+                this.interactions[interaction] = undefined;
             }
         }, this);
-    };
-
-    map.Map.prototype.removeVoronoiSelectInteraction = function () {
-        if (this.interactions.voronoi.select) {
-            this.theMap.removeInteraction(this.interactions.voronoi.select);
-            this.interactions.voronoi.select.getFeatures().clear();
-            this.interactions.voronoi.select = undefined;
-        }
     };
 
     map.Map.prototype.addChangeListener = function (feature) {
-        feature.on('change', function (event) {
-            this.shouldUpdate = true;
-        }, this);
+        feature.on('change', this.changeListener, this);
+    };
+
+    map.Map.prototype.changeListener = function () {
+        this.shouldUpdate = true;
+    };
+
+    map.Map.prototype.removeChangeListener = function (feature) {
+        feature.un('change', this.changeListener, this);
     };
 
     map.Map.prototype.createSelectInteraction = function (layer) {
@@ -294,96 +298,81 @@ define([
 
         switch (mode) {
         case ('drawFilter'):
-            this.addDrawInteraction();
+            if (this.layers.filterPolygon.getSource().getFeatures().length === 0) {
+                this.addDrawInteraction('Polygon', this.layers.filterPolygon);
+            }
             break;
         case ('modifyFilter'):
-            this.interactions.filter.select = this.createSelectInteraction(this.layers.filterPolygon);
-            this.interactions.filter.modify = this.createModifyInteraction(this.interactions.filter.select);
-            this.theMap.addInteraction(this.interactions.filter.select);
-            this.theMap.addInteraction(this.interactions.filter.modify);
+            this.interactions.select = this.createSelectInteraction(this.layers.filterPolygon);
+            this.interactions.modify = this.createModifyInteraction(this.interactions.select);
+            this.theMap.addInteraction(this.interactions.select);
+            this.theMap.addInteraction(this.interactions.modify);
             this.layers.filterPolygon.getSource().getFeatures().forEach(function (feature) {
-                this.interactions.filter.select.getFeatures().push(feature);
+                this.interactions.select.getFeatures().push(feature);
             }, this);
             this.addInteractionListener();
             break;
         case ('moveFilter'):
-            this.interactions.filter.select = this.createSelectInteraction(this.layers.filterPolygon);
-            this.interactions.filter.drag = this.createDragInteraction(this.layers.filterPolygon);
-            this.theMap.addInteraction(this.interactions.filter.drag);
-            this.theMap.addInteraction(this.interactions.filter.select);
+            this.interactions.select = this.createSelectInteraction(this.layers.filterPolygon);
+            this.interactions.drag = this.createDragInteraction(this.layers.filterPolygon);
+            this.theMap.addInteraction(this.interactions.drag);
+            this.theMap.addInteraction(this.interactions.select);
             this.layers.filterPolygon.getSource().getFeatures().forEach(function (feature) {
-                this.interactions.filter.select.getFeatures().push(feature);
+                this.interactions.select.getFeatures().push(feature);
             }, this);
             this.addInteractionListener();
             break;
         case ('addVoronoi'):
-            this.addDrawInteraction(); //for voronoi points
+            if (this.layers.voronoi.points.getSource().getFeatures().length < 6) {
+                this.addDrawInteraction('Point', this.layers.voronoi.points);
+            }
             break;
         case ('moveVoronoi'):
-            this.interactions.voronoi.select = this.createSelectInteraction(this.layers.voronoi.points);
-            this.interactions.voronoi.drag = this.createDragInteraction(this.layers.voronoi.points);
-            this.theMap.addInteraction(this.interactions.voronoi.drag);
-            this.theMap.addInteraction(this.interactions.voronoi.select);
+            this.interactions.select = this.createSelectInteraction(this.layers.voronoi.points);
+            this.interactions.drag = this.createDragInteraction(this.layers.voronoi.points);
+            this.theMap.addInteraction(this.interactions.drag);
+            this.theMap.addInteraction(this.interactions.select);
             this.layers.voronoi.points.getSource().getFeatures().forEach(function (feature) {
-                this.interactions.voronoi.select.getFeatures().push(feature);
+                this.interactions.select.getFeatures().push(feature);
             }, this);
             this.addInteractionListener();
             break;
         case ('removeVoronoi'):
-            this.interactions.voronoi.select = this.createRemoveInteraction(this.layers.voronoi.points);
-            //this.interactions.voronoi.modify = this.createRemoveInteraction(this.interactions.voronoi.select);
-            this.theMap.addInteraction(this.interactions.voronoi.select);
-            //this.theMap.addInteraction(this.interactions.voronoi.modify);
-            this.addInteractionListener();
+            if (this.layers.voronoi.points.getSource().getFeatures().length > 1) {
+                this.interactions.select = this.createRemoveInteraction(this.layers.voronoi.points);
+                this.theMap.addInteraction(this.interactions.select);
+                this.addInteractionListener();
+            }
             break;
         case ('none'):
             break;
+        default:
+            console.warn('Case not supported');
         }
     };
 
-    map.Map.prototype.addDrawInteraction = function (geomType) {
+    map.Map.prototype.addDrawInteraction = function (geomType, layer) {
         var type = geomType || 'Polygon';
 
-        if (this.layers.filterPolygon) {
-            return;
-        }
-
-        this.removeInteractionListener(); // listens for clicks on map
-        this.removeInteractions(); // all interactions with map vector layers
-
-        this.layers.filterPolygon = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.2)'
-                }),
-                stroke: new ol.style.Stroke({
-                    color: '#ffcc33',
-                    width: 2
-                }),
-                image: new ol.style.Circle({
-                    radius: 7,
-                    fill: new ol.style.Fill({
-                        color: '#ffcc33'
-                    })
-                })
-            })
-        });
-        this.theMap.addLayer(this.layers.filterPolygon);
-
-        this.interactions.filter.draw = new ol.interaction.Draw({
-            source: this.layers.filterPolygon.getSource(),
+        this.interactions.draw = new ol.interaction.Draw({
+            source: layer.getSource(),
             type: type
         });
 
-        this.interactions.filter.draw.on('drawend', function () {
-            this.theMap.removeInteraction(this.interactions.filter.draw);
-            this.layers.filterPolygon.getSource().forEachFeature(this.addChangeListener, this);
-            this.updateInteractionMode();
+        this.interactions.draw.on('drawend', function () {
+            layer.getSource().forEachFeature(this.removeChangeListener, this);
+            layer.getSource().forEachFeature(this.addChangeListener, this);
+
+            if (layer === this.layers.voronoi.points) {
+                this.updateInteractionMode('addVoronoi');
+            } else {
+                this.updateInteractionMode('drawFilter');
+            }
+
             this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
         }, this);
 
-        this.theMap.addInteraction(this.interactions.filter.draw);
+        this.theMap.addInteraction(this.interactions.draw);
     };
 
     map.Map.prototype.getFilter = function () {
@@ -451,7 +440,7 @@ define([
             };
 
         return pointFeatures.map(function (feature, i) {
-            var xValue, yValue, yStep = ((i + 1) % 2) + i;
+            var xValue, yValue, voronoiId, yStep = ((i + 1) % 2) + i;
             if (amount === 1) {
                 xValue = extent.x.min + (extent.x.dif * (1 / 2));
                 yValue = extent.y.min + (extent.y.dif * (1 / 2));
@@ -466,6 +455,11 @@ define([
                 }
                 yValue = extent.y.min + extent.y.dif * ((ySteps - yStep) / ySteps);
             }
+
+            if (!feature.getProperties().hasOwnProperty('data')) {
+                feature.set('data', {'coord': [xValue, yValue], 'voronoiId': this.getUniqueVoronoiId()});
+            }
+
             return {'coord': [xValue, yValue], 'voronoiId': feature.getProperties().data.voronoiId};
             //return {'coord': [xValue, yValue], 'voronoiId': this.getUniqueVoronoiId()};
         }, this);

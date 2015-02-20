@@ -59,7 +59,7 @@ define([
     };
 
     perplots.PerPlots.prototype.update = function (data) {
-        var processedData = this.getData(data),
+        var processedData = this.processData(data),
             updatedPlots = [],
             extent = {
                 'x': this.getXExtent(processedData),
@@ -91,13 +91,12 @@ define([
             .forEach(this.removePlot, this);
     };
 
-    perplots.PerPlots.prototype.getData = function (data) {
+    perplots.PerPlots.prototype.processData = function (data) {
         var voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
                 .setProjection(this.metadata.getMetadata().geospatial.projection)
                 .setPolygonVectorLayer(this.voronoiPolygons)
                 .setData(data)
                 .build(),
-                //.map(function (d) {d.extent = this.formatExtent(d.extent); return d; }, this),
             builder = new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
                 .setCalendarName(this.calendarName)
                 .setCycleName(this.cycleName),
@@ -112,6 +111,12 @@ define([
         return positionedData;
     };
 
+    perplots.PerPlots.prototype.getEvents = function (lineValue, xValue) {
+        return this.plots
+            .map(function (plot) {return plot.getEvents(lineValue, xValue); })
+            .reduce(function (p, c) {return p.concat(c); }, []);
+    };
+
     perplots.PerPlots.prototype.setVoronoiPolygons = function (voronoiPolygons) {
         this.voronoiPolygons = voronoiPolygons;
     };
@@ -123,9 +128,28 @@ define([
                 console.log('filter changed');
             },
             onHoverEvent: function (event) {
+                var indicationEvent;
+
                 Object.keys(this.plots).forEach(function (k) {
                     this.plots[k].onHover(event);
                 }, this);
+
+                if (event.data === undefined || event.data === null) {
+                    indicationEvent = {
+                        'context': this,
+                        'voronoiId': undefined,
+                        'indicationFilter': undefined
+                    };
+                } else {
+                    indicationEvent = {
+                        'context': this,
+                        'voronoiId': event.firingPlot.getId(),
+                        'indicationFilter': event.firingPlot.createIndicationFilter(event.data.lineValue, event.data.xValue)
+                    };
+                }
+
+                this.notifyListeners('onIndicationChanged', indicationEvent);
+
             }
         };
     };
@@ -199,15 +223,7 @@ define([
         };
     };
 
-    perplots.PerPlots.prototype.notifyListeners = function (callbackStr, event) {
-        this.listeners.forEach(function (listenerObj) {
-            listenerObj[callbackStr].call(listenerObj.context, event);
-        }, this);
-    };
-
-    perplots.PerPlots.prototype.registerListener = function (callbackObj) {
-        this.listeners.push(callbackObj);
-        return this;
+    perplots.PerPlots.prototype.onIndicationChanged = function (event) {
     };
 
     perplots.PerPlots.prototype.onSelectionChanged = function (data) {
@@ -217,6 +233,17 @@ define([
     perplots.PerPlots.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.update(data);
+    };
+
+    perplots.PerPlots.prototype.notifyListeners = function (callbackStr, event) {
+        this.listeners.forEach(function (listenerObj) {
+            listenerObj[callbackStr].call(listenerObj.context, event);
+        }, this);
+    };
+
+    perplots.PerPlots.prototype.registerListener = function (callbackObj) {
+        this.listeners.push(callbackObj);
+        return this;
     };
 
     return perplots;

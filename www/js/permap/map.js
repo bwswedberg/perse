@@ -23,6 +23,7 @@ define([
         this.layers = {
             filterPolygon: undefined,
             eventPoints: undefined,
+            highlightedEventPoints: undefined,
             voronoi: {polygons: undefined, points: undefined}
         };
         this.interactions = {
@@ -32,23 +33,6 @@ define([
             remove: undefined,
             draw: undefined
         };
-        /*
-
-            voronoi: {
-                select: undefined,
-                modify: undefined,
-                draw: undefined,
-                drag: undefined,
-                remove: undefined
-            },
-            filter: {
-                select: undefined,
-                modify: undefined,
-                draw: undefined,
-                drag: undefined
-            }
-        };
-        */
         this.voronoiPositioning = 'auto';
         this.voronoiCount = 0;
         this.maxPointsExtent = undefined;
@@ -134,7 +118,7 @@ define([
         this.theMap.removeLayer(this.layers.eventPoints);
         this.theMap.removeLayer(this.layers.voronoi.points);
         this.layers.eventPoints = this.createEventPointsLayer(data);
-
+        //this.updateEventPoints(data);
         if (this.voronoiPositioning === 'auto') {
             this.setVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
         }
@@ -148,6 +132,18 @@ define([
         this.theMap.addLayer(this.layers.voronoi.points);
 
         this.shouldUpdate = false;
+    };
+
+    map.Map.prototype.updateEventPoints = function (data) {
+        var source = this.layers.eventPoints.getSource(),
+            projection = this.metadata.getMetadata().geospatial.projection;
+        source.clear();
+        source.addFeatures(data.map(function (obj) {
+            return new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.transform(obj.coord, projection, 'EPSG:3857')),
+                data: obj
+            });
+        }));
     };
 
     map.Map.prototype.createToolbarListener = function () {
@@ -172,7 +168,7 @@ define([
                 this.updateInteractionMode(event.mode);
             },
             onVoronoiPositioningReset: function (event) {
-                this.setVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+                this.setVoronoiPoints(this.calculateNewSeedCoords(this.maxPointsExtent));
                 this.notifyListeners('onDataSetRequested', {'context': this});
             },
             onRemoveShape: function (event) {
@@ -394,6 +390,8 @@ define([
     map.Map.prototype.createEventPointsLayer = function (data) {
         var projection = this.metadata.getMetadata().geospatial.projection;
         return new eventlayerbuilder.EventLayerBuilder()
+                .setAttribute('attribute_0')
+                .setMetadata(this.metadata)
                 .setProjection(projection)
                 .setData(data)
                 .buildPointVectorLayer();
@@ -418,9 +416,23 @@ define([
     };
 
     map.Map.prototype.setVoronoiPoints = function (seedCoords) {
-        this.layers.voronoi.points.getSource().getFeatures().forEach(function (feature, i) {
+        var features = this.layers.voronoi.points.getSource().getFeatures();
+
+        // Update points
+        features.forEach(function (feature, i) {
             feature.setGeometry(new ol.geom.Point(seedCoords[i].coord));
         });
+
+        // Add points if necessary
+        seedCoords.splice(features.length, seedCoords.length - features.length)
+            .forEach(function (sCoord) {
+                var newFeature = new ol.Feature({
+                    geometry: new ol.geom.Point(sCoord.coord),
+                    data: sCoord
+                });
+                console.log('adding point');
+                this.layers.voronoi.points.getSource().addFeature(newFeature);
+            }, this);
     };
 
     map.Map.prototype.getSeedCoords = function () {
@@ -489,6 +501,68 @@ define([
         }
 
         return seedCoords;
+    };
+
+    map.Map.prototype.highlightEvents = function (events) {
+        this.theMap.removeLayer(this.layers.highlightedEventPoints);
+        this.layers.highlightedEventPoints = undefined;
+        if (events.length > 0) {
+            var projection = this.metadata.getMetadata().geospatial.projection;
+            this.layers.highlightedEventPoints = new eventlayerbuilder.EventLayerBuilder()
+                .setProjection(projection)
+                .setData(events.data)
+                .buildPointVectorLayer();
+            this.theMap.addLayer(this.layers.highlightedEventPoints);
+        }
+    };
+
+    map.Map.prototype.highlightEvents = function (events) {
+        this.layers.eventPoints.getSource().forEachFeature(function () {
+        }, this);
+        this.layers.highlightedEventPoints = undefined;
+        if (events.length > 0) {
+            var projection = this.metadata.getMetadata().geospatial.projection;
+            this.layers.highlightedEventPoints = new eventlayerbuilder.EventLayerBuilder()
+                .setProjection(projection)
+                .setData(events.data)
+                .buildPointVectorLayer();
+            this.theMap.addLayer(this.layers.highlightedEventPoints);
+        }
+    };
+
+    map.Map.prototype.styleEvents = function (attributeName, indicationFilter) {
+        console.log('style!');
+        var uniqueValues = this.metadata.getMetadata().attribute.attributes[attributeName].uniqueValues;
+        this.layers.eventPoints.getSource().forEachFeature(function (feature) {
+            var d = feature.getProperties().data,
+                color = uniqueValues[d[attributeName]].color;
+            if (indicationFilter(d)) {
+                feature.setStyle(this.getPrimaryEventPointStyle(color));
+            } else {
+                feature.setStyle(this.getBlankEventPointStyle(color));
+            }
+        }, this);
+
+    };
+
+    map.Map.prototype.onIndicationChanged = function (event) {
+        if (event.voronoiId === undefined || event.voronoiId === null) {
+            this.layers.eventPoints.getSource().forEachFeature(function (feature) {
+                feature.set('highlightLevel', 'med');
+            });
+
+        } else {
+            this.layers.eventPoints.getSource().forEachFeature(function (feature) {
+                if (event.indicationFilter(feature.get('data'))) {
+
+                    feature.set('highlightLevel', 'max');
+                } else {
+                    feature.set('highlightLevel', 'min');
+                }
+
+            });
+        }
+        //this.theMap.render();
     };
 
     map.Map.prototype.onSelectionChanged = function (data) {

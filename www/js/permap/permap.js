@@ -77,6 +77,10 @@ define([
             },
             onDataSetRequested: function (event) {
                 this.notifyListeners('onDataSetRequested', {context: this, callback: this.onSelectionChanged});
+            },
+            onIndicationChanged: function (event) {
+                this.map.onIndicationChanged(event);
+                this.perPlots.onIndicationChanged(event);
             }
         };
     };

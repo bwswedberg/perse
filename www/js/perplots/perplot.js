@@ -56,7 +56,7 @@ define([
         this.svg.append('g')
             .attr('id', 'perplot-voronoi')
             .on('mouseout', function () {
-                that.notifyListeners('onHoverEvent', {'context': that, 'firingPlot': this, 'data': undefined});
+                that.notifyListeners('onHoverEvent', {'context': that, 'firingPlot': that, 'data': undefined});
             });
 
         this.svg.append('text')
@@ -96,7 +96,7 @@ define([
             .duration(500)
             .attr('d', function (d) {return line(d.partitions); })
             .attr('class', function (d) {
-                return 'perplot-path line-id-' + d.value;
+                return 'perplot-path ' + that.getLineClass(d.value).replace('.', '');
             });
 
         pathsG.exit().remove();
@@ -116,7 +116,7 @@ define([
 
         voronoiG.enter().append('path')
             .attr('class', function (d) {
-                return 'line-id-' + d.lineValue + ' ' + 'x-id-' + d.xValue;
+                return that.getLineClass(d.lineValue).replace('.', '') + ' ' + that.getXClass(d.xValue).replace('.', '');
             })
             .on('mouseover', function () {
                 var d = d3.select(this).datum();
@@ -167,6 +167,7 @@ define([
         data.forEach(function (d) {
             d.partitions.forEach(function (p) {
                 verticies.push({
+                    julianDateExtent: p.julianDateExtent,
                     lineValue: d.value,
                     lineLabel: d.label,
                     xValue: p.value,
@@ -199,10 +200,26 @@ define([
             .classed('active', shouldShowAxes);
     };
 
+    perplot.PerPlot.prototype.getLineClass = function (lineValue) {
+        return '.line-id-' + lineValue;
+    };
+
+    perplot.PerPlot.prototype.getXClass = function (xValue) {
+        return '.x-id-' + xValue;
+    };
+
     perplot.PerPlot.prototype.onHover = function (hoverObj) {
-        if (hoverObj.data) {
-            var lineClass = '.line-id-' + hoverObj.data.lineValue,
-                xClass = '.x-id-' + hoverObj.data.xValue;
+        if (hoverObj.data === undefined || hoverObj.data === null) {
+            this.svg.selectAll('.perplot-path.active')
+                .classed('active', false);
+            this.svg.selectAll('circle')
+                .remove();
+            this.svg.selectAll('.perplot-label')
+                .text('');
+            this.showAxes(false);
+        } else {
+            var lineClass = this.getLineClass(hoverObj.data.lineValue),
+                xClass = this.getXClass(hoverObj.data.xValue);
             this.svg.selectAll('.perplot-path.active')
                 .classed('active', false);
             this.svg.selectAll('.perplot-path' + lineClass)
@@ -216,14 +233,6 @@ define([
                 .attr("r", 1.5);
             this.updateLabel(d);
             this.showAxes(hoverObj.firingPlot === this);
-        } else {
-            this.svg.selectAll('.perplot-path.active')
-                .classed('active', false);
-            this.svg.selectAll('circle')
-                .remove();
-            this.svg.selectAll('.perplot-label')
-                .text('');
-            this.showAxes(false);
         }
     };
 
@@ -264,6 +273,26 @@ define([
 
     perplot.PerPlot.prototype.getFilter = function () {
         return this.filter;
+    };
+
+    perplot.PerPlot.prototype.getEvents = function (lineValue, xValue) {
+        var events = [],
+            data;
+        if ($.isNumeric(lineValue) && $.isNumeric(xValue)) {
+            data = this.svg.select('.perplot-path' + this.getLineClass(lineValue))
+                .datum();
+            events = data.partitions[xValue].events;
+        }
+        return events;
+    };
+
+    perplot.PerPlot.prototype.createIndicationFilter = function (lineValue, xValue) {
+        var data = this.svg.select('.perplot-path' + this.getLineClass(lineValue))
+                .datum(),
+            extent = data.partitions[xValue].julianDateExtent;
+        return function (d) {
+            return extent.min <= d.julianDate && d.julianDate < extent.max;
+        };
     };
 
     perplot.PerPlot.prototype.destroy = function () {

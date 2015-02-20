@@ -74,19 +74,18 @@ define([
         });
 
         fill = new ol.style.Fill({
-            color: 'rgba(0,0,0,0.4)'
+            color: 'rgba(0,0,0,0.2)'//'rgba(230,230,230,0.6)'
         });
         stroke = new ol.style.Stroke({
-            color: '#000',
-            width: 3
+            color: 'rgba(255,255,255, 0.6)',
+            width: 8
         });
         styles = [
             new ol.style.Style({
                 image: new ol.style.Circle({
                     fill: fill,
                     stroke: stroke,
-                    radius: 3,
-                    opacity: 0.5
+                    radius: 4
                 })
             })
         ];
@@ -113,11 +112,11 @@ define([
         });
 
         fill = new ol.style.Fill({
-            color: 'rgba(255,255,255,0.4)'
+            color: 'rgba(255,255,255,0.0)'
         });
         stroke = new ol.style.Stroke({
-            color: '#3399CC',
-            width: 1.25
+            color: 'rgba(255,255,255,0.3)',
+            width: 4
         });
         styles = [
             new ol.style.Style({

@@ -2,7 +2,7 @@
     position: absolute;
     min-height: 100px;
     min-width: 100px;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.9);
     padding-right: 5px;
 }
 
@@ -13,12 +13,13 @@
 
 .perplot-path {
     fill: none;
-    stroke: #000;
+    stroke: #919191;
     stroke-width: .5;
 }
 
 .perplot-path.active{
-    stroke: red;
+    stroke: #000;
+    stroke-width: .9;
 }
 
 .perplot-axis path,
@@ -32,10 +33,12 @@
 
 .perplot-axis text {
     font-size: .50em;
-    visibility: hidden;
+    fill: #919191;
+    /*visibility: hidden;*/
 }
 
 .perplot-axis.active text {
+    fill: #000;
     visibility: visible;
 }
 

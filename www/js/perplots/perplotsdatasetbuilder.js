@@ -47,13 +47,31 @@ define([
 
         // builds the structure
         while (myDate.year <= maxDate.year) {
-            var item = {label: myDate.year.toString(), value: myDate.year, partitions: []},
+            var item = {
+                    label: myDate.year.toString(),
+                    value: myDate.year,
+                    // TODO: test this extent
+                    julianDateExtent: {
+                        min: cal.newDate(myDate.year, myDate.month + 1, 1).toJD(),
+                        max: cal.newDate(myDate.year, myDate.month + 1, 1).add(1, 'y').toJD()
+                    },
+                    partitions: []
+                },
                 maxMonth = maxPossibleMonths;
             if (myDate.year === maxDate.year) {
                 maxMonth = maxDate.month + 1;
             }
             while (myDate.month < maxMonth) {
-                item.partitions.push({label: cal.local.monthNamesShort[myDate.month], value: myDate.month, events: []});
+                item.partitions.push({
+                    label: cal.local.monthNamesShort[myDate.month],
+                    value: myDate.month,
+                    // TODO: test this extent
+                    julianDateExtent: {
+                        min: cal.newDate(myDate.year, myDate.month + 1, 1).toJD(),
+                        max: cal.newDate(myDate.year, myDate.month + 1, 1).add(1, 'm').toJD()
+                    },
+                    events: []
+                });
                 myDate.month += 1;
             }
             myDate.month = 0;
@@ -69,6 +87,25 @@ define([
         return newData;
     };
 
+    perplots.PerPlotsDataSetBuilder.prototype.extentsShouldBeWithinJulianRangeTest = function (data) {
+        var test = function (extent, events) {
+            return events.every(function (d) {
+                return extent.min <= d.julianDate && d.julianDate < extent.max;
+            });
+        };
+        data.forEach(function (item) {
+            var events = item.partitions.reduce(function (p, c) {return p.concat(c.events); }, []);
+            if (!test(item.julianDateExtent, events)) {
+                console.warn('Fail: Some outside.');
+            }
+            item.partitions.forEach(function (p) {
+                if (!test(p.julianDateExtent, p.events)) {
+                    console.warn('Fail: Some outside.');
+                }
+            });
+        });
+    };
+
     perplots.PerPlotsDataSetBuilder.prototype.createDayOfWeekData = function () {
         var cal = $.calendars.instance(this.calendarName),
             extent = this.getJulianDateExtent(),
@@ -81,12 +118,26 @@ define([
 
         // builds the structure
         for (i = 0; myDate.toJD() <= extent.max; i += 1) {
-            item = {label: i.toString(), value: i, partitions: []};
+            item = {
+                label: i.toString(),
+                value: i,
+                // TODO: test this extent
+                julianDateExtent: {
+                    min: myDate.toJD(),
+                    max: cal.fromJD(myDate.toJD()).add(1, 'w').toJD()
+                },
+                partitions: []
+            };
 
             for (ii = 0; ii < cal.local.dayNamesShort.length; ii += 1) {
                 item.partitions.push({
                     label: cal.local.dayNamesShort[ii],
                     value: ii,
+                    // TODO: test this extent
+                    julianDateExtent: {
+                        min: myDate.toJD(),
+                        max: cal.fromJD(myDate.toJD()).add(1, 'd').toJD()
+                    },
                     events: []
                 });
                 myDate.add(1, 'd');
@@ -123,12 +174,26 @@ define([
 
         // builds the structure
         while (myDate.toJD() <= extent.max) {
-            item = {label: (i + 1).toString(), value: i, partitions: []};
+            item = {
+                label: (i + 1).toString(),
+                value: i,
+                // TODO: test this extent
+                julianDateExtent: {
+                    min: myDate.toJD(),
+                    max: cal.fromJD(myDate.toJD()).add(1, 'm').toJD()
+                },
+                partitions: []
+            };
 
             for (ii = 1; myDate.day() === ii; ii += 1, myDate.add(1, 'd')) {
                 item.partitions.push({
                     label: ii,
                     value: ii - 1,
+                    // TODO: test this extent
+                    julianDateExtent: {
+                        min: myDate.toJD(),
+                        max: cal.fromJD(myDate.toJD()).add(1, 'd').toJD()
+                    },
                     events: []
                 });
             }
@@ -169,19 +234,33 @@ define([
 
         // builds the structure
         while (myDate.toJD() <= extent.max) {
-            item = {label: myDate.year().toString(), value: myDate.year(), partitions: []};
+            item = {
+                label: myDate.year().toString(),
+                value: myDate.year(),
+                // TODO: test this extent
+                julianDateExtent: {
+                    min: myDate.toJD(),
+                    max: cal.fromJD(myDate.toJD()).add(1, 'y').toJD()
+                },
+                partitions: []
+            };
             while (myDate.weekOfYear() >= item.partitions.length) {
                 if (item.partitions.length !== myDate.weekOfYear()) {
-                    item.partitions.push({label: myDate.weekOfYear().toString(), value: myDate.weekOfYear() - 1, events: []});
+                    item.partitions.push({
+                        label: myDate.weekOfYear().toString(),
+                        value: myDate.weekOfYear() - 1,
+                        // TODO: test this extent
+                        julianDateExtent: {
+                            min: myDate.toJD(),
+                            max: cal.fromJD(myDate.toJD()).add(1, 'w').toJD()
+                        },
+                        events: []
+                    });
                 }
                 myDate.add(1, 'd');
             }
             newData.push(item);
         }
-
-
-
-        //this.data = this.data.sort(function (a, b) {return a.julianDate - b.julianDate; });
 
         i = 0;
         if (this.data.length < 0) {
@@ -208,6 +287,8 @@ define([
             initDate = cal.fromJD(this.data[0].julianDate),
             daysInYear = initDate.daysInYear(),
             i;
+
+        // To do figure this function out
 
         // builds the structure
         for (i = 0; i < daysInYear; i += 1) {
@@ -254,9 +335,11 @@ define([
         case ('WeekOfYear'):
             newData = this.createWeekOfYearData();
             break;
+        /*
         case ('DayOfYear'):
-            newData = this.createWeekOfYearData();
+            newData = this.createDayOfYearData();
             break;
+        */
         default:
             console.warn('Case not supported.');
         }

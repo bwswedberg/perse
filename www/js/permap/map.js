@@ -554,7 +554,6 @@ define([
         } else {
             this.layers.eventPoints.getSource().forEachFeature(function (feature) {
                 if (event.indicationFilter(feature.get('data'))) {
-
                     feature.set('highlightLevel', 'max');
                 } else {
                     feature.set('highlightLevel', 'min');
@@ -576,7 +575,9 @@ define([
 
     map.Map.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
-            listenerObj[callbackStr].call(listenerObj.context, event);
+            if (listenerObj.hasOwnProperty(callbackStr)) {
+                listenerObj[callbackStr].call(listenerObj.context, event);
+            }
         }, this);
     };
 

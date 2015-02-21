@@ -89,26 +89,10 @@ define([
         if (this.voronoiPositioning === 'auto') {
             this.setVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
         }
+
         this.shouldUpdate = false;
 
-        this.layers.filterPolygon = new ol.layer.Vector({
-            source: new ol.source.Vector(),
-            style: new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.2)'
-                }),
-                stroke: new ol.style.Stroke({
-                    color: '#ffcc33',
-                    width: 2
-                }),
-                image: new ol.style.Circle({
-                    radius: 7,
-                    fill: new ol.style.Fill({
-                        color: '#ffcc33'
-                    })
-                })
-            })
-        });
+        this.layers.filterPolygon = this.createFilterPolygon();
 
         this.theMap.addLayer(this.layers.filterPolygon);
 
@@ -118,7 +102,6 @@ define([
         this.theMap.removeLayer(this.layers.eventPoints);
         this.theMap.removeLayer(this.layers.voronoi.points);
         this.layers.eventPoints = this.createEventPointsLayer(data);
-        //this.updateEventPoints(data);
         if (this.voronoiPositioning === 'auto') {
             this.setVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
         }
@@ -144,6 +127,27 @@ define([
                 data: obj
             });
         }));
+    };
+
+    map.Map.prototype.createFilterPolygon = function () {
+        return new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ffcc33',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ffcc33'
+                    })
+                })
+            })
+        });
     };
 
     map.Map.prototype.createToolbarListener = function () {
@@ -252,21 +256,9 @@ define([
             layer.getSource().removeFeature(feature);
             remove.getFeatures().clear();
             this.notifyListeners('onDataSetRequested', {context: this});
+            this.updateInteractionMode('removeVoronoi');
         }, this);
 
-        /*
-        map.on("pointermove", function (evt) {
-            var hit = this.forEachFeatureAtPixel(evt.pixel,
-                function(feature, layer) {
-                    return true;
-                });
-            if (hit) {
-                this.getTarget().style.cursor = 'pointer';
-            } else {
-                this.getTarget().style.cursor = '';
-            }
-        });
-        */
         return remove;
     };
 
@@ -275,7 +267,6 @@ define([
             features: selectInteraction.getFeatures(),
             deleteCondition: function (event) {
                 return ol.events.condition.click(event);
-                //return ol.events.condition.mouseOnly(event);
             }
         });
     };
@@ -360,6 +351,7 @@ define([
             layer.getSource().forEachFeature(this.addChangeListener, this);
 
             if (layer === this.layers.voronoi.points) {
+                this.layers.voronoi.points.getSource().forEachFeature(this.validateVoronoiPoint, this);
                 this.updateInteractionMode('addVoronoi');
             } else {
                 this.updateInteractionMode('drawFilter');
@@ -369,6 +361,16 @@ define([
         }, this);
 
         this.theMap.addInteraction(this.interactions.draw);
+    };
+
+    map.Map.prototype.validateVoronoiPoint = function (feature) {
+        if (!feature.getProperties().hasOwnProperty('data')) {
+            var data = {
+                'coord': feature.getGeometry().getCoordinates(),
+                'voronoiId': this.getUniqueVoronoiId()
+            };
+            feature.set('data', data);
+        }
     };
 
     map.Map.prototype.getFilter = function () {
@@ -416,23 +418,38 @@ define([
     };
 
     map.Map.prototype.setVoronoiPoints = function (seedCoords) {
-        var features = this.layers.voronoi.points.getSource().getFeatures();
+        var features = this.layers.voronoi.points.getSource().getFeatures()
+            .reduce(function (p, c) {
+                p[c.get('data').voronoiId.toString()] = c;
+                return p;
+            }, {});
 
-        // Update points
-        features.forEach(function (feature, i) {
-            feature.setGeometry(new ol.geom.Point(seedCoords[i].coord));
-        });
-
-        // Add points if necessary
-        seedCoords.splice(features.length, seedCoords.length - features.length)
-            .forEach(function (sCoord) {
-                var newFeature = new ol.Feature({
-                    geometry: new ol.geom.Point(sCoord.coord),
-                    data: sCoord
+        // remove features with ids that are not in seed Coords
+        this.layers.voronoi.points.getSource().forEachFeature(function (feature) {
+            var id = feature.get('data').voronoiId,
+                isMatch = seedCoords.some(function (seedCoord) {
+                    return seedCoord.voronoiId === id;
                 });
-                console.log('adding point');
-                this.layers.voronoi.points.getSource().addFeature(newFeature);
-            }, this);
+            if (!isMatch) {
+                this.layers.voronoi.points.getSource().removeFeature(feature);
+            }
+        }, this);
+
+        // update and add voronoi points
+        seedCoords.forEach(function (seedCoord) {
+            var feature;
+            if (features.hasOwnProperty(seedCoord.voronoiId.toString())) {
+                feature = features[seedCoord.voronoiId.toString()];
+                feature.setGeometry(new ol.geom.Point(seedCoord.coord));
+                feature.set('data', seedCoord);
+            } else {
+                feature = new ol.Feature({
+                    geometry: new ol.geom.Point(seedCoord.coord),
+                    data: seedCoord
+                });
+                this.layers.voronoi.points.getSource().addFeature(feature);
+            }
+        }, this);
     };
 
     map.Map.prototype.getSeedCoords = function () {
@@ -466,10 +483,6 @@ define([
                     xValue = (i % 2) ? extent.x.min + (extent.x.dif * (1 / 4)) : extent.x.min + (extent.x.dif * (3 / 4));
                 }
                 yValue = extent.y.min + extent.y.dif * ((ySteps - yStep) / ySteps);
-            }
-
-            if (!feature.getProperties().hasOwnProperty('data')) {
-                feature.set('data', {'coord': [xValue, yValue], 'voronoiId': this.getUniqueVoronoiId()});
             }
 
             return {'coord': [xValue, yValue], 'voronoiId': feature.getProperties().data.voronoiId};
@@ -561,7 +574,6 @@ define([
 
             });
         }
-        //this.theMap.render();
     };
 
     map.Map.prototype.onSelectionChanged = function (data) {

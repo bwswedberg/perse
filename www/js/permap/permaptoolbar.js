@@ -108,29 +108,28 @@ define([
 
         modify.on('mouseup', $.proxy(function () {
             if (modify.find('.glyphicon').length) {
-                modify.find('.glyphicon').remove();
+                this.removeGlyphIcon(modify);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             } else {
-                menu.find('li a span').remove();
-                modify.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+                this.removeGlyphIcon(move);
+                this.addGlyphIcon(modify);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'modifyFilter'});
             }
         }, this));
 
         move.on('mouseup', $.proxy(function () {
             if (move.find('.glyphicon').length) {
-                move.find('.glyphicon').remove();
+                this.removeGlyphIcon(move);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             } else {
-                menu.find('li a span').remove();
-                move.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+                this.removeGlyphIcon(modify);
+                this.addGlyphIcon(move);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'moveFilter'});
             }
         }, this));
 
         remove.on('mouseup', $.proxy(function () {
-            move.find('.glyphicon').remove();
-            modify.find('.glyphicon').remove();
+            [move, modify].forEach(this.removeGlyphIcon);
             this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             this.notifyListeners('onRemoveShape', {'context': this});
         }, this));
@@ -347,9 +346,6 @@ define([
                 this.addGlyphIcon(remove);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'removeVoronoi'});
             }
-
-            this.addGlyphIcon(remove);
-            this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'removeVoronoi'});
         }, this));
 
         reset.on('mouseup', $.proxy(function () {

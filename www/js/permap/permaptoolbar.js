@@ -303,14 +303,18 @@ define([
         fixed.on('mouseup', $.proxy(function () {
             // make seeds stay at the same location regardless of extent of what is selected
             this.removeGlyphIcon(auto);
-            this.addGlyphIcon(fixed);
+            if (fixed.find('.glyphicon').length === 0) {
+                this.addGlyphIcon(fixed);
+            }
             this.notifyListeners('onVoronoiPositioningChanged', {'context': this, 'positioning': 'fixed'});
         }, this));
 
         auto.on('mouseup', $.proxy(function () {
             // make seeds change based on the extent of what is selected
             this.removeGlyphIcon(fixed);
-            this.addGlyphIcon(auto);
+            if (auto.find('.glyphicon').length === 0) {
+                this.addGlyphIcon(auto);
+            }
             this.notifyListeners('onVoronoiPositioningChanged', {'context': this, 'positioning': 'auto'});
         }, this));
 

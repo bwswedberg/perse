@@ -102,6 +102,7 @@ define([
         this.theMap.removeLayer(this.layers.eventPoints);
         this.theMap.removeLayer(this.layers.voronoi.points);
         this.layers.eventPoints = this.createEventPointsLayer(data);
+
         if (this.voronoiPositioning === 'auto') {
             this.setVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
         }
@@ -447,6 +448,7 @@ define([
                     geometry: new ol.geom.Point(seedCoord.coord),
                     data: seedCoord
                 });
+                this.addChangeListener(feature);
                 this.layers.voronoi.points.getSource().addFeature(feature);
             }
         }, this);

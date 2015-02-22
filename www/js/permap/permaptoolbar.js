@@ -134,9 +134,9 @@ define([
             this.notifyListeners('onRemoveShape', {'context': this});
         }, this));
 
-        this.filterMove = move;
-        this.filterModify = modify;
-        this.filterRemove = remove;
+        this.buttons.filterMove = move;
+        this.buttons.filterModify = modify;
+        this.buttons.filterRemove = remove;
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(pencilButton, menu);
     };
@@ -375,111 +375,43 @@ define([
         container.find('.glyphicon').remove();
     };
 
-    permaptoolbar.PerMapToolbar.prototype.onButtonStatusChanged = function (event) {
-        var buttonName = event.buttonName,
-            isEnabled = event.isEnabled;
-        switch (buttonName) {
-        case ('reset'):
-            this.buttons.reset.toggleClass('disabled', isEnabled);
-            break;
-        case ('allFilterButtons'):
-            var filterButtons = [this.buttons.filterMove, this.buttons.filterModify, this.buttons.filterRemove];
-            if (isEnabled) {
-                filterButtons.forEach(function (b) {
-                    b.toggleClass('disabled', false);
-                }, this);
-            } else {
-                filterButtons.forEach(function (b) {
-                    this.removeGlyphIcon(b);
-                    b.toggleClass('disabled', true);
-                }, this);
-            }
-            break;
-        case ('filterMove'):
-            if (isEnabled) {
-                this.addGlyphIcon(this.buttons.filterMove);
-            } else {
-                this.removeGlyphIcon(this.buttons.filterMove);
-            }
-            break;
-        case ('filterModify'):
-            if (isEnabled) {
-                this.addGlyphIcon(this.buttons.filterModify);
-            } else {
-                this.removeGlyphIcon(this.buttons.filterModify);
-            }
-            break;
-        case ('filterRemove'):
-            if (isEnabled) {
-                this.addGlyphIcon(this.buttons.filterRemove);
-            } else {
-                this.removeGlyphIcon(this.buttons.filterRemove);
-            }
-            break;
-        /*
-        case ('voronoiAuto'):
-            if (isEnabled) {
-                this.removeGlyphIcon(this.buttons.filterMove);
-                this.buttons.filterMove.toggleClass('disabled', true);
-            } else {
-                this.buttons.filterMove.toggleClass('disabled', false);
-            }
-            break;
-        case ('voronoiFixed'):
-            if (isEnabled) {
-                this.buttons.filterMove.toggleClass('disabled', false);
-            } else {
-                this.removeGlyphIcon(this.buttons.filterMove);
-                this.buttons.filterMove.toggleClass('disabled', true);
-            }
-            break;
-        */
-        case ('voronoiAdd'):
-            if (isEnabled) {
-                this.addGlyphIcon(this.buttons.voronoiAdd);
-            } else {
-                this.removeGlyphIcon(this.buttons.voronoiAdd);
-            }
-            break;
-        case ('voronoiMove'):
-            if (isEnabled) {
-                this.addGlyphIcon(this.buttons.filterMove);
-            } else {
-                this.removeGlyphIcon(this.buttons.filterMove);
-            }
-            break;
-        case ('voronoiRemove'):
-            if (isEnabled) {
-                this.addGlyphIcon(this.buttons.filterRemove);
-            } else {
-                this.removeGlyphIcon(this.buttons.filterRemove);
-            }
-            break;
-        }
-    };
-
-    permaptoolbar.PerMapToolbar.prototype.handleEvent = function (eventType, event) {
-        switch (eventType) {
-        case ('buttonStatusChanged'):
-            this.onButtonStatusChanged(event);
-            break;
-        default:
-            console.warn('No event type ' + eventType + ' exists for toolbar.');
-        }
-    };
-
     permaptoolbar.PerMapToolbar.prototype.createListener = function () {
         return {
             'context': this,
-            'onButtonStatusChanged': function (event) {
-                if (event.buttonName === undefined ||
-                    event.isEnabled === undefined ||
-                    this.buttons.hasOwnProperty(event.buttonName)) {
-                        console.warn('Button doesn\'t exist or not defined.');
-                        return;
-                }
-                this.handleChange(event.buttonName, event.isEnabled);
+            'onResetButtonChanged': function (event) {
+                this.buttons.reset.toggleClass('disabled', !event.isEnabled);
+            },
+            'onSetFilterButtonsEnabled': function (event) {
+                ['filterMove', 'filterModify', 'filterRemove'].forEach(function (buttonName) {
+                    this.buttons[buttonName].parent().toggleClass('disabled', !event.isEnabled);
+                }, this);
+            },
+            'onClearFilterButtons': function (event) {
+                ['filterMove', 'filterMove'].forEach(function (buttonName) {
+                    this.removeGlyphIcon(this.buttons[buttonName]);
+                }, this);
+            },
+            'onVoronoiPositioningChanged': function (event) {
+                ['voronoiMove'].forEach(function (buttonName) {
+                    if (event.positioning === 'auto') {
+                        this.buttons[buttonName].parent().toggleClass('disabled', true);
+                    } else {
+                        this.buttons[buttonName].parent().toggleClass('disabled', false);
+                    }
+                }, this);
+            },
+            'onClearVoronoiButtons': function (event) {
+                ['voronoiAdd', 'voronoiMove', 'voronoiRemove'].forEach(function (buttonName) {
+                    this.removeGlyphIcon(this.buttons[buttonName]);
+                }, this);
+            },
+            'onClearButton': function (event) {
+                this.removeGlyphIcon(this.buttons[event.buttonName]);
+            },
+            'onSetButtonEnabled': function (event) {
+                this.buttons[event.buttonName].parent().toggleClass('disabled', !event.isEnabled);
             }
+
         };
     };
 

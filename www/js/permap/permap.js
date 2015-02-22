@@ -21,6 +21,7 @@ define([
         this.perPlots = undefined;
         this.map = undefined;
         this.toolbar = undefined;
+        this.toolbarListener = undefined;
         this.filter = new filter.Filter({
             uniqueId: 'perse-permap',
             property: 'coord',
@@ -38,7 +39,7 @@ define([
 
         title = $('<p>')
             .attr({'class': 'perse-header-title'})
-            .text('Map');
+            .text('Voronoi Map');
 
         panelHeader = $('<div>')
             .attr({'class': 'panel-heading perse-panel-heading'})
@@ -55,6 +56,7 @@ define([
 
     permap.PerMap.prototype.build = function (data) {
         this.toolbar.registerListener(this.createListener());
+        this.toolbarListener = this.toolbar.createListener();
 
         this.map = new map.Map()
             .render(this.container)
@@ -94,7 +96,7 @@ define([
                 this.perPlots.onIndicationChanged(event);
             },
             onToolbarEvent: function (event) {
-                this.toolbar.handleEvent(event.type, event);
+                this.toolbarListener[event.type].call(this.toolbarListener.context, event);
             }
         };
     };

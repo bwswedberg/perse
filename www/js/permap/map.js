@@ -48,7 +48,6 @@ define([
                 zoom: 5
             }),
             renderer: 'canvas',
-
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
@@ -87,7 +86,7 @@ define([
         this.theMap.addLayer(this.layers.eventPoints);
 
         if (this.voronoiPositioning === 'auto') {
-            this.setVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+            this.updateVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
         }
 
         this.shouldUpdate = false;
@@ -95,6 +94,8 @@ define([
         this.layers.filterPolygon = this.createFilterPolygon();
 
         this.theMap.addLayer(this.layers.filterPolygon);
+
+        this.validateToolbarButtons();
 
     };
 
@@ -104,7 +105,7 @@ define([
         this.layers.eventPoints = this.createEventPointsLayer(data);
 
         if (this.voronoiPositioning === 'auto') {
-            this.setVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+            this.updateVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
         }
 
         this.theMap.removeLayer(this.layers.voronoi.polygons);
@@ -116,6 +117,8 @@ define([
         this.theMap.addLayer(this.layers.voronoi.points);
 
         this.shouldUpdate = false;
+
+        this.validateToolbarButtons();
     };
 
     map.Map.prototype.updateEventPoints = function (data) {
@@ -165,15 +168,17 @@ define([
             onVoronoiPositioningChanged: function (event) {
                 this.voronoiPositioning = event.positioning;
                 if (this.voronoiPositioning === 'auto') {
-                    this.setVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+                    this.updateVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
                     this.notifyListeners('onDataSetRequested', {'context': this});
                 }
+                this.validateToolbarButtons();
             },
             onInteractionModeChanged: function (event) {
                 this.updateInteractionMode(event.mode);
             },
             onVoronoiPositioningReset: function (event) {
-                this.setVoronoiPoints(this.calculateNewSeedCoords(this.maxPointsExtent));
+                this.updateVoronoiPoints(this.calculateNewSeedCoords(this.maxPointsExtent));
+                this.validateToolbarButtons();
                 this.notifyListeners('onDataSetRequested', {'context': this});
             },
             onRemoveShape: function (event) {
@@ -333,10 +338,127 @@ define([
             }
             break;
         case ('none'):
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onClearFilterButtons'
+            });
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onClearVoronoiButtons'
+            });
             break;
         default:
             console.warn('Case not supported');
         }
+        this.validateToolbarButtons();
+    };
+
+    map.Map.prototype.validateToolbarButtons = function () {
+        var voronoiPointsAmt = this.layers.voronoi.points.getSource().getFeatures().length,
+            filterPolygonAmt = this.layers.filterPolygon.getSource().getFeatures().length;
+
+        // Should disable voronoiMove when on Auto
+        this.notifyListeners('onToolbarEvent', {
+            'context': this,
+            'type': 'onVoronoiPositioningChanged',
+            'positioning': this.voronoiPositioning
+        });
+
+        if (this.voronoiPositioning === 'auto') {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onClearButton',
+                'buttonName': 'voronoiMove'
+            });
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetButtonEnabled',
+                'buttonName': 'voronoiMove',
+                'isEnabled': false
+            });
+        } else {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetButtonEnabled',
+                'buttonName': 'voronoiMove',
+                'isEnabled': true
+            });
+        }
+
+        // Should disable remove when only 1 voronoiPoint left
+        if (voronoiPointsAmt === 1) {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onClearButton',
+                'buttonName': 'voronoiRemove'
+            });
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetButtonEnabled',
+                'buttonName': 'voronoiRemove',
+                'isEnabled': false
+            });
+        } else {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetButtonEnabled',
+                'buttonName': 'voronoiRemove',
+                'isEnabled': true
+            });
+        }
+
+        // Should disable add when 6 voronoiPoints left
+        if (voronoiPointsAmt === 6) {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onClearButton',
+                'buttonName': 'voronoiAdd'
+            });
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetButtonEnabled',
+                'buttonName': 'voronoiAdd',
+                'isEnabled': false
+            });
+        } else {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetButtonEnabled',
+                'buttonName': 'voronoiAdd',
+                'isEnabled': true
+            });
+        }
+
+        // Should not allow move or modify if no filter polygon
+        if (filterPolygonAmt === 0) {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onClearFilterButtons'
+            });
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetFilterButtonsEnabled',
+                'isEnabled': false
+            });
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onResetButtonChanged',
+                'isEnabled': false
+            });
+
+        } else {
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onSetFilterButtonsEnabled',
+                'isEnabled': true
+            });
+            this.notifyListeners('onToolbarEvent', {
+                'context': this,
+                'type': 'onResetButtonChanged',
+                'isEnabled': true
+            });
+        }
+
     };
 
     map.Map.prototype.addDrawInteraction = function (geomType, layer) {
@@ -418,7 +540,7 @@ define([
         return id;
     };
 
-    map.Map.prototype.setVoronoiPoints = function (seedCoords) {
+    map.Map.prototype.updateVoronoiPoints = function (seedCoords) {
         var features = this.layers.voronoi.points.getSource().getFeatures()
             .reduce(function (p, c) {
                 p[c.get('data').voronoiId.toString()] = c;
@@ -516,48 +638,6 @@ define([
         }
 
         return seedCoords;
-    };
-
-    map.Map.prototype.highlightEvents = function (events) {
-        this.theMap.removeLayer(this.layers.highlightedEventPoints);
-        this.layers.highlightedEventPoints = undefined;
-        if (events.length > 0) {
-            var projection = this.metadata.getMetadata().geospatial.projection;
-            this.layers.highlightedEventPoints = new eventlayerbuilder.EventLayerBuilder()
-                .setProjection(projection)
-                .setData(events.data)
-                .buildPointVectorLayer();
-            this.theMap.addLayer(this.layers.highlightedEventPoints);
-        }
-    };
-
-    map.Map.prototype.highlightEvents = function (events) {
-        this.layers.eventPoints.getSource().forEachFeature(function () {
-        }, this);
-        this.layers.highlightedEventPoints = undefined;
-        if (events.length > 0) {
-            var projection = this.metadata.getMetadata().geospatial.projection;
-            this.layers.highlightedEventPoints = new eventlayerbuilder.EventLayerBuilder()
-                .setProjection(projection)
-                .setData(events.data)
-                .buildPointVectorLayer();
-            this.theMap.addLayer(this.layers.highlightedEventPoints);
-        }
-    };
-
-    map.Map.prototype.styleEvents = function (attributeName, indicationFilter) {
-        console.log('style!');
-        var uniqueValues = this.metadata.getMetadata().attribute.attributes[attributeName].uniqueValues;
-        this.layers.eventPoints.getSource().forEachFeature(function (feature) {
-            var d = feature.getProperties().data,
-                color = uniqueValues[d[attributeName]].color;
-            if (indicationFilter(d)) {
-                feature.setStyle(this.getPrimaryEventPointStyle(color));
-            } else {
-                feature.setStyle(this.getBlankEventPointStyle(color));
-            }
-        }, this);
-
     };
 
     map.Map.prototype.onIndicationChanged = function (event) {

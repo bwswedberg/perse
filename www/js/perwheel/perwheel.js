@@ -21,6 +21,7 @@ define([
         this.calendarName = 'Gregorian';
         this.listeners = [];
         this.timeWheel = undefined;
+        this.filterButton = undefined;
         this.filter = new filter.Filter({
             uniqueId: 'perse-perwheel',
             property: 'julianDate',
@@ -61,10 +62,11 @@ define([
 
         filterButton.on('mouseup', $.proxy(function () {
             $(filterButton).blur();
-            this.filter.filterOn = function (d) {return true; };
-            this.timeWheel.setAllEnabled();
-            this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
+            this.onReset();
+            this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
         }, this));
+
+        this.filterButton = filterButton;
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(filterButton);
     };
@@ -120,12 +122,23 @@ define([
         this.timeWheel.registerListener({
             context: this,
             onTimeWheelSelectionChanged: function (event) {
+                this.validateFilterButton();
                 this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
             }
         });
         return $('<div>')
             .attr({'class': 'perse-perwheel-timewheel'})
             .append(timeWheelDiv);
+    };
+
+    perwheel.PerWheel.prototype.validateFilterButton = function () {
+        var twData = this.getData(),
+            shouldEnable = Object.keys(twData.periodicity).every(function (key) {
+                return twData.periodicity[key].data.every(function (cycle) {
+                    return cycle.enabled;
+                });
+            });
+        this.filterButton.toggleClass('disabled', shouldEnable);
     };
 
     perwheel.PerWheel.prototype.getData = function () {
@@ -154,6 +167,12 @@ define([
         return this.filter;
     };
 
+    perwheel.PerWheel.prototype.onReset = function () {
+        this.filterButton.toggleClass('disabled', true);
+        this.filter.filterOn = function () {return true; };
+        this.timeWheel.setAllEnabled();
+    };
+
     perwheel.PerWheel.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
             listenerObj[callbackStr].call(listenerObj.context, event);
@@ -172,6 +191,7 @@ define([
     perwheel.PerWheel.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.timeWheel.onDataSetChanged(data, metadata);
+        this.filterButton.toggleClass('disabled', true);
     };
 
     return perwheel;

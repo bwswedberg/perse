@@ -54,8 +54,11 @@ define([
                 .append(filterIcon);
 
         filterButton.on('mouseup', $.proxy(function () {
+            if (filterButton.hasClass('disabled')) {
+                return;
+            }
             $(filterButton).blur();
-            this.notifyListeners('onRemoveShape', {'context': this});
+            this.notifyListeners('onReset', {'context': this});
         }, this));
 
         this.buttons.reset = filterButton;
@@ -136,7 +139,7 @@ define([
             }
             [move, modify].forEach(this.removeGlyphIcon);
             this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
-            this.notifyListeners('onRemoveShape', {'context': this});
+            this.notifyListeners('onRemoveFilterPolygon', {'context': this});
         }, this));
 
         this.buttons.filterDraw = draw;

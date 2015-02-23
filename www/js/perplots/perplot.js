@@ -303,6 +303,12 @@ define([
         this.listeners = null;
     };
 
+    perplot.PerPlot.prototype.onReset = function () {
+        this.filter.filterOn = function () {
+            return true;
+        };
+    };
+
     perplot.PerPlot.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
             listenerObj[callbackStr].call(listenerObj.context, event);

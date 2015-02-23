@@ -88,6 +88,9 @@ define([
             onRemoveFilter: function (event) {
                 this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()});
             },
+            onReset: function (event) {
+                this.onReset();
+            },
             onDataSetRequested: function (event) {
                 this.notifyListeners('onDataSetRequested', {context: this, callback: this.onSelectionChanged});
             },
@@ -95,10 +98,19 @@ define([
                 this.map.onIndicationChanged(event);
                 this.perPlots.onIndicationChanged(event);
             },
+            onRemoveFilterPolygon: function (event) {
+                this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()});
+            },
             onToolbarEvent: function (event) {
                 this.toolbarListener[event.type].call(this.toolbarListener.context, event);
             }
         };
+    };
+
+    permap.PerMap.prototype.onReset = function () {
+        this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()}); // must go first
+        this.map.onReset();
+        this.perPlots.onReset();
     };
 
     permap.PerMap.prototype.getFilter = function () {

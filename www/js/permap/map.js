@@ -181,15 +181,18 @@ define([
                 this.validateToolbarButtons();
                 this.notifyListeners('onDataSetRequested', {'context': this});
             },
-            onRemoveShape: function (event) {
-                if (this.layers.filterPolygon) {
-                    this.removeFilterShape();
-                    this.updateInteractionMode('none');
-                    this.notifyListeners('onFilterChanged', {'context': this});
-                }
-
+            onRemoveFilterPolygon: function (event) {
+                this.removeFilterPolygon();
             }
         };
+    };
+
+    map.Map.prototype.removeFilterPolygon = function () {
+        if (this.layers.filterPolygon) {
+            this.layers.filterPolygon.getSource().clear();
+            this.updateInteractionMode('none');
+            this.notifyListeners('onFilterChanged', {'context': this});
+        }
     };
 
     map.Map.prototype.addInteractionListener = function () {
@@ -203,10 +206,6 @@ define([
 
     map.Map.prototype.removeInteractionListener = function () {
         $(this.theMap.getViewport()).off('click');
-    };
-
-    map.Map.prototype.removeFilterShape = function () {
-        this.layers.filterPolygon.getSource().clear();
     };
 
     map.Map.prototype.removeInteractions = function () {
@@ -638,6 +637,10 @@ define([
         }
 
         return seedCoords;
+    };
+
+    map.Map.prototype.onReset = function () {
+        this.removeFilterPolygon();
     };
 
     map.Map.prototype.onIndicationChanged = function (event) {

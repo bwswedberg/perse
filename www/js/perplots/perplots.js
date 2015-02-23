@@ -223,6 +223,12 @@ define([
         };
     };
 
+    perplots.PerPlots.prototype.onReset = function () {
+        this.plots.forEach(function (plot) {
+            plot.onReset();
+        });
+    };
+
     perplots.PerPlots.prototype.onIndicationChanged = function (event) {
     };
 

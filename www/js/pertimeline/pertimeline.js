@@ -15,6 +15,7 @@ define([
         this.resolution = 'Week';
         this.metadata = undefined;
         this.listeners = [];
+        this.filterButton = undefined;
         this.filter = new filter.Filter({
             uniqueId: 'perse-pertimeline',
             property: 'julianDate',
@@ -57,8 +58,10 @@ define([
 
         filterButton.on('mouseup', $.proxy(function () {
             $(filterButton).blur();
-            this.timeline.clearBrush();
+            this.onReset();
         }, this));
+
+        this.filterButton = filterButton;
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(filterButton);
     };
@@ -159,6 +162,7 @@ define([
             onTimelineLabelChanged: function (event) {
             },
             onTimelineSelectionChanged: function (event) {
+                this.validateFilterButton();
                 this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
             }
         });
@@ -192,6 +196,15 @@ define([
         return this.filter;
     };
 
+    pertimeline.PerTimeline.prototype.validateFilterButton = function () {
+        this.filterButton.toggleClass('disabled', !this.timeline.isBrushing());
+    };
+
+    pertimeline.PerTimeline.prototype.onReset = function () {
+        this.timeline.clearBrush();
+        this.filterButton.toggleClass('disabled', true);
+    };
+
     pertimeline.PerTimeline.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
             listenerObj[callbackStr].call(listenerObj.context, event);
@@ -210,6 +223,7 @@ define([
     pertimeline.PerTimeline.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.timeline.onDataSetChanged(data, metadata);
+        this.validateFilterButton();
     };
 
     return pertimeline;

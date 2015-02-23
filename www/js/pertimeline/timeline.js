@@ -333,6 +333,11 @@ define([
         return {begin: extent[0], end: extent[1]};
     };
 
+    timeline.Timeline.prototype.isBrushing = function () {
+        var extent = this.brush.extent();
+        return extent[0] !== extent[1];
+    };
+
     timeline.Timeline.prototype.clearBrush = function () {
         this.svg.selectAll('.brush').call(this.brush.clear());
         this.notifyListeners('onTimelineSelectionChanged', {context: this});

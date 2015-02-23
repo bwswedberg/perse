@@ -90,6 +90,7 @@ define([
             },
             onReset: function (event) {
                 this.onReset();
+                this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
             },
             onDataSetRequested: function (event) {
                 this.notifyListeners('onDataSetRequested', {context: this, callback: this.onSelectionChanged});
@@ -108,7 +109,7 @@ define([
     };
 
     permap.PerMap.prototype.onReset = function () {
-        this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()}); // must go first
+        //this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()}); // must go first
         this.map.onReset();
         this.perPlots.onReset();
     };

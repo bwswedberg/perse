@@ -16,6 +16,7 @@ define([
         this.listeners = [];
         this.buttons = {
             'reset': undefined,
+            'filterDraw': undefined,
             'filterMove': undefined,
             'filterModify': undefined,
             'filterRemove': undefined,
@@ -64,9 +65,7 @@ define([
 
     permaptoolbar.PerMapToolbar.prototype.createDrawControlButton = function () {
         var // menu
-            drawHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Draw'),
-            polygon = $('<a>').attr({'role': 'menuitem'}).text('Polygon '),
-            circle = $('<a>').attr({'role': 'menuitem'}).text('Circle '),
+            draw = $('<a>').attr({'role': 'menuitem'}).text('Draw '),
             divider1 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
             actionHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Edit'),
             modify = $('<a>').attr({'role': 'menuitem'}).text('Modify '),
@@ -76,9 +75,7 @@ define([
             menu = $('<ul>')
                 .attr({'class': 'dropdown-menu', 'role': 'menu'})
                 .append([
-                    drawHeader,
-                    $('<li>').attr({'role': 'presentation'}).append(polygon),
-                    $('<li>').attr({'class': 'disabled', 'role': 'presentation'}).append(circle),
+                    $('<li>').attr({'role': 'presentation'}).append(draw),
                     divider1,
                     actionHeader,
                     $('<li>').attr({'role': 'presentation'}).append(modify),
@@ -98,15 +95,17 @@ define([
                 .append(pencilIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
-        polygon.on('mouseup', $.proxy(function () {
+        draw.on('mouseup', $.proxy(function () {
+            if (draw.parent().hasClass('disabled')) {
+                return;
+            }
             this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'drawFilter', 'shape': 'Polygon'});
         }, this));
 
-        circle.on('mouseup', $.proxy(function () {
-            this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'drawFilter', 'shape': 'Circle'});
-        }, this));
-
         modify.on('mouseup', $.proxy(function () {
+            if (modify.parent().hasClass('disabled')) {
+                return;
+            }
             if (modify.find('.glyphicon').length) {
                 this.removeGlyphIcon(modify);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
@@ -118,6 +117,9 @@ define([
         }, this));
 
         move.on('mouseup', $.proxy(function () {
+            if (move.parent().hasClass('disabled')) {
+                return;
+            }
             if (move.find('.glyphicon').length) {
                 this.removeGlyphIcon(move);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
@@ -129,11 +131,15 @@ define([
         }, this));
 
         remove.on('mouseup', $.proxy(function () {
+            if (remove.parent().hasClass('disabled')) {
+                return;
+            }
             [move, modify].forEach(this.removeGlyphIcon);
             this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
             this.notifyListeners('onRemoveShape', {'context': this});
         }, this));
 
+        this.buttons.filterDraw = draw;
         this.buttons.filterMove = move;
         this.buttons.filterModify = modify;
         this.buttons.filterRemove = remove;
@@ -319,6 +325,9 @@ define([
         }, this));
 
         add.on('mouseup', $.proxy(function () {
+            if (add.parent().hasClass('disabled')) {
+                return;
+            }
             if (add.find('.glyphicon').length) {
                 this.removeGlyphIcon(add);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
@@ -330,7 +339,9 @@ define([
         }, this));
 
         move.on('mouseup', $.proxy(function () {
-
+            if (move.parent().hasClass('disabled')) {
+                return;
+            }
             if (move.find('.glyphicon').length) {
                 this.removeGlyphIcon(move);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
@@ -342,6 +353,9 @@ define([
         }, this));
 
         remove.on('mouseup', $.proxy(function () {
+            if (remove.parent().hasClass('disabled')) {
+                return;
+            }
             if (remove.find('.glyphicon').length) {
                 this.removeGlyphIcon(remove);
                 this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'none'});
@@ -380,11 +394,13 @@ define([
             'context': this,
             'onResetButtonChanged': function (event) {
                 this.buttons.reset.toggleClass('disabled', !event.isEnabled);
+                this.buttons.filterDraw.parent().toggleClass('disabled', event.isEnabled);
             },
             'onSetFilterButtonsEnabled': function (event) {
                 ['filterMove', 'filterModify', 'filterRemove'].forEach(function (buttonName) {
                     this.buttons[buttonName].parent().toggleClass('disabled', !event.isEnabled);
                 }, this);
+                this.buttons.filterDraw.parent().toggleClass('disabled', event.isEnabled);
             },
             'onClearFilterButtons': function (event) {
                 ['filterMove', 'filterMove'].forEach(function (buttonName) {

@@ -63,3 +63,11 @@
     padding: 4px 8px;
 }
 
+.dropdown-menu li.dropdown-header {
+    pointer-events: none;
+}
+
+.dropdown-menu li a {
+    cursor: pointer;
+}
+

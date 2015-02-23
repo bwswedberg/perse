@@ -160,7 +160,7 @@ define([
             .on('mousemove', function () {
                 var x = d3.mouse(that.svg.node())[0];
                 if (x >= 0) {
-                    that.updateLabel('Count: ' + Math.round(that.xScale.invert(d3.mouse(that.svg.node())[0])));
+                    that.updateLabel('Frequency: ' + Math.round(that.xScale.invert(d3.mouse(that.svg.node())[0])));
                 } else {
                     that.updateLabel('');
                 }
@@ -171,7 +171,7 @@ define([
 
         brushMove = function () {
             var bExtent = that.brush.extent();
-            that.updateLabel('Count: ' + Math.round(bExtent[0]) + ' to ' + Math.round(bExtent[1]));
+            that.updateLabel('Frequency: ' + Math.round(bExtent[0]) + ' to ' + Math.round(bExtent[1]));
         };
 
         brushEnd = function () {

@@ -18,7 +18,9 @@ define([
         this.container = $('<div>').attr({'class': 'perse-perattr-categoricalplot'});
         this.listeners = [];
         this.svg = undefined;
+        this.svgXAxis = undefined;
         this.margin = {top: 1, right: 3, bottom: 1, left: 3};
+        this.xScale = undefined;
         this.size = {
             width: 150 - this.margin.left - this.margin.right,
             height: 170 - this.margin.top - this.margin.bottom
@@ -26,7 +28,6 @@ define([
         this.buttons = {'none': undefined, 'filter': undefined};
         this.metadata = undefined;
         this.deselected = [];
-        this.dataExtent = undefined;
     };
 
     categoricalplot.CategoricalPlot.prototype.render = function (parent) {
@@ -85,70 +86,58 @@ define([
         var chartContainer = $('<div>').attr({'class': 'categoricalplot-chart'}),
             axisContainer = $('<div>').attr({'class': 'categoricalplot-axis'});
         this.buildChart(chartContainer.get(0), data);
-        this.buildAxis(axisContainer.get(0), data);
+        this.buildAxis(axisContainer.get(0));
         this.container.append(chartContainer, axisContainer);
     };
 
-    categoricalplot.CategoricalPlot.prototype.buildAxis = function (container, data) {
-        var dataExtent = d3.extent(data, function (d) {return d.count; }),
-            axisSvg,
-            xScale,
-            xAxisBuilder;
-
-        axisSvg = d3.select(container).append('svg')
+    categoricalplot.CategoricalPlot.prototype.buildAxis = function (container) {
+        this.svgXAxis = d3.select(container).append('svg')
             .attr('height', '35px')
             .attr('width', this.size.width + this.margin.left + this.margin.right + 'px')
             .append('g')
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-        xScale = d3.scale.linear()
-            .domain([0, dataExtent[1]])
-            .range([0, this.size.width]);
+        this.updateAxis();
+    };
 
-        xAxisBuilder = d3.svg.axis()
-            .scale(xScale)
-            .ticks(4)
-            .innerTickSize(5)
-            .outerTickSize(5)
-            .tickPadding(5)
-            .orient("bottom");
+    categoricalplot.CategoricalPlot.prototype.updateAxis = function () {
+        var that = this,
+            xAxisBuilder = d3.svg.axis()
+                .scale(that.xScale)
+                .ticks(4)
+                .innerTickSize(5)
+                .outerTickSize(5)
+                .tickPadding(5)
+                .orient('bottom');
 
-        axisSvg.append("g")
-            .attr("transform", "translate(0, 0)")
+        this.svgXAxis.selectAll('.categoricalplot-axis').remove();
+
+        this.svgXAxis.append('g')
+            .attr('transform', 'translate(0, 0)')
+            .attr('class', 'categoricalplot-axis')
             .call(xAxisBuilder)
             .append('text')
             .attr('class', 'categoricalplot-axis-label')
-            .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 23 + ')')
-            .attr("dy", ".71em")
-            .style("text-anchor", "middle")
-            .text("Frequency");
-
-        /// build y axis here
-        /*
-        .append('text')
-            .attr('class', 'timeline-axis-label')
-            .attr('transform', 'translate(-' + (this.margin.left * 0.95) + ',' + (this.size.height / 2) + ') rotate(-90)')
+            .attr('transform', 'translate(' + (this.size.width / 2) + ',' + 23 + ')')
             .attr('dy', '.71em')
             .style('text-anchor', 'middle')
-            .text('Categories');
-        */
+            .text('Frequency');
     };
 
     categoricalplot.CategoricalPlot.prototype.buildChart = function (container, data) {
         var that = this,
-            xScale,
             yScale,
             offset = 1,
             height = 20,
             bars,
-            yAxisBuilder;
-        this.dataExtent = d3.extent(data, function (d) {return d.count; });
+            yAxisBuilder,
+            dataExtent = d3.extent(data, function (d) {return d.count; });
         this.size.height = this.margin.top + this.margin.bottom + height * data.length;
 
         data = data.sort(function (a, b) {return a.count - b.count; });
 
-        xScale = d3.scale.linear()
-            .domain([0, this.dataExtent[1]])
+        this.xScale = d3.scale.linear()
+            .domain([0, dataExtent[1]])
             .range([0, this.size.width]);
 
         yScale = d3.scale.linear()
@@ -191,7 +180,7 @@ define([
             .attr('y', offset)
             .attr('rx', 1)
             .attr('ry', 1)
-            .attr('width', function (d) {return xScale(d.count); })
+            .attr('width', function (d) {return that.xScale(d.count); })
             .attr('height', height - (offset * 2))
             .attr('fill', function (d) {return d.color; })
             .attr('fill-opacity', '1')
@@ -231,14 +220,17 @@ define([
     };
 
     categoricalplot.CategoricalPlot.prototype.update = function (data) {
-        var xScale = d3.scale.linear()
-            .domain([0, this.dataExtent[1]])
+        var that = this,
+            dataExtent = d3.extent(data, function (d) {return d.count; });
+        this.xScale = d3.scale.linear()
+            .domain([0, dataExtent[1]])
             .range([0, this.size.width]);
         this.svg.selectAll('.categoricalplot-category')
             .data(data, function (d) {return d.name; })
             .select('.categoricalplot-bar')
             .transition()
-            .attr('width', function (d) {return xScale(d.count); });
+            .attr('width', function (d) {return that.xScale(d.count); });
+        this.updateAxis();
     };
 
     categoricalplot.CategoricalPlot.prototype.getFilter = function () {

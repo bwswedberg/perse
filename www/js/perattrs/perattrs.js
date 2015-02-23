@@ -6,21 +6,21 @@
 
 define([
     'jquery',
-    'perattr/histogram',
+    'perattrs/perattr',
     // No namespace
     'bootstrap'
-], function ($, histogram) {
+], function ($, perattr) {
 
-    var perattr = {};
+    var perattrs = {};
 
-    perattr.PerAttr = function (container) {
+    perattrs.PerAttrs = function (container) {
         this.container = $('<div>').attr({'class': 'panel-body perse-perattr perse-panel-body'});
         this.listeners = [];
         this.metadata = undefined;
-        this.histograms = [];
+        this.plots = [];
     };
 
-    perattr.PerAttr.prototype.render = function (parent) {
+    perattrs.PerAttrs.prototype.render = function (parent) {
         var title = $('<p>')
                 .attr({'class': 'perse-header-title'})
                 .text('Attributes'),
@@ -36,7 +36,7 @@ define([
         return this;
     };
 
-    perattr.PerAttr.prototype.build = function (data) {
+    perattrs.PerAttrs.prototype.build = function (data) {
         var cardContainer = $('<div>').attr({'class': 'perse-perattr-cardcontainer'}),
             b = $('<button>')
                 .attr({'class': 'btn btn-link btn-md dropdown-toggle', 'data-toggle': 'dropdown'}),
@@ -52,7 +52,7 @@ define([
             .empty()
             .append(dropdown);
 
-        this.histograms = [];
+        this.plots = [];
 
         this.metadata.getMetadata().attribute.attributeKeys.forEach(function (attributeName, i) {
             var id = 'perse-perattr-card-' + attributeName,
@@ -60,13 +60,13 @@ define([
                 card = $('<div>').hide().attr({'class': 'perse-perattr-card', id: id}),
                 button = $('<a>').attr({'role': 'menuitem'}).text(label),
                 li = $('<li>').attr({'role': 'presentation', 'id': id}).append(button),
-                hist;
+                plot;
 
             //this.container.append(card);
-            hist = new histogram.Histogram(attributeName)
+            plot = new perattr.PerAttr(attributeName)
                 .render(card)
                 .registerListener(this.createFilterChangedListener());
-            hist.onDataSetChanged(data, this.metadata);
+            plot.onDataSetChanged(data, this.metadata);
 
             if (i === 0) {
                 b.text(label).append($('<span>').attr({'class': 'caret'}));
@@ -75,10 +75,10 @@ define([
                 this.container
                     .siblings('.panel-heading')
                     .find('.panel-title')
-                    .append(hist.getToolbar());
+                    .append(plot.getToolbar());
             }
 
-            this.histograms.push(hist);
+            this.plots.push(plot);
 
             button.click($.proxy(function () {
                 b.text($(button).text() + ' ').append($('<span>').attr({'class': 'caret'}));
@@ -94,7 +94,7 @@ define([
                 this.container
                     .siblings('.panel-heading')
                     .find('.panel-title')
-                    .append(hist.getToolbar());
+                    .append(plot.getToolbar());
             }, this));
             menu.append(li);
             cardContainer.append(card);
@@ -103,37 +103,37 @@ define([
         this.container.append(cardContainer);
     };
 
-    perattr.PerAttr.prototype.notifyListeners = function (callbackStr, event) {
+    perattrs.PerAttrs.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
             listenerObj[callbackStr].call(listenerObj.context, event);
         }, this);
     };
 
-    perattr.PerAttr.prototype.registerListener = function (callbackObj) {
+    perattrs.PerAttrs.prototype.registerListener = function (callbackObj) {
         this.listeners.push(callbackObj);
         return this;
     };
 
-    perattr.PerAttr.prototype.onSelectionChanged = function (data) {
-        this.histograms.forEach(function (h) {
-            h.onSelectionChanged(data);
+    perattrs.PerAttrs.prototype.onSelectionChanged = function (data) {
+        this.plots.forEach(function (plot) {
+            plot.onSelectionChanged(data);
         });
     };
 
-    perattr.PerAttr.prototype.createFilterChangedListener = function () {
+    perattrs.PerAttrs.prototype.createFilterChangedListener = function () {
         return {
             context: this,
             onFilterChanged: function (event) {
                 this.notifyListeners('onFilterChanged', {context: this, filter: event.filter });
             }
-        }
+        };
     };
 
-    perattr.PerAttr.prototype.onDataSetChanged = function (data, metadata) {
+    perattrs.PerAttrs.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.build(data);
     };
 
-    return perattr;
+    return perattrs;
 
 });

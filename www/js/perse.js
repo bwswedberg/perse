@@ -12,7 +12,7 @@ define([
     'coordination/coordinator',
     'permap/permap',
     'perwheel/perwheel',
-    'perattr/perattr',
+    'perattrs/perattrs',
     'pertimeline/pertimeline',
     'pertable/pertable',
     // No namespace
@@ -25,7 +25,7 @@ define([
     coordination,
     permap,
     perwheel,
-    perattr,
+    perattrs,
     pertimeline,
     pertable
 ) {
@@ -65,10 +65,10 @@ define([
         this.coordinator.registerObserver(perMap);
 
         // perattr section
-        var perAttr = new perattr.PerAttr()
+        var perAttrs = new perattrs.PerAttrs()
             .render(largeRight)
             .registerListener(this.coordinator.getCoordinationListener());
-        this.coordinator.registerObserver(perAttr);
+        this.coordinator.registerObserver(perAttrs);
 
         // perwheel section
         var perWheel = new perwheel.PerWheel()

@@ -6,9 +6,9 @@
 
 define([
     'jquery',
-    'perattr/rugplot',
-    'perattr/barchart',
-    'perattr/categoricalbarchart',
+    'perattrs/rugplot',
+    'perattrs/barchart',
+    'perattrs/categoricalbarchart',
     'data/filter',
     // No namespace
     'bootstrap'
@@ -20,9 +20,9 @@ define([
     filter
 ) {
 
-    var histogram = {};
+    var perattr = {};
 
-    histogram.Histogram = function (attribute) {
+    perattr.PerAttr = function (attribute) {
         var classId = 'perse-perattr-' + attribute;
         this.attribute = attribute;
         this.container = $('<div>').attr({'class': classId});
@@ -39,14 +39,12 @@ define([
         this.toolbar = undefined;
     };
 
-    histogram.Histogram.prototype.render = function (container) {
+    perattr.PerAttr.prototype.render = function (container) {
         $(container).append(this.container);
         return this;
     };
 
-    histogram.Histogram.prototype.build = function (data) {
-        var name = this.metadata.getMetadata().attribute.attributes[this.attribute].label;
-
+    perattr.PerAttr.prototype.build = function (data) {
         if (this.metadata.getMetadata().attribute.attributes[this.attribute].isNumeric) {
             this.buildNumerical(data);
         } else {
@@ -54,9 +52,9 @@ define([
         }
     };
 
-    histogram.Histogram.prototype.buildNumerical = function (data) {
-        var barChartDiv = $('<div>').attr({'class': 'row perse-row perse-perattr-histogram'}),
-            rugPlotDiv = $('<div>').attr({'class': 'row perse-row perse-perattr-histogram'});
+    perattr.PerAttr.prototype.buildNumerical = function (data) {
+        var barChartDiv = $('<div>').attr({'class': 'perse-perattr'}),
+            rugPlotDiv = $('<div>').attr({'class': 'perse-perattr'});
 
         this.barChart = new barchart.BarChart(this.attribute)
             .render(barChartDiv.get(0))
@@ -89,9 +87,9 @@ define([
         this.toolbar = this.createNumericalControls();
     };
 
-    histogram.Histogram.prototype.buildCategorical = function (data) {
+    perattr.PerAttr.prototype.buildCategorical = function (data) {
         var categoricalBarChartDiv = $('<div>')
-                .attr({'class': 'perse-perattr-histogram'});
+                .attr({'class': 'perse-perattr'});
 
         this.categoricalBarChart = new categoricalbarchart.CategoricalBarChart(this.attribute)
             .render(categoricalBarChartDiv.get(0))
@@ -109,27 +107,27 @@ define([
         this.toolbar = this.createCategoricalControls();
     };
 
-    histogram.Histogram.prototype.createNumericalControls = function () {
-        var filter = $('<div>')
+    perattr.PerAttr.prototype.createNumericalControls = function () {
+        var filterDiv = $('<div>')
             .attr({'class': 'btn-group', 'role': 'group'})
             .append(this.createFilterControlButton());
         return $('<div>')
             .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(filter);
+            .append(filterDiv);
     };
 
-    histogram.Histogram.prototype.createCategoricalControls = function () {
+    perattr.PerAttr.prototype.createCategoricalControls = function () {
         var none = this.createNoneControlButton(),
-            filter = this.createFilterControlButton(),
+            filterDiv = this.createFilterControlButton(),
             g = $('<div>')
                 .attr({'class': 'btn-group', 'role': 'group'})
-                .append(none, filter);
+                .append(none, filterDiv);
         return $('<div>')
             .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
             .append(g);
     };
 
-    histogram.Histogram.prototype.createFilterControlButton = function () {
+    perattr.PerAttr.prototype.createFilterControlButton = function () {
         var filterIcon = $('<span>')
                 .attr({'class': 'glyphicon glyphicon-filter', 'aria-hidden': 'true'}),
             filterButton = $('<button>')
@@ -149,7 +147,7 @@ define([
         return filterButton;
     };
 
-    histogram.Histogram.prototype.createNoneControlButton = function () {
+    perattr.PerAttr.prototype.createNoneControlButton = function () {
         var that = this,
             filterIcon = $('<span>')
                 .attr({'class': 'glyphicon glyphicon-ban-circle', 'aria-hidden': 'true'}),
@@ -165,11 +163,11 @@ define([
         return filterButton;
     };
 
-    histogram.Histogram.prototype.getToolbar = function () {
+    perattr.PerAttr.prototype.getToolbar = function () {
         return this.toolbar;
     };
 
-    histogram.Histogram.prototype.getFilter = function () {
+    perattr.PerAttr.prototype.getFilter = function () {
         if (this.metadata.getMetadata().attribute.attributes[this.attribute].isNumeric) {
             this.filter.filterOn = this.rugPlot.getFilter();
         } else {
@@ -178,7 +176,7 @@ define([
         return this.filter;
     };
 
-    histogram.Histogram.prototype.onSelectionChanged = function (data) {
+    perattr.PerAttr.prototype.onSelectionChanged = function (data) {
         [this.barChart, this.rugPlot, this.categoricalBarChart].forEach(function (view) {
             if (view) {
                 view.onSelectionChanged(data);
@@ -186,22 +184,22 @@ define([
         });
     };
 
-    histogram.Histogram.prototype.onDataSetChanged = function (data, metadata) {
+    perattr.PerAttr.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.build(data);
     };
 
-    histogram.Histogram.prototype.registerListener = function (listenerObj) {
+    perattr.PerAttr.prototype.registerListener = function (listenerObj) {
         this.listeners.push(listenerObj);
         return this;
     };
 
-    histogram.Histogram.prototype.notifyListeners = function (callbackStr, event) {
+    perattr.PerAttr.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
             listenerObj[callbackStr].call(listenerObj.context, event);
         });
     };
 
-    return histogram;
+    return perattr;
 
 });

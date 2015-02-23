@@ -1,50 +1,50 @@
-.perse-perattr-categoricalbarchart {
+.perse-perattr-categoricalplot {
     width: 150px;
     height: 210px;
     margin: 0 auto;
 }
 
-.categoricalbarchart-chart,
-.categoricalbarchart-axis {
+.categoricalplot-chart,
+.categoricalplot-axis {
      font-size: .7em;
  }
 
-.categoricalbarchart-chart {
+.categoricalplot-chart {
     width: 150px;
     max-height: 170px;
     overflow: auto;
 }
 
-.categoricalbarchart-axis svg path,
-.categoricalbarchart-axis svg line,
-.categoricalbarchart-axis path,
-.categoricalbarchart-axis line {
+.categoricalplot-axis svg path,
+.categoricalplot-axis svg line,
+.categoricalplot-axis path,
+.categoricalplot-axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
     stroke-width: 1px;
 }
 
-.categoricalbarchart-axis-label {
+.categoricalplot-axis-label {
     font-size: 1.1em;
     letter-spacing: .05em;
     shape-rendering: precision;
 }
 
-.categoricalbarchart-category {
+.categoricalplot-category {
     cursor: pointer;
 }
 
-.categoricalbarchart-category text {
+.categoricalplot-category text {
     pointer-events: none;
 }
 /*
-.categoricalbarchart-category .outline {
+.categoricalplot-category .outline {
     stroke: none;
     pointer-events: all;
 }*/
 
-.categoricalbarchart-category-background {
+.categoricalplot-category-background {
     stroke: #000;
     stroke-width: 1px;
     shape-rendering: crispEdges;
@@ -53,6 +53,6 @@
     pointer-events: all;
 }
 
-.categoricalbarchart-category:hover .categoricalbarchart-category-background {
+.categoricalplot-category:hover .categoricalplot-category-background {
     stroke-opacity: 1;
 }

@@ -4,21 +4,20 @@
  *  Copyright (C) 2015  Brian Swedberg
  */
 
+/**
+ *  This file is part of PerSE. PerSE is a visual analytics app for
+ *  event periodicity detection and analysis.
+ *  Copyright (C) 2015  Brian Swedberg
+ */
+
 define([
     'jquery',
-    'perattrs/rugplot',
-    'perattrs/barchart',
-    'perattrs/categoricalbarchart',
+    'perattrs/numericalplot',
+    'perattrs/categoricalplot',
     'data/filter',
     // No namespace
     'bootstrap'
-], function (
-    $,
-    rugplot,
-    barchart,
-    categoricalbarchart,
-    filter
-) {
+], function ($, numericalplot, categoricalplot, filter) {
 
     var perattr = {};
 
@@ -28,9 +27,7 @@ define([
         this.container = $('<div>').attr({'class': classId});
         this.listeners = [];
         this.metadata = undefined;
-        this.barChart = undefined;
-        this.rugPlot = undefined;
-        this.categoricalBarChart = undefined;
+        this.plot = undefined;
         this.filter = new filter.Filter({
             uniqueId: classId,
             property: this.attribute,
@@ -45,69 +42,34 @@ define([
     };
 
     perattr.PerAttr.prototype.build = function (data) {
-        if (this.metadata.getMetadata().attribute.attributes[this.attribute].isNumeric) {
-            this.buildNumerical(data);
+        var isNumeric = this.metadata.getMetadata().attribute.attributes[this.attribute].isNumeric,
+            plotDiv = $('<div>').attr({'class': 'perse-perattr'});
+
+        if (isNumeric) {
+            this.plot = new numericalplot.NumericalPlot(this.attribute)
+                .render(plotDiv.get(0))
+                .registerListener(this.createPlotListener());
         } else {
-            this.buildCategorical(data);
+            this.plot = new categoricalplot.CategoricalPlot(this.attribute)
+                .render(plotDiv.get(0))
+                .registerListener(this.createPlotListener());
         }
+
+        this.toolbar = this.plot.createToolbar();
+        this.plot.onDataSetChanged(data, this.metadata);
+        this.container.append(plotDiv);
     };
 
-    perattr.PerAttr.prototype.buildNumerical = function (data) {
-        var barChartDiv = $('<div>').attr({'class': 'perse-perattr'}),
-            rugPlotDiv = $('<div>').attr({'class': 'perse-perattr'});
-
-        this.barChart = new barchart.BarChart(this.attribute)
-            .render(barChartDiv.get(0))
-            .registerListener({
-                context: this,
-                onBarChartBinChanged: function (event) {
-                    this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
-                }
-            });
-        this.barChart.onDataSetChanged(data, this.metadata);
-
-        this.rugPlot = new rugplot.RugPlot(this.attribute)
-            .render(rugPlotDiv.get(0))
-            .registerListener({
-                context: this,
-                onRugPlotSelectionChanged: function (event) {
-                    this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
-                }
-            });
-        this.rugPlot.onDataSetChanged(data, this.metadata);
-
-        this.container.append(
-            $('<span>').text('Range:'),
-            this.rugPlot.createRangeInput(),
-            rugPlotDiv,
-            $('<span>').text('Histogram:'),
-            barChartDiv
-        );
-
-        this.toolbar = this.createNumericalControls();
+    perattr.PerAttr.prototype.createPlotListener = function () {
+        return {
+            context: this,
+            onPlotSelectionChanged: function (event) {
+                this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
+            }
+        };
     };
 
-    perattr.PerAttr.prototype.buildCategorical = function (data) {
-        var categoricalBarChartDiv = $('<div>')
-                .attr({'class': 'perse-perattr'});
-
-        this.categoricalBarChart = new categoricalbarchart.CategoricalBarChart(this.attribute)
-            .render(categoricalBarChartDiv.get(0))
-            .registerListener({
-                context: this,
-                onCategoricalBarChartSelectionChanged: function (event) {
-                    this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
-                }
-            });
-
-        this.categoricalBarChart.onDataSetChanged(data, this.metadata);
-
-        this.container.append(categoricalBarChartDiv);
-
-        this.toolbar = this.createCategoricalControls();
-    };
-
-    perattr.PerAttr.prototype.createNumericalControls = function () {
+    perattr.PerAttr.prototype.createNumericalToolbar = function () {
         var filterDiv = $('<div>')
             .attr({'class': 'btn-group', 'role': 'group'})
             .append(this.createFilterControlButton());
@@ -116,7 +78,7 @@ define([
             .append(filterDiv);
     };
 
-    perattr.PerAttr.prototype.createCategoricalControls = function () {
+    perattr.PerAttr.prototype.createCategoricalToolbar = function () {
         var none = this.createNoneControlButton(),
             filterDiv = this.createFilterControlButton(),
             g = $('<div>')
@@ -168,20 +130,16 @@ define([
     };
 
     perattr.PerAttr.prototype.getFilter = function () {
-        if (this.metadata.getMetadata().attribute.attributes[this.attribute].isNumeric) {
-            this.filter.filterOn = this.rugPlot.getFilter();
-        } else {
-            this.filter.filterOn = this.categoricalBarChart.getFilter();
-        }
+        this.filter.filterOn = this.plot.getFilter();
         return this.filter;
     };
 
+    perattr.PerAttr.prototype.onReset = function () {
+        this.plot.onReset();
+    };
+
     perattr.PerAttr.prototype.onSelectionChanged = function (data) {
-        [this.barChart, this.rugPlot, this.categoricalBarChart].forEach(function (view) {
-            if (view) {
-                view.onSelectionChanged(data);
-            }
-        });
+        this.plot.onSelectionChanged(data);
     };
 
     perattr.PerAttr.prototype.onDataSetChanged = function (data, metadata) {

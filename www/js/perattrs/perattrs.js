@@ -80,6 +80,7 @@ define([
 
             this.plots.push(plot);
 
+            // When title is clicked it changes to show that card / toolbar
             button.click($.proxy(function () {
                 b.text($(button).text() + ' ').append($('<span>').attr({'class': 'caret'}));
                 cardContainer.find('.perse-perattr-card.active').removeClass('active').hide();

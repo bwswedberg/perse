@@ -11,11 +11,11 @@ define([
     'bootstrap'
 ], function ($, d3) {
 
-    var categoricalbarchart = {};
+    var categoricalplot = {};
 
-    categoricalbarchart.CategoricalBarChart = function (attribute) {
+    categoricalplot.CategoricalPlot = function (attribute) {
         this.attribute = attribute;
-        this.container = $('<div>').attr({'class': 'perse-perattr-categoricalbarchart'});
+        this.container = $('<div>').attr({'class': 'perse-perattr-categoricalplot'});
         this.listeners = [];
         this.svg = undefined;
         this.margin = {top: 1, right: 3, bottom: 1, left: 3};
@@ -23,25 +23,73 @@ define([
             width: 150 - this.margin.left - this.margin.right,
             height: 170 - this.margin.top - this.margin.bottom
         };
+        this.buttons = {'none': undefined, 'filter': undefined};
         this.metadata = undefined;
         this.deselected = [];
         this.dataExtent = undefined;
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.render = function (parent) {
+    categoricalplot.CategoricalPlot.prototype.render = function (parent) {
         $(parent).append(this.container);
         return this;
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.build = function (data) {
-        var chartContainer = $('<div>').attr({'class': 'categoricalbarchart-chart'}),
-            axisContainer = $('<div>').attr({'class': 'categoricalbarchart-axis'});
+    categoricalplot.CategoricalPlot.prototype.createToolbar = function () {
+        var none = this.createNoneButton(),
+            filterDiv = this.createFilterButton(),
+            g = $('<div>')
+                .attr({'class': 'btn-group', 'role': 'group'})
+                .append(none, filterDiv);
+        return $('<div>')
+            .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
+            .append(g);
+    };
+
+    categoricalplot.CategoricalPlot.prototype.createFilterButton = function () {
+        var filterIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-filter', 'aria-hidden': 'true'}),
+            filterButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
+                .append(filterIcon);
+
+        filterButton.on('mouseup', $.proxy(function () {
+            $(filterButton).blur();
+            this.onReset();
+            this.notifyListeners('onPlotSelectionChanged', {context: this});
+        }, this));
+
+        this.buttons.filter = filterButton;
+
+        return filterButton;
+    };
+
+    categoricalplot.CategoricalPlot.prototype.createNoneButton = function () {
+        var noneIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-ban-circle', 'aria-hidden': 'true'}),
+            noneButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
+                .append(noneIcon);
+
+        noneButton.on('mouseup', $.proxy(function () {
+            $(noneButton).blur();
+            this.onClear();
+            this.notifyListeners('onPlotSelectionChanged', {context: this});
+        }, this));
+
+        this.buttons.none = noneButton;
+
+        return noneButton;
+    };
+
+    categoricalplot.CategoricalPlot.prototype.build = function (data) {
+        var chartContainer = $('<div>').attr({'class': 'categoricalplot-chart'}),
+            axisContainer = $('<div>').attr({'class': 'categoricalplot-axis'});
         this.buildChart(chartContainer.get(0), data);
         this.buildAxis(axisContainer.get(0), data);
         this.container.append(chartContainer, axisContainer);
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.buildAxis = function (container, data) {
+    categoricalplot.CategoricalPlot.prototype.buildAxis = function (container, data) {
         var dataExtent = d3.extent(data, function (d) {return d.count; }),
             axisSvg,
             xScale,
@@ -69,7 +117,7 @@ define([
             .attr("transform", "translate(0, 0)")
             .call(xAxisBuilder)
             .append('text')
-            .attr('class', 'categoricalbarchart-axis-label')
+            .attr('class', 'categoricalplot-axis-label')
             .attr("transform", 'translate(' + (this.size.width / 2) + ',' + 23 + ')')
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
@@ -86,7 +134,7 @@ define([
         */
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.buildChart = function (container, data) {
+    categoricalplot.CategoricalPlot.prototype.buildChart = function (container, data) {
         var that = this,
             xScale,
             yScale,
@@ -121,10 +169,10 @@ define([
             .attr('height', this.size.height + 'px')
             .attr('opacity', '0');
 
-        bars = this.svg.selectAll('.categoricalbarchart-category')
+        bars = this.svg.selectAll('.categoricalplot-category')
             .data(data, function (d) {return d.name; })
             .enter().append('g')
-            .attr('class', 'categoricalbarchart-category')
+            .attr('class', 'categoricalplot-category')
             .attr("transform", function (d, i) { return "translate(0," + yScale(i + 1) + ")"; })
             .on('mouseup', function () {
                 var name = d3.select(this).datum().name;
@@ -133,11 +181,12 @@ define([
                 } else {
                     that.deselected.splice(that.deselected.indexOf(name), 1);
                 }
-                that.notifyListeners('onCategoricalBarChartSelectionChanged', {context: that});
+                that.notifyListeners('onPlotSelectionChanged', {context: that});
+                that.validateButtons();
             });
 
         bars.append('rect')
-            .attr('class', 'categoricalbarchart-bar')
+            .attr('class', 'categoricalplot-bar')
             .attr('x', 0)
             .attr('y', offset)
             .attr('rx', 1)
@@ -160,7 +209,7 @@ define([
             .attr('dominant-baseline', 'central');
 
         bars.append('rect')
-            .attr('class', 'categoricalbarchart-category-background')
+            .attr('class', 'categoricalplot-category-background')
             .attr('x', 0)
             .attr('y', offset)
             .attr('width', this.size.width + 'px')
@@ -175,41 +224,58 @@ define([
             .orient("left");
 
         this.svg.append("g")
-            .attr('class', 'categoricalbarchart-axis')
+            .attr('class', 'categoricalplot-axis')
             .attr("transform", "translate(-2, 0)")
             .call(yAxisBuilder);
 
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.deselectAll = function () {
-        this.deselected = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues);
-        this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
-    };
-
-    categoricalbarchart.CategoricalBarChart.prototype.selectAll = function () {
-        this.deselected = [];
-        this.notifyListeners('onCategoricalBarChartSelectionChanged', {context: this});
-    };
-
-    categoricalbarchart.CategoricalBarChart.prototype.update = function (data) {
+    categoricalplot.CategoricalPlot.prototype.update = function (data) {
         var xScale = d3.scale.linear()
             .domain([0, this.dataExtent[1]])
             .range([0, this.size.width]);
-        this.svg.selectAll('.categoricalbarchart-category')
+        this.svg.selectAll('.categoricalplot-category')
             .data(data, function (d) {return d.name; })
-            .select('.categoricalbarchart-bar')
+            .select('.categoricalplot-bar')
             .transition()
             .attr('width', function (d) {return xScale(d.count); });
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.getFilter = function () {
+    categoricalplot.CategoricalPlot.prototype.getFilter = function () {
         var that = this;
         return function (d) {
             return that.deselected.indexOf(d) < 0;
         };
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.onSelectionChanged = function (data) {
+    categoricalplot.CategoricalPlot.prototype.validateButtons = function () {
+        this.validateFilterButton();
+        this.validateNoneButton();
+    };
+
+    categoricalplot.CategoricalPlot.prototype.validateFilterButton = function () {
+        this.buttons.filter.toggleClass('disabled', this.deselected.length === 0);
+    };
+
+    categoricalplot.CategoricalPlot.prototype.validateNoneButton = function () {
+        var allValuesLength = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues).length,
+            deselectedLength = this.deselected.length;
+        this.buttons.none.toggleClass('disabled', allValuesLength === deselectedLength);
+    };
+
+    categoricalplot.CategoricalPlot.prototype.onClear = function () {
+        // deselect all categories
+        this.deselected = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues);
+        this.validateButtons();
+    };
+
+    categoricalplot.CategoricalPlot.prototype.onReset = function () {
+        // select all categories
+        this.deselected = [];
+        this.validateButtons();
+    };
+
+    categoricalplot.CategoricalPlot.prototype.onSelectionChanged = function (data) {
         var that = this,
             nestData = d3.nest().key(function (d) {return d[that.attribute]; }).map(data),
             newData = Object.keys(nestData).map(function (key) {
@@ -224,7 +290,7 @@ define([
         this.update(newData);
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.onDataSetChanged = function (data, metadata) {
+    categoricalplot.CategoricalPlot.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         var md = this.metadata.getMetadata().attribute.attributes[this.attribute];
         this.build(Object.keys(md.uniqueValues).map(function (key) {
@@ -235,18 +301,19 @@ define([
                 selected: true
             };
         }));
+        this.validateButtons();
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.registerListener = function (listenerObj) {
+    categoricalplot.CategoricalPlot.prototype.registerListener = function (listenerObj) {
         this.listeners.push(listenerObj);
         return this;
     };
 
-    categoricalbarchart.CategoricalBarChart.prototype.notifyListeners = function (callbackStr, event) {
+    categoricalplot.CategoricalPlot.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
             listenerObj[callbackStr].call(listenerObj.context, event);
         });
     };
 
-    return categoricalbarchart;
+    return categoricalplot;
 });

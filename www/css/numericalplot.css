@@ -1,0 +1,53 @@
+.perse-perattr-numericalplot {
+    width: 150px;
+    height: 210px;
+    font-size: .7em;
+    position: relative;
+    margin: 0 auto;
+}
+
+.numericalplot-bin rect {
+    fill: steelblue;
+    fill-opacity: .1;
+    stroke: none;
+    pointer-events: none;
+}
+
+.numericalplot-bin.selected rect {
+    fill-opacity: 1;
+    /*pointer-events: all;*/
+}
+
+.numericalplot-bin.selected rect:hover {
+    fill-opacity: .8;
+    cursor: auto;
+}
+
+.perse-perattr-numericalplot svg .brush .extent {
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+
+.numericalplot-axis path,
+.numericalplot-axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    stroke-width: .7px;
+}
+
+.numericalplot-axis text {
+    font-size: .55em;
+}
+
+.numericalplot-axis text.numericalplot-axis-label {
+    font-size: .69em;
+    letter-spacing: .05em;
+    shape-rendering: precision;
+}
+
+
+#numericalplot-label {
+    text-anchor: top;
+    font-size: .69em;
+}

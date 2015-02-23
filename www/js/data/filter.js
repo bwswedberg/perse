@@ -4,7 +4,7 @@
  *  Copyright (C) 2015  Brian Swedberg
  */
 
-define([],function () {
+define([], function () {
 
     var data = {};
 

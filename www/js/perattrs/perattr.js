@@ -69,62 +69,6 @@ define([
         };
     };
 
-    perattr.PerAttr.prototype.createNumericalToolbar = function () {
-        var filterDiv = $('<div>')
-            .attr({'class': 'btn-group', 'role': 'group'})
-            .append(this.createFilterControlButton());
-        return $('<div>')
-            .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(filterDiv);
-    };
-
-    perattr.PerAttr.prototype.createCategoricalToolbar = function () {
-        var none = this.createNoneControlButton(),
-            filterDiv = this.createFilterControlButton(),
-            g = $('<div>')
-                .attr({'class': 'btn-group', 'role': 'group'})
-                .append(none, filterDiv);
-        return $('<div>')
-            .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(g);
-    };
-
-    perattr.PerAttr.prototype.createFilterControlButton = function () {
-        var filterIcon = $('<span>')
-                .attr({'class': 'glyphicon glyphicon-filter', 'aria-hidden': 'true'}),
-            filterButton = $('<button>')
-                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
-                .append(filterIcon);
-
-        filterButton.on('mouseup', $.proxy(function () {
-            $(filterButton).blur();
-            if (this.categoricalBarChart) {
-                this.categoricalBarChart.selectAll();
-            } else {
-                this.rugPlot.reset();
-            }
-            this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
-        }, this));
-
-        return filterButton;
-    };
-
-    perattr.PerAttr.prototype.createNoneControlButton = function () {
-        var that = this,
-            filterIcon = $('<span>')
-                .attr({'class': 'glyphicon glyphicon-ban-circle', 'aria-hidden': 'true'}),
-            filterButton = $('<button>')
-                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
-                .append(filterIcon);
-
-        filterButton.on('mouseup', function () {
-            $(filterButton).blur();
-            that.categoricalBarChart.deselectAll();
-        });
-
-        return filterButton;
-    };
-
     perattr.PerAttr.prototype.getToolbar = function () {
         return this.toolbar;
     };

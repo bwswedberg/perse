@@ -18,6 +18,7 @@ define([
         this.metadata = undefined;
         this.listeners = [];
         this.calendarName = 'gregorian';
+        this.calendarButtons = {gregorian: undefined, islamic: undefined};
 
     };
 
@@ -63,22 +64,25 @@ define([
 
         // add events here
         gregorian.on('mouseup', $.proxy(function () {
-            this.calendarChanged('Gregorian');
-            menu.find('li a span').remove();
-            gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+            this.calendarChanged('gregorian');
+            //menu.find('li a span').remove();
+            //gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         islamic.on('mouseup', $.proxy(function () {
-            this.calendarChanged('Islamic');
-            menu.find('li a span').remove();
-            islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+            this.calendarChanged('islamic');
+            //menu.find('li a span').remove();
+            //islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
+
+        this.calendarButtons.islamic = islamic;
+        this.calendarButtons.gregorian = gregorian;
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
     };
 
     pertable.PerTable.prototype.calendarChanged = function (calendarName) {
-        this.calendarName = calendarName;
+        this.setCalendar(calendarName);
         this.notifyListeners('onDataSetRequested', {
             context: this,
             callback: function (data) {
@@ -91,7 +95,7 @@ define([
         var headers = $('<tr>'),
             tbody = $('<tbody>').append(headers),
             table = $('<table>').attr({'class': 'table table-condensed'}).append(tbody),
-            attrMetadata = this.metadata.getMetadata().attribute;
+            attrMetadata = this.metadata.attribute;
 
         headers.append($('<th>').text('Date'));
 
@@ -109,7 +113,7 @@ define([
     pertable.PerTable.prototype.update = function (data) {
         var cal = $.calendars.instance(this.calendarName),
             months = cal.local.monthNamesShort,
-            attrMetadata = this.metadata.getMetadata().attribute,
+            attrMetadata = this.metadata.attribute,
             tbody = this.container.find('table tbody');
 
         tbody.find('.pertable-datarow').remove();
@@ -128,6 +132,25 @@ define([
             row.append($('<td>').text(d.description));
             tbody.append(row);
         });
+    };
+
+    pertable.PerTable.prototype.setContentAttribute = function (contentAttribute) {
+
+    };
+
+    pertable.PerTable.prototype.onReset = function () {
+    };
+
+    pertable.PerTable.prototype.setCalendar = function (calendarName) {
+        if (this.calendarButtons.hasOwnProperty(calendarName)) {
+            this.calendarName = calendarName;
+            [this.calendarButtons.islamic, this.calendarButtons.gregorian].forEach(function (b) {
+                b.find('.glyphicon').remove();
+            });
+            this.calendarButtons[calendarName].append(
+                $('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})
+            );
+        }
     };
 
     pertable.PerTable.prototype.notifyListeners = function (callbackStr, event) {

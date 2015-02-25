@@ -20,6 +20,7 @@ define([
         this.container = $('<div>').attr({'class': 'perse-perplot', 'id': 'perse-perplot-' + uniqueId});
         this.listeners = [];
         this.svg = undefined;
+        this.contentAttribute = undefined;
         this.calendarName = 'Gregorian';
         this.cycleName = 'MonthOfYear';
         this.margin = {'top': 0, 'bottom': 10, 'left': 15, 'right': 0};
@@ -262,6 +263,7 @@ define([
         var cssObj = this.container.prop('style');
         cssObj.removeProperty('left');
         cssObj.removeProperty('right');
+        //this.container.css(positionObj);
         this.container.animate(positionObj, 'slow');
         return this;
     };
@@ -307,6 +309,11 @@ define([
         this.filter.filterOn = function () {
             return true;
         };
+    };
+
+    perplot.PerPlot.prototype.setContentAttribute = function (contentAttribute) {
+        this.contentAttribute = contentAttribute;
+        return this;
     };
 
     perplot.PerPlot.prototype.notifyListeners = function (callbackStr, event) {

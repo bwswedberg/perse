@@ -8,24 +8,24 @@ define([
     'jquery',
     'data/filter',
     'perwheel/timewheel',
-    'general/combobutton',
     // no namespace
     '$.calendars',
     'bootstrap'
-], function ($, filter, timewheel, combobutton) {
+], function ($, filter, timewheel) {
     
     var perwheel = {};
 
     perwheel.PerWheel = function () {
         this.container = $('<div>').attr({'class': 'panel-body perse-panel-body'});
-        this.calendarName = 'Gregorian';
+        this.calendarName = 'gregorian';
         this.listeners = [];
         this.timeWheel = undefined;
         this.filterButton = undefined;
+        this.calendarButtons = {gregorian: undefined, islamic: undefined};
         this.filter = new filter.Filter({
             uniqueId: 'perse-perwheel',
             property: 'julianDate',
-            filterOn: function (d) {return true; }
+            filterOn: function () {return true; }
         });
     };
 
@@ -47,10 +47,10 @@ define([
 
     perwheel.PerWheel.prototype.createControls = function () {
         var cal = this.createCalendarButtonGroup(),
-            filter = this.createFilterControlButtonGroup();
+            filterBG = this.createFilterControlButtonGroup();
         return $('<div>')
             .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(cal, filter);
+            .append(cal, filterBG);
     };
 
     perwheel.PerWheel.prototype.createFilterControlButtonGroup = function () {
@@ -91,44 +91,31 @@ define([
 
         // add events here
         gregorian.on('mouseup', $.proxy(function () {
-            this.calendarName = 'Gregorian';
-            this.calendarChanged('Gregorian');
-            menu.find('li a span').remove();
-            gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+            this.setCalendar('gregorian');
         }, this));
 
         islamic.on('mouseup', $.proxy(function () {
-            this.calendarName = 'Islamic';
-            this.calendarChanged('Islamic');
-            menu.find('li a span').remove();
-            islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+            this.setCalendar('islamic');
         }, this));
+
+        this.calendarButtons.gregorian = gregorian;
+        this.calendarButtons.islamic = islamic;
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
     };
 
-    perwheel.PerWheel.prototype.calendarChanged = function (newCalendar) {
-        this.calendarName = newCalendar;
-        this.timeWheel.setCalendarName(this.calendarName);
-        this.filter.filterOn = function () {return true; };
-        this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
-    };
-
     perwheel.PerWheel.prototype.createTimeWheel = function () {
         var timeWheelDiv = $('<div>');
-
-        this.timeWheel = new timewheel.TimeWheel(this.calendarName, timeWheelDiv.get(0));
-
-        this.timeWheel.registerListener({
-            context: this,
-            onTimeWheelSelectionChanged: function (event) {
-                this.validateFilterButton();
-                this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
-            }
-        });
-        return $('<div>')
-            .attr({'class': 'perse-perwheel-timewheel'})
-            .append(timeWheelDiv);
+        this.timeWheel = new timewheel.TimeWheel(this.calendarName)
+            .render(timeWheelDiv.get(0))
+            .registerListener({
+                context: this,
+                onTimeWheelSelectionChanged: function () {
+                    this.validateFilterButton();
+                    this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
+                }
+            });
+        return timeWheelDiv;
     };
 
     perwheel.PerWheel.prototype.validateFilterButton = function () {
@@ -153,18 +140,38 @@ define([
             cal = $.calendars.instance(data.calendarName);
         this.filter.filterOn = function (julianDate) {
             var date = cal.fromJD(julianDate);
-            if (!data.periodicity.dayOfWeek.data[date.dayOfWeek()].enabled) {
+            if (!data.periodicity.dayOfWeek.data[date.dayOfWeek()].isEnabled) {
                 return false;
             }
-            if (!data.periodicity.dayOfMonth.data[date.day() - 1].enabled) {
+            if (!data.periodicity.dayOfMonth.data[date.day() - 1].isEnabled) {
                 return false;
             }
-            if (!data.periodicity.monthOfYear.data[date.month() - 1].enabled) {
+            if (!data.periodicity.monthOfYear.data[date.month() - 1].isEnabled) {
                 return false;
             }
             return true;
         };
         return this.filter;
+    };
+
+    perwheel.PerWheel.prototype.setContentAttribute = function (contentAttribute) {
+
+    };
+
+    perwheel.PerWheel.prototype.setCalendar = function (calendarName) {
+        if (this.calendarButtons.hasOwnProperty(calendarName)) {
+            [this.calendarButtons.islamic, this.calendarButtons.gregorian].forEach(function (b) {
+                b.find('.glyphicon').remove();
+            });
+            this.calendarButtons[calendarName].append(
+                $('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})
+            );
+
+            this.calendarName = calendarName;
+            this.timeWheel.setCalendar(this.calendarName);
+            this.filter.filterOn = function () {return true; };
+            this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
+        }
     };
 
     perwheel.PerWheel.prototype.onReset = function () {

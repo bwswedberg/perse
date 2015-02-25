@@ -20,6 +20,7 @@ define([
         this.listeners = [];
         this.metadata = undefined;
         this.theMap = undefined;
+        this.contentAttribute = undefined;
         this.layers = {
             filterPolygon: undefined,
             eventPoints: undefined,
@@ -61,7 +62,7 @@ define([
                         url: 'http://api.tiles.mapbox.com/v4/bwswedberg.l5e51i3j/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYndzd2VkYmVyZyIsImEiOiJBTjZDRnBJIn0.xzlamtU5oK5yGfb1-w-bYg',
                     })
                 })
-            ],*/
+            ], */
             target: $(parent).get(0)
         });
         return this;
@@ -123,7 +124,7 @@ define([
 
     map.Map.prototype.updateEventPoints = function (data) {
         var source = this.layers.eventPoints.getSource(),
-            projection = this.metadata.getMetadata().geospatial.projection;
+            projection = this.metadata.geospatial.projection;
         source.clear();
         source.addFeatures(data.map(function (obj) {
             return new ol.Feature({
@@ -499,7 +500,7 @@ define([
         var projection, source, featureAmt;
 
         if (this.layers.filterPolygon) {
-            projection = this.metadata.getMetadata().geospatial.projection;
+            projection = this.metadata.geospatial.projection;
             source = this.layers.filterPolygon.getSource();
             featureAmt = source.getFeatures().length;
             return function (d) {
@@ -512,9 +513,9 @@ define([
     };
 
     map.Map.prototype.createEventPointsLayer = function (data) {
-        var projection = this.metadata.getMetadata().geospatial.projection;
+        var projection = this.metadata.geospatial.projection;
         return new eventlayerbuilder.EventLayerBuilder()
-                .setAttribute('attribute_0')
+                .setAttribute(this.contentAttribute)
                 .setMetadata(this.metadata)
                 .setProjection(projection)
                 .setData(data)
@@ -639,10 +640,6 @@ define([
         return seedCoords;
     };
 
-    map.Map.prototype.onReset = function () {
-        this.removeFilterPolygon();
-    };
-
     map.Map.prototype.onIndicationChanged = function (event) {
         if (event.voronoiId === undefined || event.voronoiId === null) {
             this.layers.eventPoints.getSource().forEachFeature(function (feature) {
@@ -661,8 +658,18 @@ define([
         }
     };
 
+    map.Map.prototype.setContentAttribute = function (contentAttribute) {
+        this.contentAttribute = contentAttribute;
+    };
+
+    map.Map.prototype.onReset = function () {
+        this.removeFilterPolygon();
+    };
+
     map.Map.prototype.onSelectionChanged = function (data) {
         this.update(data);
+
+
     };
 
     map.Map.prototype.onDataSetChanged = function (data, metadata) {

@@ -8,19 +8,14 @@ define([], function () {
 
     var coordination = {};
 
-    coordination.Coordinator = function (dataSetAdapterAccessor) {
-        this.dataSetAdapterAccessor = dataSetAdapterAccessor;
+    coordination.Coordinator = function () {
+        this.dataSetAdapter = undefined;
         this.observers = [];
-    };
-
-    coordination.Coordinator.prototype.getDataSetAdapter = function () {
-        return this.dataSetAdapterAccessor.getDataSetAdapter();
     };
 
     coordination.Coordinator.prototype.registerObserver = function (observer) {
         this.observers.push(observer);
     };
-
 
     coordination.Coordinator.prototype.removeObserver = function (observer) {
         this.observers.forEach(function (obs, index) {
@@ -30,7 +25,7 @@ define([], function () {
         }, this);
     };
 
-    coordination.Coordinator.prototype.getCoordinationListener = function () {
+    coordination.Coordinator.prototype.createListener = function () {
         return {
             context: this,
             onFilterChanged: function (event) {
@@ -39,19 +34,49 @@ define([], function () {
             onRemoveFilter: function (event) {
                 this.removeFilter(event.filter);
             },
-            onRefresh: function (event) {
-                this.selectionChanged(this.getDataSetAdapter().getData());
-            },
             onDataSetRequested: function (event) {
-                event.callback.call(event.context, this.getDataSetAdapter().getData());
+                event.callback.call(event.context, this.dataSetAdapter.getData());
             }
         };
     };
 
-    coordination.Coordinator.prototype.dataSetChanged = function () {
+    coordination.Coordinator.prototype.registerDataSetAdapter = function (dataSetAdapter) {
+        this.dataSetAdapter = dataSetAdapter;
+    };
+
+    coordination.Coordinator.prototype.onRefresh = function () {
+        this.selectionChanged(this.dataSetAdapter.getData());
+    };
+
+    coordination.Coordinator.prototype.setCalendar = function (calendarName) {
         this.observers.forEach(function (obs) {
-            obs.onDataSetChanged(this.getDataSetAdapter().getData(), this.getDataSetAdapter().getMetadata());
+            if (obs.setCalendar !== undefined) {
+                obs.setCalendar(calendarName);
+            }
         }, this);
+    };
+
+    coordination.Coordinator.prototype.setContentAttribute = function (attributeId) {
+        this.observers.forEach(function (obs) {
+            obs.setContentAttribute(attributeId);
+        }, this);
+    };
+
+    coordination.Coordinator.prototype.onReset = function () {
+        this.observers.forEach(function (obs) {
+            console.log(obs);
+            obs.onReset();
+        }, this);
+    };
+
+    coordination.Coordinator.prototype.updateFilter = function (filterObject) {
+        this.dataSetAdapter.updateFilter(filterObject);
+        this.selectionChanged(this.dataSetAdapter.getData());
+    };
+
+    coordination.Coordinator.prototype.removeFilter = function (filterObject) {
+        this.dataSetAdapter.removeFilter(filterObject);
+        this.selectionChanged(this.dataSetAdapter.getData());
     };
 
     coordination.Coordinator.prototype.selectionChanged = function (selection) {
@@ -60,14 +85,11 @@ define([], function () {
         }, this);
     };
 
-    coordination.Coordinator.prototype.updateFilter = function (filterObject) {
-        this.getDataSetAdapter().updateFilter(filterObject);
-        this.selectionChanged(this.getDataSetAdapter().getData());
-    };
+    coordination.Coordinator.prototype.dataSetChanged = function () {
+        this.observers.forEach(function (obs) {
+            obs.onDataSetChanged(this.dataSetAdapter.getData(), this.dataSetAdapter.getMetadata());
+        }, this);
 
-    coordination.Coordinator.prototype.removeFilter = function (filterObject) {
-        this.getDataSetAdapter().removeFilter(filterObject);
-        this.selectionChanged(this.getDataSetAdapter().getData());
     };
 
     return coordination;

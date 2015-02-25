@@ -54,9 +54,9 @@ define([
 
         this.plots = [];
 
-        this.metadata.getMetadata().attribute.attributeKeys.forEach(function (attributeName, i) {
+        this.metadata.attribute.attributeKeys.forEach(function (attributeName, i) {
             var id = 'perse-perattr-card-' + attributeName,
-                label = this.metadata.getMetadata().attribute.attributes[attributeName].label + ' ',
+                label = this.metadata.attribute.attributes[attributeName].label + ' ',
                 card = $('<div>').hide().attr({'class': 'perse-perattr-card', id: id}),
                 button = $('<a>').attr({'role': 'menuitem'}).text(label),
                 li = $('<li>').attr({'role': 'presentation', 'id': id}).append(button),
@@ -104,23 +104,6 @@ define([
         this.container.append(cardContainer);
     };
 
-    perattrs.PerAttrs.prototype.notifyListeners = function (callbackStr, event) {
-        this.listeners.forEach(function (listenerObj) {
-            listenerObj[callbackStr].call(listenerObj.context, event);
-        }, this);
-    };
-
-    perattrs.PerAttrs.prototype.registerListener = function (callbackObj) {
-        this.listeners.push(callbackObj);
-        return this;
-    };
-
-    perattrs.PerAttrs.prototype.onSelectionChanged = function (data) {
-        this.plots.forEach(function (plot) {
-            plot.onSelectionChanged(data);
-        });
-    };
-
     perattrs.PerAttrs.prototype.createFilterChangedListener = function () {
         return {
             context: this,
@@ -130,9 +113,41 @@ define([
         };
     };
 
+    perattrs.PerAttrs.prototype.setContentAttribute = function (contentAttribute) {
+        if (this.plots.length > 0) {
+            this.plots.forEach(function (plot) {
+                plot.setContentAttribute(contentAttribute);
+            }, this);
+        }
+        return this;
+    };
+
+    perattrs.PerAttrs.prototype.onReset = function () {
+        this.plots.forEach(function (plot) {
+            plot.onReset();
+        }, this);
+    };
+
+    perattrs.PerAttrs.prototype.onSelectionChanged = function (data) {
+        this.plots.forEach(function (plot) {
+            plot.onSelectionChanged(data);
+        });
+    };
+
     perattrs.PerAttrs.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.build(data);
+    };
+
+    perattrs.PerAttrs.prototype.notifyListeners = function (callbackStr, event) {
+        this.listeners.forEach(function (listenerObj) {
+            listenerObj[callbackStr].call(listenerObj.context, event);
+        }, this);
+    };
+
+    perattrs.PerAttrs.prototype.registerListener = function (callbackObj) {
+        this.listeners.push(callbackObj);
+        return this;
     };
 
     return perattrs;

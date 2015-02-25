@@ -16,6 +16,7 @@ define([
         this.listeners = [];
         this.buttons = {
             'reset': undefined,
+            'calendars': {'islamic': undefined, 'gregorian': undefined},
             'filterDraw': undefined,
             'filterMove': undefined,
             'filterModify': undefined,
@@ -213,6 +214,9 @@ define([
             this.addGlyphIcon(islamic);
             this.notifyListeners('onCalendarChanged', {'context': this, 'calendarName': 'islamic'});
         }, this));
+
+        this.buttons.calendars.islamic = islamic;
+        this.buttons.calendars.gregorian = gregorian;
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
     };
@@ -432,6 +436,15 @@ define([
             }
 
         };
+    };
+
+    permaptoolbar.PerMapToolbar.prototype.setCalendar = function (calendarName) {
+        [this.buttons.calendars.islamic, this.buttons.calendars.gregorian].forEach(function (b) {
+            b.find('.glyphicon').remove();
+        });
+        this.buttons.calendars[calendarName].append(
+            $('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})
+        );
     };
 
     permaptoolbar.PerMapToolbar.prototype.notifyListeners = function (callbackStr, event) {

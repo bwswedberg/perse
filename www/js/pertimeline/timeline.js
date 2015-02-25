@@ -279,8 +279,8 @@ define([
 
     timeline.Timeline.prototype.getXExtent = function () {
         return {
-            min: this.metadata.getMetadata().temporal.beginJulianDate,
-            max: this.metadata.getMetadata().temporal.endJulianDate
+            min: this.metadata.temporal.beginJulianDate,
+            max: this.metadata.temporal.endJulianDate
         };
     };
 
@@ -327,7 +327,7 @@ define([
         var extent = this.brush.extent(),
             m;
         if (extent[0] === extent[1]) {
-            m = this.metadata.getMetadata().temporal;
+            m = this.metadata.temporal;
             return {begin: m.beginJulianDate, end: m.endJulianDate};
         }
         return {begin: extent[0], end: extent[1]};

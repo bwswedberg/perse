@@ -250,15 +250,19 @@ define([
     };
 
     categoricalplot.CategoricalPlot.prototype.validateNoneButton = function () {
-        var allValuesLength = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues).length,
+        var allValuesLength = Object.keys(this.metadata.attribute.attributes[this.attribute].uniqueValues).length,
             deselectedLength = this.deselected.length;
         this.buttons.none.toggleClass('disabled', allValuesLength === deselectedLength);
     };
 
     categoricalplot.CategoricalPlot.prototype.onClear = function () {
         // deselect all categories
-        this.deselected = Object.keys(this.metadata.getMetadata().attribute.attributes[this.attribute].uniqueValues);
+        this.deselected = Object.keys(this.metadata.attribute.attributes[this.attribute].uniqueValues);
         this.validateButtons();
+    };
+
+    categoricalplot.CategoricalPlot.prototype.setContentAttribute = function (contentAttribute) {
+        return this;
     };
 
     categoricalplot.CategoricalPlot.prototype.onReset = function () {
@@ -273,7 +277,7 @@ define([
             newData = Object.keys(nestData).map(function (key) {
                 return {name: key, count: nestData[key].length};
             }),
-            md = this.metadata.getMetadata().attribute.attributes[this.attribute];
+            md = this.metadata.attribute.attributes[this.attribute];
         Object.keys(md.uniqueValues).forEach(function (key) {
             if (!nestData[key]) {
                 newData.push({name: key, count: 0});
@@ -284,7 +288,7 @@ define([
 
     categoricalplot.CategoricalPlot.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
-        var md = this.metadata.getMetadata().attribute.attributes[this.attribute];
+        var md = this.metadata.attribute.attributes[this.attribute];
         this.build(Object.keys(md.uniqueValues).map(function (key) {
             return {
                 name: md.uniqueValues[key].name,

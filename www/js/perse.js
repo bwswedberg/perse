@@ -35,9 +35,7 @@ define([
 
     perse.PerSE = function (parent) {
         this.container = $(parent).addClass('container');
-        this.coordinator = new coordination.Coordinator(this);
-        this.dataSetAdapter = undefined;
-
+        this.coordinator = new coordination.Coordinator();
     };
 
     perse.PerSE.prototype.init = function () {
@@ -61,31 +59,31 @@ define([
         // permap section
         var perMap = new permap.PerMap()
             .render(largeLeft)
-            .registerListener(this.coordinator.getCoordinationListener());
+            .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perMap);
 
         // perattr section
         var perAttrs = new perattrs.PerAttrs()
             .render(largeRight)
-            .registerListener(this.coordinator.getCoordinationListener());
+            .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perAttrs);
 
         // perwheel section
         var perWheel = new perwheel.PerWheel()
             .render(largeRight)
-            .registerListener(this.coordinator.getCoordinationListener());
+            .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perWheel);
 
         // pertimeline section
         var perTimeline = new pertimeline.PerTimeline()
             .render(middle)
-            .registerListener(this.coordinator.getCoordinationListener());
+            .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perTimeline);
 
         // pertable section
         var perTable = new pertable.PerTable()
             .render(bottom)
-            .registerListener(this.coordinator.getCoordinationListener());
+            .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perTable);
 
     };
@@ -137,18 +135,22 @@ define([
         dataLoader.registerListener({
             context: this,
             onLoad: function (event) {
-                this.dataSetAdapter = new datasetadapter.DataSetAdapter(new crossfilterdataset.CrossfilterDataSet(event.data, event.metadata));
+                var dataSetAdapter = new datasetadapter.DataSetAdapter(new crossfilterdataset.CrossfilterDataSet(event.data, event.metadata));
+                this.coordinator.registerDataSetAdapter(dataSetAdapter);
                 this.coordinator.dataSetChanged();
+
+                // Make sure all animations are finished globally
+                $(":animated").promise().done($.proxy(function () {
+                    this.coordinator.setCalendar('gregorian');
+                    this.coordinator.setContentAttribute('attribute_0');
+                    this.coordinator.onRefresh();
+                }, this));
             },
             onCancel: function () {
                 console.log('onCancel', this);
             }
         });
         dataLoader.loadBuiltInData();
-    };
-
-    perse.PerSE.prototype.getDataSetAdapter = function () {
-        return this.dataSetAdapter;
     };
 
     return perse;

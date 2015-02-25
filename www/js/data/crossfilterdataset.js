@@ -21,7 +21,7 @@ define([
     };
 
     data.CrossfilterDataSet.prototype.getMetadata = function () {
-        return this.metadata;
+        return this.metadata.getMetadata();
     };
 
     data.CrossfilterDataSet.prototype.getAllData = function () {

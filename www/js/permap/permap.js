@@ -108,17 +108,30 @@ define([
         };
     };
 
-    permap.PerMap.prototype.onReset = function () {
-        //this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()}); // must go first
-        this.map.onReset();
-        this.perPlots.onReset();
-    };
-
     permap.PerMap.prototype.getFilter = function () {
         // get filter from perplots
         this.filter.filterOn = this.map.getFilter();
 
         return this.filter;
+    };
+
+    permap.PerMap.prototype.setCalendar = function (calendarName) {
+        [this.perPlots, this.toolbar].forEach(function (p) {
+            p.setCalendar(calendarName);
+        }, this);
+    };
+
+    permap.PerMap.prototype.setContentAttribute = function (contentAttribute) {
+        [this.perPlots, this.map].forEach(function (p) {
+            p.setContentAttribute(contentAttribute);
+        }, this);
+        //this.notifyListeners('onDataSetRequested', {context: this, callback: this.onSelectionChanged});
+    };
+
+    permap.PerMap.prototype.onReset = function () {
+        //this.notifyListeners('onRemoveFilter', {context: this, filter: this.getFilter()}); // must go first
+        this.map.onReset();
+        this.perPlots.onReset();
     };
 
     permap.PerMap.prototype.onDataSetChanged = function (data, metadata) {

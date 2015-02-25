@@ -37,8 +37,8 @@ define([
         return this;
     };
 
-    eventlayerbuilder.EventLayerBuilder.prototype.getStyleFunction = function () {
-        var uniqueValues = this.metadata.getMetadata().attribute.attributes[this.attributeName].uniqueValues,
+    eventlayerbuilder.EventLayerBuilder.prototype.getAttributeStyleFunction = function () {
+        var uniqueValues = this.metadata.attribute.attributes[this.attributeName].uniqueValues,
             styles = {},
             colors = Object.keys(uniqueValues).map(function (key) {return uniqueValues[key].color; }),
             opacities = {'max': 0.8, 'med': 0.5, 'min': 0.1};
@@ -66,8 +66,8 @@ define([
         };
     };
 
-    eventlayerbuilder.EventLayerBuilder.prototype.buildPointVectorLayer = function () {
-        var uniqueValues = this.metadata.getMetadata().attribute.attributes[this.attributeName].uniqueValues,
+    eventlayerbuilder.EventLayerBuilder.prototype.buildAttributePointVectorLayer = function () {
+        var uniqueValues = this.metadata.attribute.attributes[this.attributeName].uniqueValues,
             attrName = this.attributeName,
             features = [],
             vectorSource;
@@ -84,7 +84,43 @@ define([
 
         vectorSource = new ol.source.Vector({features: features});
 
-        return new ol.layer.Vector({source: vectorSource, style: this.getStyleFunction()});
+        return new ol.layer.Vector({source: vectorSource, style: this.getAttributeStyleFunction()});
+    };
+
+    eventlayerbuilder.EventLayerBuilder.prototype.buildDefaultPointVectorLayer = function () {
+        var styles,
+            features = [],
+            vectorSource;
+
+        styles = [new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 3,
+                fill: new ol.style.Fill({
+                    color: 'rgb(255, 255, 255, 0.5'
+                }),
+                opacity: '0.5'
+            })
+        })];
+
+        this.data.forEach(function (obj) {
+            var feature = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.transform(obj.coord, this.projection, 'EPSG:3857')),
+                data: obj
+            });
+            features.push(feature);
+        }, this);
+
+        vectorSource = new ol.source.Vector({features: features});
+
+        return new ol.layer.Vector({source: vectorSource, style: styles});
+    };
+
+    eventlayerbuilder.EventLayerBuilder.prototype.buildPointVectorLayer = function () {
+        if (this.attributeName === undefined) {
+            return this.buildDefaultPointVectorLayer();
+        } else {
+            return this.buildAttributePointVectorLayer();
+        }
     };
 
     return eventlayerbuilder;

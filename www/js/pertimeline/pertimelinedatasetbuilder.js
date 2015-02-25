@@ -185,8 +185,8 @@ define([
 
     pertimelinedatasetbuilder.PerTimelineDataSetBuilder.prototype.getExtent = function () {
         return {
-            min: this.metadata.getMetadata().temporal.beginJulianDate,
-            max: this.metadata.getMetadata().temporal.endJulianDate
+            min: this.metadata.temporal.beginJulianDate,
+            max: this.metadata.temporal.endJulianDate
         };
     };
 

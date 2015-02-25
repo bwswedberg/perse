@@ -21,6 +21,7 @@ define([
             property: 'julianDate',
             filterOn: function () {return true; }
         });
+        this.calendarButtons = {islamic: undefined, gregorian: undefined};
         this.timeline = undefined;
     };
 
@@ -86,18 +87,21 @@ define([
 
         // add events here
         gregorian.on('mouseup', $.proxy(function () {
-            this.calendarName = 'Gregorian';
-            this.calendarChanged('Gregorian');
-            menu.find('li a span').remove();
-            gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+            //this.calendarName = 'Gregorian';
+            this.calendarChanged('gregorian');
+            //menu.find('li a span').remove();
+            //gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         islamic.on('mouseup', $.proxy(function () {
-            this.calendarName = 'Islamic';
-            this.calendarChanged('Islamic');
-            menu.find('li a span').remove();
-            islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
+            //this.calendarName = 'Islamic';
+            this.calendarChanged('islamic');
+            //menu.find('li a span').remove();
+            //islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
+
+        this.calendarButtons.gregorian = gregorian;
+        this.calendarButtons.islamic = islamic;
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
     };
@@ -170,8 +174,7 @@ define([
     };
 
     pertimeline.PerTimeline.prototype.calendarChanged = function (calendarName) {
-        this.calendarName = calendarName;
-        this.timeline.setCalendarName(calendarName);
+        this.setCalendar(calendarName);
         this.notifyListeners('onDataSetRequested', {context: this, callback: function (data) {
             this.timeline.onSelectionChanged(data);
         }});
@@ -198,6 +201,23 @@ define([
 
     pertimeline.PerTimeline.prototype.validateFilterButton = function () {
         this.filterButton.toggleClass('disabled', !this.timeline.isBrushing());
+    };
+
+    pertimeline.PerTimeline.prototype.setCalendar = function (calendarName) {
+        if (this.calendarButtons.hasOwnProperty(calendarName)) {
+            this.calendarName = calendarName;
+            [this.calendarButtons.islamic, this.calendarButtons.gregorian].forEach(function (b) {
+                b.find('.glyphicon').remove();
+            });
+            this.calendarButtons[calendarName].append(
+                $('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})
+            );
+            this.timeline.setCalendarName(calendarName);
+        }
+    };
+
+    pertimeline.PerTimeline.prototype.setContentAttribute = function (contentAttribute) {
+
     };
 
     pertimeline.PerTimeline.prototype.onReset = function () {

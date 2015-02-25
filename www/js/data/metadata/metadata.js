@@ -16,14 +16,6 @@ define([], function () {
         return this.metadata;
     };
 
-    metadata.Metadata.prototype.getPropertyList = function () {
-        var propertyList = [this.metadata.temporal, this.metadata.geospatial];
-        this.metadata.attribute.attributeKeys.forEach(function (p) {
-            propertyList.push(this.metadata.attribute.attributes[p]);
-        }, this);
-        return propertyList;
-    };
-
     return metadata;
 
 });

@@ -79,7 +79,7 @@ define([
         var that = this,
             binnedData,
             bars,
-            color = this.metadata.getMetadata().attribute.attributes[this.attribute].color;
+            color = this.metadata.attribute.attributes[this.attribute].color;
 
         binnedData = d3.layout.histogram()
             .value(function (d) {return d.value; })
@@ -222,6 +222,10 @@ define([
         return function (d) {
             return (d >= brushExtent[0] && d <= brushExtent[1]);
         };
+    };
+
+    numericalplot.NumericalPlot.prototype.setContentAttribute = function (contentAttribute) {
+        return this;
     };
 
     numericalplot.NumericalPlot.prototype.onReset = function () {

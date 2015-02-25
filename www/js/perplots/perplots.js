@@ -20,6 +20,7 @@ define([
         this.container = $('<div>').attr({'class': 'perse-perplots'});
         this.listeners = [];
         this.metadata = undefined;
+        this.contentAttribute = undefined;
         this.calendarName = 'islamic';
         this.cycleName = 'MonthOfYear';
         this.voronoiPolygons = undefined;
@@ -37,6 +38,7 @@ define([
             .registerListener(this.createPerPlotListener())
             .setCalendarName(this.calendarName)
             .setCycleName(this.cycleName)
+            .setContentAttribute(this.contentAttribute)
             .setPlotExtent(extent)
             .setPosition(plotData.position);
 
@@ -93,7 +95,7 @@ define([
 
     perplots.PerPlots.prototype.processData = function (data) {
         var voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
-                .setProjection(this.metadata.getMetadata().geospatial.projection)
+                .setProjection(this.metadata.geospatial.projection)
                 .setPolygonVectorLayer(this.voronoiPolygons)
                 .setData(data)
                 .build(),
@@ -207,10 +209,7 @@ define([
         return {
             context: this,
             onCalendarChanged: function (event) {
-                this.calendarName = event.calendarName;
-                Object.keys(this.plots).forEach(function (k) {
-                    this.plots[k].setCalendarName(event.calendarName);
-                }, this);
+                this.setCalendar(event.calendarName);
                 this.notifyListeners('onDataSetRequested', {context: this});
             },
             onCycleChanged: function (event) {
@@ -223,13 +222,31 @@ define([
         };
     };
 
+    perplots.PerPlots.prototype.onIndicationChanged = function (event) {
+    };
+
+    perplots.PerPlots.prototype.setCalendar = function (calendarName) {
+        this.calendarName = calendarName;
+        if (this.plots.length > 0) {
+            Object.keys(this.plots).forEach(function (k) {
+                this.plots[k].setCalendarName(calendarName);
+            }, this);
+        }
+    };
+
+    perplots.PerPlots.prototype.setContentAttribute = function (contentAttribute) {
+        this.contentAttribute = contentAttribute;
+        if (this.plots.length > 0) {
+            Object.keys(this.plots).forEach(function (k) {
+                this.plots[k].setContentAttribute(contentAttribute);
+            }, this);
+        }
+    };
+
     perplots.PerPlots.prototype.onReset = function () {
         this.plots.forEach(function (plot) {
             plot.onReset();
         });
-    };
-
-    perplots.PerPlots.prototype.onIndicationChanged = function (event) {
     };
 
     perplots.PerPlots.prototype.onSelectionChanged = function (data) {

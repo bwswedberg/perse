@@ -307,7 +307,7 @@ define([
     };
 
     perplots.PerPlotsDataSetBuilder.prototype.getJulianDateExtent = function () {
-        var m = this.metadata.getMetadata().temporal;
+        var m = this.metadata.temporal;
         return {min: m.beginJulianDate, max: m.endJulianDate};
     };
 

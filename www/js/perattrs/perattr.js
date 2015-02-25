@@ -42,7 +42,7 @@ define([
     };
 
     perattr.PerAttr.prototype.build = function (data) {
-        var isNumeric = this.metadata.getMetadata().attribute.attributes[this.attribute].isNumeric,
+        var isNumeric = this.metadata.attribute.attributes[this.attribute].isNumeric,
             plotDiv = $('<div>').attr({'class': 'perse-perattr'});
 
         if (isNumeric) {
@@ -76,6 +76,13 @@ define([
     perattr.PerAttr.prototype.getFilter = function () {
         this.filter.filterOn = this.plot.getFilter();
         return this.filter;
+    };
+
+    perattr.PerAttr.prototype.setContentAttribute = function (contentAttribute) {
+        if (this.plot !== undefined) {
+            this.plot.setContentAttribute(contentAttribute);
+        }
+        return this;
     };
 
     perattr.PerAttr.prototype.onReset = function () {

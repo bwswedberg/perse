@@ -217,7 +217,7 @@ define([
     };
 
     pertimeline.PerTimeline.prototype.setContentAttribute = function (contentAttribute) {
-
+        this.timeline.setContentAttribute(contentAttribute);
     };
 
     pertimeline.PerTimeline.prototype.onReset = function () {

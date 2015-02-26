@@ -18,6 +18,7 @@ define([
     timeline.Timeline = function (calendarName, resolution) {
         this.calendarName = calendarName;
         this.resolution = resolution;
+        this.contentAttribute = undefined;
         this.metadata = undefined;
         this.listeners = [];
         this.container = $('<div>').attr({'class': 'timeline'});
@@ -131,29 +132,42 @@ define([
             .data(data);
 
         barsG.enter().append('g')
-            .attr('class', 'timeline-bars selected')
-            .append('rect');
+            .attr('class', 'timeline-bars selected');
 
-        barsG.select('rect')
-            .attr('x', function (d) {
-                return that.xScale(d.dateRange.begin);
-            })
-            .attr('width', function (d) {
-                return that.xScale(d.dateRange.end) - that.xScale(d.dateRange.begin);
-            })
-            .attr('y', function () {
-                return that.yScale(0);
-            })
-            .attr('height', function () {
-                return that.size.height - that.yScale(0);
-            })
-            .transition()
-            .attr('y', function (d) {
-                return that.yScale(d.composite.length);
-            })
-            .attr('height', function (d) {
-                return that.size.height - that.yScale(d.composite.length);
-            });
+        barsG.each(function () {
+            var g = d3.select(this),
+                rects = g.selectAll('rect')
+                    .data(g.datum().composite);
+
+            rects.enter().append('rect');
+
+            rects
+                .style('fill', function (d) {
+                    return d.color;
+                })
+                .attr('x', function (d) {
+                    return that.xScale(d.dateRange.begin);
+                })
+                .attr('width', function (d) {
+                    return that.xScale(d.dateRange.end) - that.xScale(d.dateRange.begin);
+                })
+                .attr('y', function () {
+                    return that.yScale(0);
+                })
+                .attr('height', function () {
+                    return that.size.height - that.yScale(0);
+                })
+                .transition()
+                .duration(500)
+                .attr('y', function (d) {
+                    return that.yScale(d.y);
+                })
+                .attr('height', function (d) {
+                    return that.size.height - that.yScale(d.events.length);
+                });
+
+            rects.exit().remove();
+        });
 
         barsG.exit().remove();
 
@@ -163,6 +177,7 @@ define([
     };
 
     timeline.Timeline.prototype.updateData = function (data) {
+
         var that = this,
             extent = {
                 x: this.getXExtent(),
@@ -179,29 +194,47 @@ define([
             .data(data);
 
         barsG.enter().append('g')
-            .attr('class', 'timeline-bars selected')
-            .append('rect');
+            .attr('class', 'timeline-bars selected');
 
-        barsG.select('rect')
-            .attr('x', function (d) {
-                return that.xScale(d.dateRange.begin);
-            })
-            .attr('width', function (d) {
-                return that.xScale(d.dateRange.end) - that.xScale(d.dateRange.begin);
-            })
-            .transition()
-            .attr('y', function (d) {
-                return that.yScale(d.composite.length);
-            })
-            .attr('height', function (d) {
-                return that.size.height - that.yScale(d.composite.length);
-            });
+        barsG.each(function () {
+            var g = d3.select(this),
+                rects = g.selectAll('rect')
+                    .data(g.datum().composite);
+
+            rects.enter().append('rect');
+
+            rects
+                .style('fill', function (d) {
+                    return d.color;
+                })
+                .attr('x', function (d) {
+                    return that.xScale(d.dateRange.begin);
+                })
+                .attr('width', function (d) {
+                    return that.xScale(d.dateRange.end) - that.xScale(d.dateRange.begin);
+                })
+                .transition()
+                .duration(500)
+                .attr('y', function (d) {
+                    return that.yScale(d.y);
+                })
+                .attr('height', function (d) {
+                    return that.size.height - that.yScale(d.events.length);
+                });
+
+            rects.exit().remove();
+        });
 
         // make the values for other stuff 0
         barsG.exit().remove();
 
         this.updateYAxis();
         this.updateXAxis();
+    };
+
+    timeline.Timeline.prototype.updateBar = function (selection) {
+
+
     };
 
     timeline.Timeline.prototype.updateYAxis = function () {
@@ -284,29 +317,16 @@ define([
         };
     };
 
-    timeline.Timeline.prototype.hellYeah = function (prev, cur) {
-        function f(prev, cur) {
-            if (cur.isLeaf) {
-                return prev + cur.composite.length;
-            }
-            return cur.composite.reduce(f, 0);
-        }
-        return f(prev, cur);
-    };
-
-    timeline.Timeline.prototype.getCount = function (data) {
-        return data.map(function (d) {
-            return this.hellYeah(0, d);
-        }, this);
-    };
-
     timeline.Timeline.prototype.getYExtent = function (data) {
-        var e = d3.extent(data, function (d) {return d.composite.length; });
+        var e = d3.extent(data, function (d) {
+            return d.composite.reduce(function (p, c) {return c.events.length + p; }, 0);
+        });
         return {min: e[0], max: e[1]};
     };
 
     timeline.Timeline.prototype.getData = function (data) {
         return new pertimelinedatasetbuilder.PerTimelineDataSetBuilder(this.metadata)
+            .setContentAttribute(this.contentAttribute)
             .setCalendar(this.calendarName)
             .setData(data)
             .setResolution(this.resolution)
@@ -343,15 +363,8 @@ define([
         this.notifyListeners('onTimelineSelectionChanged', {context: this});
     };
 
-    timeline.Timeline.prototype.notifyListeners = function (callbackStr, event) {
-        this.listeners.forEach(function (listenerObj) {
-            listenerObj[callbackStr].call(listenerObj.context, event);
-        }, this);
-    };
-
-    timeline.Timeline.prototype.registerListener = function (callbackObj) {
-        this.listeners.push(callbackObj);
-        return this;
+    timeline.Timeline.prototype.setContentAttribute = function (contentAttribute) {
+        this.contentAttribute = contentAttribute;
     };
 
     timeline.Timeline.prototype.onResolutionChanged = function (data) {
@@ -365,6 +378,17 @@ define([
     timeline.Timeline.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
         this.build(this.getData(data));
+    };
+
+    timeline.Timeline.prototype.notifyListeners = function (callbackStr, event) {
+        this.listeners.forEach(function (listenerObj) {
+            listenerObj[callbackStr].call(listenerObj.context, event);
+        }, this);
+    };
+
+    timeline.Timeline.prototype.registerListener = function (callbackObj) {
+        this.listeners.push(callbackObj);
+        return this;
     };
 
     return timeline;

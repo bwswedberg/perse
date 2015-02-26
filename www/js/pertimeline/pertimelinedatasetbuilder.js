@@ -14,6 +14,7 @@ define([
 
     pertimelinedatasetbuilder.PerTimelineDataSetBuilder = function (metadata) {
         this.metadata = metadata;
+        this.contentAttribute = undefined;
         this.calendarName = undefined;
         this.data = undefined;
         this.resolution = undefined;
@@ -21,6 +22,11 @@ define([
 
     pertimelinedatasetbuilder.PerTimelineDataSetBuilder.prototype.setData = function (data) {
         this.data = data;
+        return this;
+    };
+
+    pertimelinedatasetbuilder.PerTimelineDataSetBuilder.prototype.setContentAttribute = function (contentAttribute) {
+        this.contentAttribute = contentAttribute;
         return this;
     };
 
@@ -39,7 +45,6 @@ define([
             label: label,
             value: value,
             dateRange: {begin: 0, end: 0},
-            isLeaf: true,
             composite: []
         };
     };
@@ -59,13 +64,11 @@ define([
                 if (myDate.year() - minDate.year() > newData.length - 1) {
                     agg = this.createAggregate(myDate.year().toString(), myDate.year());
                     agg.dateRange.begin = myDate.toJD();
-                    agg.isLeaf = false;
                     newData.push(agg);
                 }
                 if (myDate.month() - minDate.month() > newData[myDate.year() - minDate.year()].composite.length - 1) {
                     agg.composite.push(this.createAggregate(cal.local.monthNamesShort[myDate.monthOfYear() - 1], myDate.monthOfYear() - 1));
                     agg.composite[agg.composite.length - 1].dateRange.begin = myDate.toJD();
-                    agg.composite[agg.composite.length - 1].isLeaf = true;
                 }
                 agg.dateRange.end = myDate.toJD();
                 agg.composite[agg.composite.length - 1].dateRange.end = myDate.toJD();
@@ -190,6 +193,53 @@ define([
         };
     };
 
+    pertimelinedatasetbuilder.PerTimelineDataSetBuilder.prototype.parseData = function (data) {
+        var attr = this.contentAttribute,
+            parsedData,
+            uniqueValues;
+        if (attr === undefined) {
+            parsedData = data.map(function (chunk) {
+                var item = {
+                    events: chunk.composite,
+                    color: '#bdbdbd',
+                    dateRange: chunk.dateRange,
+                    y: chunk.composite.length
+                };
+                chunk.composite = [item];
+                return chunk;
+            });
+        } else {
+            uniqueValues = this.metadata.attribute.attributes[attr].uniqueValues;
+            parsedData = data.map(function (chunk) {
+                var out = chunk.composite.reduce(function (p, c) {
+                    if (p.hasOwnProperty(c[attr])) {
+                        p[c[attr]].events.push(c);
+                    } else {
+                        p[c[attr]] = {color: uniqueValues[c[attr]].color, events: [c], name: c[attr]};
+                    }
+                    return p;
+                }, {});
+
+                var y = 0;
+                chunk.composite = Object.keys(out)
+                    .map(function (k) {
+                        return out[k];
+                    })
+                    .sort(function (a, b) {
+                        return uniqueValues[b.name].count - uniqueValues[a.name].count;
+                    })
+                    .map(function (d) {
+                        y += d.events.length;
+                        d.dateRange = chunk.dateRange;
+                        d.y = y;
+                        return d;
+                    });
+                return chunk;
+            }, this);
+        }
+        return parsedData;
+    };
+
     pertimelinedatasetbuilder.PerTimelineDataSetBuilder.prototype.build = function () {
         var newData = [];
         switch (this.resolution) {
@@ -208,7 +258,7 @@ define([
         default:
             console.warn('Case not supported:', this.resolution);
         }
-        return newData;
+        return this.parseData(newData);
     };
 
 

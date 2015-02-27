@@ -118,7 +118,6 @@ define([
         return {
             context: this,
             onFilterChanged: function (event) {
-                console.log(event.filter);
                 this.notifyListeners('onFilterChanged', {context: this, filter: event.filter });
             }
         };

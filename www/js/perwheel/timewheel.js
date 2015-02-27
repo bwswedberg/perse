@@ -17,6 +17,7 @@ define([
 
     timewheel.TimeWheel = function (calendarName) {
         this.calendarName = calendarName;
+        this.contentAttribute = undefined;
         this.container = $('<div>').attr({'class': 'perse-perwheel-timewheel'});
         this.svg = undefined;
         this.margin = {left: 4.5, right: 4.5, top: 8, bottom: 1};
@@ -159,22 +160,28 @@ define([
     };
 
     timewheel.TimeWheel.prototype.getData = function () {
-        var data = {};
-        this.rings.forEach(function (ring) {
-            data[ring.ringId] = ring.getData();
-        });
-        return data;
+        return this.rings.reduce(function (p, c) {
+            p[c.ringId] = c.getData();
+            return p;
+        }, {});
     };
 
     timewheel.TimeWheel.prototype.processData = function (data) {
         var cal = $.calendars.instance(this.calendarName),
             twBuilder = new timewheeldatasetbuilder.TimeWheelDataSetBuilder();
-        return twBuilder.setCalendarName(this.calendarName)
+        return twBuilder
+            .setCalendarName(this.calendarName)
+            .setContentAttribute(this.contentAttribute)
+            .setMetadata(this.metadata)
             .addRing(twBuilder.getJQueryCalendarDayInMonthData(cal))
             .addRing(twBuilder.getJQueryCalendarMonthInYearData(cal))
             .addRing(twBuilder.getJQueryCalendarDayInWeekData(cal))
             .setRawData(data)
             .build();
+    };
+
+    timewheel.TimeWheel.prototype.setContentAttribute = function (contentAttr) {
+        this.contentAttribute = contentAttr;
     };
 
     timewheel.TimeWheel.prototype.onSelectionChanged = function (data) {

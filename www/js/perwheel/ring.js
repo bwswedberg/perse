@@ -147,7 +147,7 @@ define([
         // update the data
         pieFillData = data.map(function (d) {
             d.innerRadius = this.radius.inner;
-            d.outerRadius = radiusScale(d.data.count);
+            d.outerRadius = radiusScale(d.data.events[d.data.events.length - 1].count.end);
             return d;
         }, this);
 
@@ -167,7 +167,9 @@ define([
         // update the style
         arcGroupFill.select('path')
             .attr('stroke', 'none')
-            .style('fill', '#C0C0C0');
+            .style('fill', function (d) {
+                return d.data.events[0].color;
+            });
 
         arcGroupFill.select('path')
             .transition()
@@ -185,10 +187,11 @@ define([
     };
 
     timewheel.Ring.prototype.getCountExtent = function (ringData) {
-        var countExtent = {min: ringData[0].count, max: ringData[0].count};
+        var firstValue = ringData[0].events[ringData[0].events.length - 1].count.end,
+            countExtent = {min: firstValue, max: firstValue};
         ringData.forEach(function (d) {
-            countExtent.min = Math.min(d.count, countExtent.min);
-            countExtent.max = Math.max(d.count, countExtent.max);
+            countExtent.min = Math.min(d.events[d.events.length - 1].count.end, countExtent.min);
+            countExtent.max = Math.max(d.events[d.events.length - 1].count.end, countExtent.max);
         });
         countExtent.min = 0;
         return countExtent;

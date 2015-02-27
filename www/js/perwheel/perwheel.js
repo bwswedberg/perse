@@ -155,7 +155,7 @@ define([
     };
 
     perwheel.PerWheel.prototype.setContentAttribute = function (contentAttribute) {
-
+        this.timeWheel.setContentAttribute(contentAttribute);
     };
 
     perwheel.PerWheel.prototype.setCalendar = function (calendarName) {

@@ -38,7 +38,6 @@ define([
     timewheel.TimeWheelDataSetBuilder.prototype.build = function () {
         this.addRawDataCountToRingData();
         this.setRelativeCounts();
-        console.log(this.ringData);
         return this.ringData;
     };
 
@@ -75,7 +74,7 @@ define([
                 agg.events.forEach(function (e) {
                     e.count.begin = begin;
                     e.count.end = e.count.begin + e.count.total;
-                    begin = e.count.end
+                    begin = e.count.end;
                 });
             });
         });
@@ -125,7 +124,7 @@ define([
             return {
                 short: num.toString(),
                 long: num.toString(),
-                value: num,
+                value: num - 1,
                 events: this.getEventTypeList()
             };
         }, this);

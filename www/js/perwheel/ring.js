@@ -104,7 +104,7 @@ define([
 
         arcGroup.select('text')
             .transition()
-            .duration(200)
+            .duration(500)
             //.attr('font-size', 0)
             .text(function (d) { return d.data.short; })
             .attr('transform', function (d) {
@@ -118,7 +118,7 @@ define([
 
         arcGroup.select('path')
             .transition()
-            .duration(200)
+            .duration(500)
             .attr('d', arc);
 
     };
@@ -156,14 +156,49 @@ define([
 
         // add any needed
         arcGroupFill.enter().append('g')
-            .classed({'timewheel-arc': true, 'timewheel-arc-fill': true})
+            .classed({'timewheel-arc': true, 'timewheel-arc-fill': true});
+        /*
             .call(function (selection) {
                 selection.append('path');
+            });*/
+
+        var arc2 = d3.svg.arc()
+            .innerRadius(function (d) {
+                return radiusScale(d.count.begin);
+            })
+            .outerRadius(function (d) {
+                return radiusScale(d.count.end);
             });
+        arcGroupFill.each(function () {
+            var g = d3.select(this),
+                gData = g.datum(),
+                paths = g.selectAll('path')
+                    .data(gData.data.events.map(function (d) {
+                        d.startAngle = gData.startAngle;
+                        d.endAngle = gData.endAngle;
+                        return d;
+                    }));
+
+            paths.enter().append('path')
+                .attr('stroke', 'none');
+
+            paths
+                .transition()
+                .duration(500)
+                .style('fill', function (d) {
+                    return d.color;
+                })
+                .attr('d', function (d) {
+                    return (d.count.total === 0) ? null : arc2(d);
+                });
+
+            paths.exit().remove();
+        });
 
         // remove any extra
         arcGroupFill.exit().remove();
 
+        /*
         // update the style
         arcGroupFill.select('path')
             .attr('stroke', 'none')
@@ -174,7 +209,7 @@ define([
         arcGroupFill.select('path')
             .transition()
             .duration(200)
-            .attr('d', arc);
+            .attr('d', arc);*/
 
     };
 

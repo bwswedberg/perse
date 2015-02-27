@@ -100,14 +100,16 @@ define([
             return 'translate(' + that.xScale(d.x) + ',' + that.yScale(d.y) + ')';
         });
 
-        bars.select('rect')
-            .attr('x', 0)
-            .attr('y', 0)
-            .attr('width', that.xScale(binnedData[0].dx))
-            .attr('height', function (d) {
-                return that.size.height - that.yScale(d.y);
-            })
-            .attr('fill', color);
+        if (binnedData.length > 0) {
+            bars.select('rect')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', that.xScale(binnedData[0].dx))
+                .attr('height', function (d) {
+                    return that.size.height - that.yScale(d.y);
+                })
+                .attr('fill', color);
+        }
 
         bars.exit().remove();
 

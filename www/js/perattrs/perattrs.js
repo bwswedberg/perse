@@ -60,13 +60,17 @@ define([
                 card = $('<div>').hide().attr({'class': 'perse-perattr-card', id: id}),
                 button = $('<a>').attr({'role': 'menuitem'}).text(label),
                 li = $('<li>').attr({'role': 'presentation', 'id': id}).append(button),
-                plot;
+                plot,
+                toolbar;
 
             //this.container.append(card);
             plot = new perattr.PerAttr(attributeName)
                 .render(card)
                 .registerListener(this.createFilterChangedListener());
             plot.onDataSetChanged(data, this.metadata);
+            toolbar = plot.getToolbar()
+                .attr({'id': id})
+                .addClass('perse-perattr-card-toolbar');
 
             if (i === 0) {
                 b.text(label).append($('<span>').attr({'class': 'caret'}));
@@ -75,7 +79,13 @@ define([
                 this.container
                     .siblings('.panel-heading')
                     .find('.panel-title')
-                    .append(plot.getToolbar());
+                    .append(toolbar.show());
+            } else {
+
+                this.container
+                    .siblings('.panel-heading')
+                    .find('.panel-title')
+                    .append(toolbar.hide());
             }
 
             this.plots.push(plot);
@@ -90,12 +100,12 @@ define([
 
                 this.container
                     .siblings('.panel-heading')
-                    .find('.panel-title .perse-header-toolbar')
-                    .remove();
+                    .find('.perse-perattr-card-toolbar')
+                    .hide();
                 this.container
                     .siblings('.panel-heading')
-                    .find('.panel-title')
-                    .append(plot.getToolbar());
+                    .find('.perse-perattr-card-toolbar#' + id)
+                    .show();
             }, this));
             menu.append(li);
             cardContainer.append(card);
@@ -108,6 +118,7 @@ define([
         return {
             context: this,
             onFilterChanged: function (event) {
+                console.log(event.filter);
                 this.notifyListeners('onFilterChanged', {context: this, filter: event.filter });
             }
         };

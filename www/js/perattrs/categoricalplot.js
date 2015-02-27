@@ -56,6 +56,7 @@ define([
         filterButton.on('mouseup', $.proxy(function () {
             $(filterButton).blur();
             this.onReset();
+
             this.notifyListeners('onPlotSelectionChanged', {context: this});
         }, this));
 
@@ -68,12 +69,13 @@ define([
         var noneIcon = $('<span>')
                 .attr({'class': 'glyphicon glyphicon-ban-circle', 'aria-hidden': 'true'}),
             noneButton = $('<button>')
-                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Reset Filter'})
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Clear All'})
                 .append(noneIcon);
 
         noneButton.on('mouseup', $.proxy(function () {
             $(noneButton).blur();
             this.onClear();
+
             this.notifyListeners('onPlotSelectionChanged', {context: this});
         }, this));
 
@@ -170,8 +172,9 @@ define([
                 } else {
                     that.deselected.splice(that.deselected.indexOf(name), 1);
                 }
-                that.notifyListeners('onPlotSelectionChanged', {context: that});
                 that.validateButtons();
+                that.notifyListeners('onPlotSelectionChanged', {context: that});
+
             });
 
         bars.append('rect')

@@ -8,6 +8,10 @@ svg.timewheel {
     pointer-events: all;
 }
 
+.timewheel-arc-background > path {
+    fill: none;
+}
+
 .timewheel-arc-fill,
 .timewheel-arc-background > text {
     pointer-events: none;
@@ -18,15 +22,12 @@ svg.timewheel {
     fill: none;
 }
 
-.timewheel-arc-background.enabled > path,
-.timewheel-arc-background > path:hover {
-    fill: none;
-}
-
 .timewheel-arc-background > path:active {
-    fill: none;
+    fill: #bdbdbd;
+    fill-opacity: .5;
 }
 
 #timewheel-label {
+
     font-size: .4em;
 }

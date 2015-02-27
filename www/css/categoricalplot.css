@@ -57,5 +57,12 @@
 }
 
 .categoricalplot-category:hover .categoricalplot-category-background {
-    stroke-opacity: 1;
+    fill: #bdbdbd;
+    fill-opacity: .15;
+    /*stroke-opacity: 1;*/
+}
+
+.categoricalplot-category:active .categoricalplot-category-background {
+    fill: #bdbdbd;
+    fill-opacity: .5;
 }

@@ -8,6 +8,10 @@ svg.timewheel {
     pointer-events: all;
 }
 
+.timewheel-arc-fill {
+    fill: none;
+}
+
 .timewheel-arc-background > path {
     fill: none;
 }
@@ -20,6 +24,11 @@ svg.timewheel {
 .timewheel-arc-background > path {
     cursor: pointer;
     fill: none;
+}
+
+.timewheel-arc-background > path:hover {
+    fill: #bdbdbd;
+    fill-opacity: .25;
 }
 
 .timewheel-arc-background > path:active {

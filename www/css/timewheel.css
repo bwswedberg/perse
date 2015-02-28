@@ -21,6 +21,10 @@ svg.timewheel {
     pointer-events: none;
 }
 
+.timewheel-arc-background text {
+    font-weight: bold;
+}
+
 .timewheel-arc-background > path {
     cursor: pointer;
     fill: none;
@@ -37,6 +41,5 @@ svg.timewheel {
 }
 
 #timewheel-label {
-
     font-size: .4em;
 }

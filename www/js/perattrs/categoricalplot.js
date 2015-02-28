@@ -255,30 +255,11 @@ define([
     };
 
     categoricalplot.CategoricalPlot.prototype.update = function (data) {
-        console.log(data);
         var xExtent = this.getXExtent(data);
         this.xScale = d3.scale.linear()
             .domain([xExtent.min, xExtent.max])
             .range([0, this.size.width]);
         this.updateChart(data);
-        this.updateAxis();
-    };
-
-    categoricalplot.CategoricalPlot.prototype.update_dep = function (data) {
-        var that = this,
-            dataExtent = d3.extent(data, function (d) {return d.count; });
-
-        this.xScale = d3.scale.linear()
-            .domain([0, dataExtent[1]])
-            .range([0, this.size.width]);
-
-        this.svgChart.selectAll('.categoricalplot-category')
-            .data(data, function (d) {return d.name; })
-            .select('.categoricalplot-bar')
-            .transition()
-            .duration(500)
-            .attr('width', function (d) {return that.xScale(d.count); });
-
         this.updateAxis();
     };
 
@@ -331,12 +312,12 @@ define([
 
     categoricalplot.CategoricalPlot.prototype.getXExtent = function (data) {
         var firstValue = data[0].events[data[0].events.length - 1].count.end,
-            extent = {max: firstValue, min: 0};
-        data.forEach(function (agg) {
-            var aggMax = agg.events[agg.events.length - 1].count.end;
-            extent.max = Math.max(extent.max, aggMax);
-        });
-        return extent;
+            extent = {min: 0, max: firstValue};
+        return data.reduce(function (p, c) {
+            var aggMax = c.events[c.events.length - 1].count.end;
+            p.max = Math.max(extent.max, aggMax);
+            return p;
+        }, extent);
     };
 
     categoricalplot.CategoricalPlot.prototype.onSelectionChanged = function (data) {

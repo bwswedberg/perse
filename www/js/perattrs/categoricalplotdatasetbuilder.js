@@ -98,11 +98,11 @@ define([], function () {
             });
     };
 
-    categoricalplotdatasetbuilder.CategoricalPlotDataSetBuilder.prototype.nestRawData = function () {
+    categoricalplotdatasetbuilder.CategoricalPlotDataSetBuilder.prototype.nestRawData = function (data) {
         var contentAttrLookUpMap = this.getLookUpMap(this.contentAttribute),
             attrLookUpMap = this.getLookUpMap(this.attribute),
             nestData = this.getAttributeList();
-        this.data.forEach(function (d) {
+        data.forEach(function (d) {
             var contentAttrIndex = (this.contentAttribute === undefined) ? 0 : contentAttrLookUpMap[d[this.contentAttribute]],
                 attrIndex = attrLookUpMap[d[this.attribute]];
             nestData[attrIndex].events[contentAttrIndex].count.total += 1;
@@ -123,7 +123,7 @@ define([], function () {
     };
 
     categoricalplotdatasetbuilder.CategoricalPlotDataSetBuilder.prototype.build = function () {
-        var nestData = this.nestRawData(this.rawData);
+        var nestData = this.nestRawData(this.data);
         return this.tallyRelativeCounts(nestData);
     };
 

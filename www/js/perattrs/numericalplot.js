@@ -225,7 +225,7 @@ define([
     };
 
     numericalplot.NumericalPlot.prototype.getYExtent = function (data) {
-        var firstValue = data[0].events[data[0].events.length - 1].count.end,
+        var firstValue = (data.length === 0) ? 0 : data[0].events[data[0].events.length - 1].count.end,
             extent = {min: 0, max: firstValue};
         return data.reduce(function (p, c) {
             var aggMax = c.events[c.events.length - 1].count.end;

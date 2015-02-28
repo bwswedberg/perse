@@ -130,7 +130,8 @@ define([
     };
 
     pertable.PerTable.prototype.update = function (data) {
-        var cal = $.calendars.instance(this.calendarName),
+        var uniqueValues = (this.contentAttribute === undefined) ? {} : this.metadata.attribute.attributes[this.contentAttribute].uniqueValues,
+            cal = $.calendars.instance(this.calendarName),
             months = cal.local.monthNamesShort,
             attrMetadata = this.metadata.attribute,
             tbody = this.container.find('table tbody');
@@ -147,7 +148,10 @@ define([
         }
 
         data.splice(this.paging.page * this.paging.interval, this.paging.interval).forEach(function (d) {
-            var row = $('<tr>').attr({'class': 'pertable-datarow'}),
+            var hexColor = (this.contentAttribute === undefined) ? '#000000' : uniqueValues[d[this.contentAttribute]].color,
+                rgb = this.hexToRGB(hexColor),
+                row = $('<tr>').attr({'class': 'pertable-datarow'})
+                    .css({'background-color': 'rgba(' + [rgb.r, rgb.g, rgb.b, 0.15].join(',') + ')'}),
                 date = cal.fromJD(d.julianDate);
             row.append($('<td>').text([date.day(), months[date.month() - 1], date.year()].join(' ')));
             attrMetadata.attributeKeys.forEach(function (key) {
@@ -155,8 +159,27 @@ define([
             }, this);
             row.append($('<td>').text(d.description));
             tbody.append(row);
-        });
+        }, this);
         this.validatePagingButtons();
+    };
+
+    pertable.PerTable.prototype.hexToRGB = function (hex) {
+        // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+        // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+            result;
+
+        hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
     };
 
     pertable.PerTable.prototype.calendarChanged = function (calendarName) {

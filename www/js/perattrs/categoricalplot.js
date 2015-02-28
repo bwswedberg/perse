@@ -7,17 +7,19 @@
 define([
     'jquery',
     'd3',
+    'perattrs/categoricalplotdatasetbuilder',
     // no namespace
     'bootstrap'
-], function ($, d3) {
+], function ($, d3, categoricalplotdatasetbuilder) {
 
     var categoricalplot = {};
 
     categoricalplot.CategoricalPlot = function (attribute) {
         this.attribute = attribute;
+        this.contentAttribute = undefined;
         this.container = $('<div>').attr({'class': 'perse-perattr-categoricalplot'});
         this.listeners = [];
-        this.svg = undefined;
+        this.svgChart = undefined;
         this.svgXAxis = undefined;
         this.margin = {top: 1, right: 3, bottom: 1, left: 3};
         this.xScale = undefined;
@@ -25,6 +27,7 @@ define([
             width: 150 - this.margin.left - this.margin.right,
             height: 170 - this.margin.top - this.margin.bottom
         };
+        this.barSize = {height: 20, offset: 1};
         this.buttons = {'none': undefined, 'filter': undefined};
         this.metadata = undefined;
         this.deselected = [];
@@ -86,7 +89,13 @@ define([
 
     categoricalplot.CategoricalPlot.prototype.build = function (data) {
         var chartContainer = $('<div>').attr({'class': 'categoricalplot-chart'}),
-            axisContainer = $('<div>').attr({'class': 'categoricalplot-axis'});
+            axisContainer = $('<div>').attr({'class': 'categoricalplot-axis'}),
+            xExtent = this.getXExtent(data);
+
+        this.xScale = d3.scale.linear()
+            .domain([xExtent.min, xExtent.max])
+            .range([0, this.size.width]);
+
         this.buildChart(chartContainer.get(0), data);
         this.buildAxis(axisContainer.get(0));
         this.container.append(chartContainer, axisContainer);
@@ -127,44 +136,57 @@ define([
     };
 
     categoricalplot.CategoricalPlot.prototype.buildChart = function (container, data) {
-        var that = this,
-            yScale,
-            offset = 1,
-            height = 20,
-            bars,
-            yAxisBuilder,
-            dataExtent = d3.extent(data, function (d) {return d.count; });
-        this.size.height = this.margin.top + this.margin.bottom + height * data.length;
+        var yScale,
+            yAxisBuilder;
 
-        data = data.sort(function (a, b) {return a.count - b.count; });
+        this.size.height = this.margin.top + this.margin.bottom + this.barSize.height * data.length;
 
-        this.xScale = d3.scale.linear()
-            .domain([0, dataExtent[1]])
-            .range([0, this.size.width]);
-
-        yScale = d3.scale.linear()
-            .domain([0, data.length])
-            .range([this.size.height, 0]);
-
-
-        this.svg = d3.select(container).append('svg')
+        this.svgChart = d3.select(container).append('svg')
             .attr('height', this.size.height + 'px')
             .attr('width', this.size.width + this.margin.left + this.margin.right + 'px')
             .append('g')
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-        this.svg.append('rect')
+        this.svgChart.append('rect')
             .attr('x', 0)
             .attr('y', 0)
             .attr('width', this.size.width + 'px')
             .attr('height', this.size.height + 'px')
             .attr('opacity', '0');
 
-        bars = this.svg.selectAll('.categoricalplot-category')
-            .data(data, function (d) {return d.name; })
-            .enter().append('g')
+        yScale = d3.scale.linear()
+            .domain([0, data.length])
+            .range([0, this.size.height]);
+
+        yAxisBuilder = d3.svg.axis()
+            .scale(yScale)
+            .tickFormat('')
+            .ticks(0)
+            .innerTickSize(0)
+            .outerTickSize(0)
+            .orient("left");
+
+        this.svgChart.append("g")
+            .attr('class', 'categoricalplot-axis')
+            .attr("transform", "translate(-2, 0)")
+            .call(yAxisBuilder);
+
+        this.updateChart(data);
+    };
+
+    categoricalplot.CategoricalPlot.prototype.updateChart = function (data) {
+        var that = this,
+            yScale = d3.scale.linear()
+                .domain([0, data.length])
+                .range([0, this.size.height]),
+            bars;
+
+
+        bars = this.svgChart.selectAll('.categoricalplot-category')
+            .data(data, function (d) {return d.name; });
+
+        bars.enter().append('g')
             .attr('class', 'categoricalplot-category')
-            .attr("transform", function (d, i) { return "translate(0," + yScale(i + 1) + ")"; })
             .on('mouseup', function () {
                 var name = d3.select(this).datum().name;
                 if (that.deselected.indexOf(name) < 0) {
@@ -175,64 +197,88 @@ define([
                 that.validateButtons();
                 that.notifyListeners('onPlotSelectionChanged', {context: that});
 
+            })
+            .call(function (selection) {
+                selection.append('g')
+                    .attr('class', 'categoricalplot-bar');
+                selection.append('text')
+                    .text(function (d) {
+                        var shortName = d.name.substring(25, 0);
+                        shortName = (d.name.length > 25) ? shortName + '...' : shortName;
+                        return shortName;
+                    })
+                    .attr('x', '1em')
+                    .attr('y', (that.barSize.height - (that.barSize.offset * 2)) / 2 + 1)
+                    .attr('text-anchor', 'start')
+                    .attr('dominant-baseline', 'central');
+                selection.append('rect')
+                    .attr('class', 'categoricalplot-category-background')
+                    .attr('x', 0)
+                    .attr('y', that.barSize.offset)
+                    .attr('width', that.size.width + 'px')
+                    .attr('height', that.barSize.height - (that.barSize.offset * 2) + 'px');
             });
 
-        bars.append('rect')
-            .attr('class', 'categoricalplot-bar')
-            .attr('x', 0)
-            .attr('y', offset)
-            .attr('rx', 1)
-            .attr('ry', 1)
-            .attr('width', function (d) {return that.xScale(d.count); })
-            .attr('height', height - (offset * 2))
-            .attr('fill', function (d) {return d.color; })
-            .attr('fill-opacity', '1')
-            .attr('stroke-opacity', '0');
+        bars.select('g.categoricalplot-bar')
+            .each(function () {
+                var g = d3.select(this),
+                    segData = g.datum().events,
+                    segments;
 
-        bars.append('text')
-            .text(function (d) {
-                var shortName = d.name.substring(25, 0);
-                shortName = (d.name.length > 25) ? shortName + '...' : shortName;
-                return shortName;
-            })
-            .attr('x', '1em')
-            .attr('y', (height - (offset * 2)) / 2 + 1)
-            .attr('text-anchor', 'start')
-            .attr('dominant-baseline', 'central');
 
-        bars.append('rect')
-            .attr('class', 'categoricalplot-category-background')
-            .attr('x', 0)
-            .attr('y', offset)
-            .attr('width', this.size.width + 'px')
-            .attr('height', height - (offset * 2) + 'px');
+                // bind new data
+                segments = g.selectAll('rect')
+                    .data(segData);
 
-        yAxisBuilder = d3.svg.axis()
-            .scale(yScale)
-            .tickFormat('')
-            .ticks(0)
-            .innerTickSize(0)
-            .outerTickSize(0)
-            .orient("left");
+                // add new if needed
+                segments.enter()
+                    .append('rect')
+                    .attr('y', that.barSize.offset)
+                    .attr('height', that.barSize.height - (that.barSize.offset * 2));
 
-        this.svg.append("g")
-            .attr('class', 'categoricalplot-axis')
-            .attr("transform", "translate(-2, 0)")
-            .call(yAxisBuilder);
+                // update all
+                segments
+                    .transition()
+                    .duration(500)
+                    .attr('x', function (d) {return that.xScale(d.count.begin); })
+                    .attr('width', function (d) {return that.xScale(d.count.end) - that.xScale(d.count.begin); })
+                    .attr('fill', function (d) {return d.color; });
 
+                // remove any extra
+                segments.exit().remove();
+
+            });
+
+        bars.attr("transform", function (d, i) { return "translate(0," + yScale(i) + ")"; });
+
+        bars.exit().remove();
     };
 
     categoricalplot.CategoricalPlot.prototype.update = function (data) {
+        console.log(data);
+        var xExtent = this.getXExtent(data);
+        this.xScale = d3.scale.linear()
+            .domain([xExtent.min, xExtent.max])
+            .range([0, this.size.width]);
+        this.updateChart(data);
+        this.updateAxis();
+    };
+
+    categoricalplot.CategoricalPlot.prototype.update_dep = function (data) {
         var that = this,
             dataExtent = d3.extent(data, function (d) {return d.count; });
+
         this.xScale = d3.scale.linear()
             .domain([0, dataExtent[1]])
             .range([0, this.size.width]);
-        this.svg.selectAll('.categoricalplot-category')
+
+        this.svgChart.selectAll('.categoricalplot-category')
             .data(data, function (d) {return d.name; })
             .select('.categoricalplot-bar')
             .transition()
+            .duration(500)
             .attr('width', function (d) {return that.xScale(d.count); });
+
         this.updateAxis();
     };
 
@@ -264,8 +310,17 @@ define([
         this.validateButtons();
     };
 
-    categoricalplot.CategoricalPlot.prototype.setContentAttribute = function (contentAttribute) {
-        return this;
+    categoricalplot.CategoricalPlot.prototype.processData = function (data) {
+        return new categoricalplotdatasetbuilder.CategoricalPlotDataSetBuilder()
+            .setMetadata(this.metadata)
+            .setAttribute(this.attribute)
+            .setContentAttribute(this.contentAttribute)
+            .setData(data)
+            .build();
+    };
+
+    categoricalplot.CategoricalPlot.prototype.setContentAttribute = function (contentAttr) {
+        this.contentAttribute = contentAttr;
     };
 
     categoricalplot.CategoricalPlot.prototype.onReset = function () {
@@ -274,32 +329,23 @@ define([
         this.validateButtons();
     };
 
-    categoricalplot.CategoricalPlot.prototype.onSelectionChanged = function (data) {
-        var that = this,
-            nestData = d3.nest().key(function (d) {return d[that.attribute]; }).map(data),
-            newData = Object.keys(nestData).map(function (key) {
-                return {name: key, count: nestData[key].length};
-            }),
-            md = this.metadata.attribute.attributes[this.attribute];
-        Object.keys(md.uniqueValues).forEach(function (key) {
-            if (!nestData[key]) {
-                newData.push({name: key, count: 0});
-            }
+    categoricalplot.CategoricalPlot.prototype.getXExtent = function (data) {
+        var firstValue = data[0].events[data[0].events.length - 1].count.end,
+            extent = {max: firstValue, min: 0};
+        data.forEach(function (agg) {
+            var aggMax = agg.events[agg.events.length - 1].count.end;
+            extent.max = Math.max(extent.max, aggMax);
         });
-        this.update(newData);
+        return extent;
+    };
+
+    categoricalplot.CategoricalPlot.prototype.onSelectionChanged = function (data) {
+        this.update(this.processData(data));
     };
 
     categoricalplot.CategoricalPlot.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
-        var md = this.metadata.attribute.attributes[this.attribute];
-        this.build(Object.keys(md.uniqueValues).map(function (key) {
-            return {
-                name: md.uniqueValues[key].name,
-                color: md.uniqueValues[key].color,
-                count: md.uniqueValues[key].count,
-                selected: true
-            };
-        }));
+        this.build(this.processData(data));
         this.validateButtons();
     };
 

@@ -66,3 +66,7 @@
     fill: #bdbdbd;
     fill-opacity: .5;
 }
+
+.categoricalplot-bar rect {
+    stroke: none;
+}

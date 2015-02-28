@@ -124,18 +124,15 @@ define([
     };
 
     perattrs.PerAttrs.prototype.setContentAttribute = function (contentAttribute) {
-        if (this.plots.length > 0) {
-            this.plots.forEach(function (plot) {
-                plot.setContentAttribute(contentAttribute);
-            }, this);
-        }
-        return this;
+        this.plots.forEach(function (plot) {
+            plot.setContentAttribute(contentAttribute);
+        });
     };
 
     perattrs.PerAttrs.prototype.onReset = function () {
         this.plots.forEach(function (plot) {
             plot.onReset();
-        }, this);
+        });
     };
 
     perattrs.PerAttrs.prototype.onSelectionChanged = function (data) {

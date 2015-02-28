@@ -79,10 +79,7 @@ define([
     };
 
     perattr.PerAttr.prototype.setContentAttribute = function (contentAttribute) {
-        if (this.plot !== undefined) {
-            this.plot.setContentAttribute(contentAttribute);
-        }
-        return this;
+        this.plot.setContentAttribute(contentAttribute);
     };
 
     perattr.PerAttr.prototype.onReset = function () {

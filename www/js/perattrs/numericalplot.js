@@ -7,14 +7,16 @@
 define([
     'jquery',
     'd3',
+    'perattrs/numericalplotdatasetbuilder',
     // no namespace
     'bootstrap'
-], function ($, d3) {
+], function ($, d3, numericalplotdatasetbuilder) {
 
     var numericalplot = {};
 
     numericalplot.NumericalPlot = function (attribute) {
         this.attribute = attribute;
+        this.contentAttribute = undefined;
         this.container = $('<div>').attr({'class': 'perse-perattr-numericalplot'});
         this.listeners = [];
         this.svg = undefined;
@@ -61,14 +63,15 @@ define([
     };
 
     numericalplot.NumericalPlot.prototype.build = function (data) {
-        var dataExtent = d3.extent(data.map(function (d) {return d.value; }));
+        var xExtent = this.getXExtent(data);
+
         this.svg = d3.select(this.container.get(0)).append('svg')
             .attr('viewBox', [0, 0, this.viewBox.width, this.viewBox.height].join(' '))
             .append('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
         this.xScale = d3.scale.linear()
-            .domain([dataExtent[0], dataExtent[1]])
+            .domain([xExtent.min, xExtent.max])
             .range([0, this.size.width]);
 
         this.update(data);
@@ -77,39 +80,51 @@ define([
 
     numericalplot.NumericalPlot.prototype.update = function (data) {
         var that = this,
-            binnedData,
-            bars,
-            color = this.metadata.attribute.attributes[this.attribute].color;
-
-        binnedData = d3.layout.histogram()
-            .value(function (d) {return d.value; })
-            (data);
+            yExtent = this.getYExtent(data),
+            bars;
 
         this.yScale = d3.scale.linear()
-            .domain([0, d3.max(binnedData, function (d) {return d.y; })])
+            .domain([yExtent.min, yExtent.max])
             .range([this.size.height, 0]);
 
         bars = this.svg.selectAll('.numericalplot-bin')
-            .data(binnedData);
+            .data(data);
 
         bars.enter().append('g')
-            .attr('class', 'numericalplot-bin selected')
-            .append('rect');
+            .attr('class', 'numericalplot-bin selected');
 
-        bars.attr('transform', function (d) {
-            return 'translate(' + that.xScale(d.x) + ',' + that.yScale(d.y) + ')';
+        bars.each(function () {
+            var g = d3.select(this),
+                gData = g.datum(),
+                rects;
+
+            rects = g.selectAll('rect')
+                .data(gData.events);
+
+            rects.enter().append('rect');
+
+            rects
+                .transition()
+                .duration(500)
+                .attr('fill', function (d) {
+                    return d.color;
+                })
+                .attr('x', 0)
+                .attr('y', function (d) {
+                    return that.yScale(d.count.end);
+                })
+                .attr('width', that.xScale(gData.dx))
+                .attr('height', function (d) {
+                    return that.yScale(d.count.begin) - that.yScale(d.count.end);
+                });
+
+            rects.exit().remove();
+
         });
 
-        if (binnedData.length > 0) {
-            bars.select('rect')
-                .attr('x', 0)
-                .attr('y', 0)
-                .attr('width', that.xScale(binnedData[0].dx))
-                .attr('height', function (d) {
-                    return that.size.height - that.yScale(d.y);
-                })
-                .attr('fill', color);
-        }
+        bars.attr('transform', function (d) {
+            return 'translate(' + that.xScale(d.x) + ',0)';
+        });
 
         bars.exit().remove();
 
@@ -146,13 +161,6 @@ define([
             .attr('class', 'numericalplot-axis')
             .attr('transform', 'translate(-1,0)')
             .call(yAxisBuilder);
-        /*
-            .append('text')
-            .attr('class', 'numericalplot-axis-label')
-            .attr('transform', 'translate(-' + (this.margin.left * 0.95) + ',' + (this.size.height / 2) + ') rotate(-90)')
-            .attr('dy', '.71em')
-            .style('text-anchor', 'middle')
-            .text('Frequency');*/
     };
 
     numericalplot.NumericalPlot.prototype.buildBrush = function () {
@@ -203,17 +211,27 @@ define([
         labelNode
             .attr('x', this.size.width - bbox.width)
             .attr('y', -3);
-
-    };
-
-    numericalplot.NumericalPlot.prototype.simplifyDataStructure = function (data) {
-        return data.map(function (d) {
-            return {value: d[this.attribute]};
-        }, this);
     };
 
     numericalplot.NumericalPlot.prototype.clearBrush = function () {
         this.svg.selectAll('.brush').call(this.brush.clear());
+    };
+
+    numericalplot.NumericalPlot.prototype.getXExtent = function (data) {
+        return {
+            min: data[0].x,
+            max: data[data.length - 1].x + data[data.length - 1].dx
+        };
+    };
+
+    numericalplot.NumericalPlot.prototype.getYExtent = function (data) {
+        var firstValue = data[0].events[data[0].events.length - 1].count.end,
+            extent = {min: 0, max: firstValue};
+        return data.reduce(function (p, c) {
+            var aggMax = c.events[c.events.length - 1].count.end;
+            p.max = Math.max(extent.max, aggMax);
+            return p;
+        }, extent);
     };
 
     numericalplot.NumericalPlot.prototype.getFilter = function () {
@@ -226,8 +244,17 @@ define([
         };
     };
 
-    numericalplot.NumericalPlot.prototype.setContentAttribute = function (contentAttribute) {
-        return this;
+    numericalplot.NumericalPlot.prototype.processData = function (data) {
+        return new numericalplotdatasetbuilder.NumericalPlotDataSetBuilder()
+            .setMetadata(this.metadata)
+            .setData(data)
+            .setContentAttribute(this.contentAttribute)
+            .setAttribute(this.attribute)
+            .build();
+    };
+
+    numericalplot.NumericalPlot.prototype.setContentAttribute = function (contentAttr) {
+        this.contentAttribute = contentAttr;
     };
 
     numericalplot.NumericalPlot.prototype.onReset = function () {
@@ -235,12 +262,12 @@ define([
     };
 
     numericalplot.NumericalPlot.prototype.onSelectionChanged = function (data) {
-        this.update(this.simplifyDataStructure(data));
+        this.update(this.processData(data));
     };
 
     numericalplot.NumericalPlot.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
-        this.build(this.simplifyDataStructure(data));
+        this.build(this.processData(data));
     };
 
     numericalplot.NumericalPlot.prototype.registerListener = function (listenerObj) {

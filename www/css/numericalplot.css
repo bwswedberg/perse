@@ -7,8 +7,6 @@
 }
 
 .numericalplot-bin rect {
-    fill: steelblue;
-    fill-opacity: .1;
     stroke: none;
     pointer-events: none;
 }

@@ -125,7 +125,7 @@ define([
 
     timewheel.Ring.prototype.updateArcFills = function (ringData) {
         var data,
-            arc = d3.svg.arc(),
+            arc,
             pie,
             radiusScale,
             pieFillData,
@@ -162,7 +162,7 @@ define([
                 selection.append('path');
             });*/
 
-        var arc2 = d3.svg.arc()
+        arc = d3.svg.arc()
             .innerRadius(function (d) {
                 return radiusScale(d.count.begin);
             })
@@ -189,7 +189,7 @@ define([
                     return d.color;
                 })
                 .attr('d', function (d) {
-                    return (d.count.total === 0) ? null : arc2(d);
+                    return arc(d);
                 });
 
             paths.exit().remove();

@@ -201,7 +201,9 @@ define([
                 rects = g.selectAll('rect')
                     .data(g.datum().composite);
 
-            rects.enter().append('rect');
+            rects.enter().append('rect')
+                .attr('y', that.size.height)
+                .attr('height', 0);
 
             rects
                 .style('fill', function (d) {

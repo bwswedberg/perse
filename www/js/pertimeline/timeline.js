@@ -234,11 +234,6 @@ define([
         this.updateXAxis();
     };
 
-    timeline.Timeline.prototype.updateBar = function (selection) {
-
-
-    };
-
     timeline.Timeline.prototype.updateYAxis = function () {
         var yAxisBuilder = d3.svg.axis()
             .scale(this.yScale)

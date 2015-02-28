@@ -15,11 +15,13 @@ define([
 
     pertable.PerTable = function () {
         this.container = $('<div>').attr({'class': 'panel-body perse-panel-body'});
+        this.contentAttribute = undefined;
         this.metadata = undefined;
         this.listeners = [];
         this.calendarName = 'gregorian';
         this.calendarButtons = {gregorian: undefined, islamic: undefined};
-
+        this.pagingButtons = {left: undefined, right: undefined};
+        this.paging = {page: 0, maxPage: 0, minPage: 0, interval: 25, isPageUpdate: false};
     };
 
     pertable.PerTable.prototype.render = function (parent) {
@@ -38,10 +40,11 @@ define([
     };
 
     pertable.PerTable.prototype.createControls = function () {
-        var cal = this.createCalendarButtonGroup();
+        var cal = this.createCalendarButtonGroup(),
+            paging = this.createPagingControlButtonGroup();
         return $('<div>')
             .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(cal);
+            .append(cal, paging);
     };
 
     pertable.PerTable.prototype.createCalendarButtonGroup = function () {
@@ -65,14 +68,10 @@ define([
         // add events here
         gregorian.on('mouseup', $.proxy(function () {
             this.calendarChanged('gregorian');
-            //menu.find('li a span').remove();
-            //gregorian.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         islamic.on('mouseup', $.proxy(function () {
             this.calendarChanged('islamic');
-            //menu.find('li a span').remove();
-            //islamic.append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'}));
         }, this));
 
         this.calendarButtons.islamic = islamic;
@@ -81,14 +80,34 @@ define([
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
     };
 
-    pertable.PerTable.prototype.calendarChanged = function (calendarName) {
-        this.setCalendar(calendarName);
-        this.notifyListeners('onDataSetRequested', {
-            context: this,
-            callback: function (data) {
-                this.onSelectionChanged(data);
-            }
-        });
+    pertable.PerTable.prototype.createPagingControlButtonGroup = function () {
+        var pageLeftIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-arrow-left', 'aria-hidden': 'true'}),
+            pageLeftButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button', 'title': 'Previous ' + this.paging.interval + ' Events'})
+                .append(pageLeftIcon),
+            pageRightIcon = $('<span>')
+                .attr({'class': 'glyphicon glyphicon-arrow-right', 'aria-hidden': 'true', 'title': 'Next ' + this.paging.interval + ' Events'}),
+            pageRightButton = $('<button>')
+                .attr({'class': 'btn btn-default btn-xs', 'type': 'button'})
+                .append(pageRightIcon);
+
+        pageLeftButton.on('mouseup', $.proxy(function () {
+            $(pageLeftButton).blur();
+            this.pageChanged(this.paging.page - 1);
+        }, this));
+
+        pageRightButton.on('mouseup', $.proxy(function () {
+            $(pageRightButton).blur();
+            this.pageChanged(this.paging.page + 1);
+        }, this));
+
+        this.pagingButtons.left = pageLeftButton;
+        this.pagingButtons.right = pageRightButton;
+
+        return $('<div>')
+            .attr({'class': 'btn-group', 'role': 'group'})
+            .append(pageLeftButton, pageRightButton);
     };
 
     pertable.PerTable.prototype.build = function (data) {
@@ -118,11 +137,16 @@ define([
 
         tbody.find('.pertable-datarow').remove();
 
-        // TODO: update rows rather than delete and add
 
-        // TODO: add paging so that people can see more than top 50 events
+        if (this.paging.isPageUpdate) {
+            // flag to prevent from going back to page 0
+            this.paging.isPageUpdate = false;
+        } else {
+            this.paging.page = 0;
+            this.setPageExtent(data.length);
+        }
 
-        data.splice(0, 50).forEach(function (d) {
+        data.splice(this.paging.page * this.paging.interval, this.paging.interval).forEach(function (d) {
             var row = $('<tr>').attr({'class': 'pertable-datarow'}),
                 date = cal.fromJD(d.julianDate);
             row.append($('<td>').text([date.day(), months[date.month() - 1], date.year()].join(' ')));
@@ -132,13 +156,64 @@ define([
             row.append($('<td>').text(d.description));
             tbody.append(row);
         });
+        this.validatePagingButtons();
     };
 
-    pertable.PerTable.prototype.setContentAttribute = function (contentAttribute) {
+    pertable.PerTable.prototype.calendarChanged = function (calendarName) {
+        this.setCalendar(calendarName);
+        this.notifyListeners('onDataSetRequested', {
+            context: this,
+            callback: function (data) {
+                this.onSelectionChanged(data);
+            }
+        });
+    };
 
+    pertable.PerTable.prototype.setPageExtent = function (amtEvents) {
+        this.paging.maxPage = Math.ceil(amtEvents / this.paging.interval) - 1; // pages start at 0
+        this.paging.minPage = 0;
+    };
+
+    pertable.PerTable.prototype.isPageNumberValid = function (pageNumber) {
+        if (pageNumber < this.paging.minPage || pageNumber > this.paging.maxPage) {
+            return false;
+        }
+        return true;
+    };
+
+    pertable.PerTable.prototype.validatePagingButtons = function () {
+        if (this.paging.page === this.paging.minPage) {
+            this.pagingButtons.left.toggleClass('disabled', true);
+        } else {
+            this.pagingButtons.left.toggleClass('disabled', false);
+        }
+        if (this.paging.page === this.paging.maxPage) {
+            this.pagingButtons.right.toggleClass('disabled', true);
+        } else {
+            this.pagingButtons.right.toggleClass('disabled', false);
+        }
+    };
+
+    pertable.PerTable.prototype.pageChanged = function (pageNumber) {
+        if (this.isPageNumberValid(pageNumber)) {
+            this.paging.isPageUpdate = true;
+            this.paging.page = pageNumber;
+            this.validatePagingButtons();
+            this.notifyListeners('onDataSetRequested', {
+                context: this,
+                callback: function (data) {
+                    this.onSelectionChanged(data);
+                }
+            });
+        }
+    };
+
+    pertable.PerTable.prototype.setContentAttribute = function (contentAttr) {
+        this.contentAttribute = contentAttr;
     };
 
     pertable.PerTable.prototype.onReset = function () {
+        // don't need to do anything
     };
 
     pertable.PerTable.prototype.setCalendar = function (calendarName) {

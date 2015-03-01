@@ -111,8 +111,8 @@ define([
             .registerListener({
                 context: this,
                 onTimeWheelSelectionChanged: function () {
-                    this.validateFilterButton();
                     this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
+                    this.validateFilterButton();
                 }
             });
         return timeWheelDiv;
@@ -122,7 +122,7 @@ define([
         var twData = this.getData(),
             shouldEnable = Object.keys(twData.periodicity).every(function (key) {
                 return twData.periodicity[key].data.every(function (cycle) {
-                    return cycle.enabled;
+                    return cycle.isEnabled;
                 });
             });
         this.filterButton.toggleClass('disabled', shouldEnable);

@@ -8,10 +8,11 @@ define([
     'jquery',
     'd3',
     'data/filter',
+    'perplots/perplotsdatasetbuilder',
     // no namespace
     '$.calendars',
     'bootstrap'
-], function ($, d3, filter) {
+], function ($, d3, filter, perplotsdatasetbuilder) {
 
     var perplot = {};
 
@@ -237,7 +238,7 @@ define([
         }
     };
 
-    perplot.PerPlot.prototype.setCalendarName = function (calendarName) {
+    perplot.PerPlot.prototype.setCalendar = function (calendarName) {
         this.calendarName = calendarName;
         if (this.svg) {
             this.svg.select('#perplot-voronoi')
@@ -264,7 +265,7 @@ define([
         cssObj.removeProperty('left');
         cssObj.removeProperty('right');
         //this.container.css(positionObj);
-        this.container.animate(positionObj, 'slow');
+        this.container.animate(positionObj, 1000);
         return this;
     };
 
@@ -273,19 +274,26 @@ define([
         return this;
     };
 
-    perplot.PerPlot.prototype.getFilter = function () {
-        return this.filter;
+    perplot.PerPlot.prototype.getExtent = function (data) {
+        var firstX = data[0].partitions[0].value,
+            firstY = data[0].partitions[0].events.length,
+            extent = {
+                x: {min: firstX, max: firstX},
+                y: {min: firstY, max: firstY}
+            };
+        data.forEach(function (d) {
+            d.partitions.forEach(function (p) {
+                extent.x.min = Math.min(extent.x.min, p.value);
+                extent.x.max = Math.max(extent.x.max, p.value);
+                extent.y.max = Math.max(extent.y.max, p.events.length);
+                extent.y.min = Math.min(extent.y.min, p.events.length);
+            });
+        });
+        return extent;
     };
 
-    perplot.PerPlot.prototype.getEvents = function (lineValue, xValue) {
-        var events = [],
-            data;
-        if ($.isNumeric(lineValue) && $.isNumeric(xValue)) {
-            data = this.svg.select('.perplot-path' + this.getLineClass(lineValue))
-                .datum();
-            events = data.partitions[xValue].events;
-        }
-        return events;
+    perplot.PerPlot.prototype.getFilter = function () {
+        return this.filter;
     };
 
     perplot.PerPlot.prototype.createIndicationFilter = function (lineValue, xValue) {
@@ -303,6 +311,18 @@ define([
             .on('mouseover', null);
         this.container.remove();
         this.listeners = null;
+    };
+
+    perplot.PerPlot.prototype.processData = function (obj) {
+        var data = obj.data,
+            metadata = obj.metadata || this.metadata,
+            calendarName = obj.calendarName || this.calendarName,
+            cycleName = obj.cycleName || this.cycleName;
+        return new perplotsdatasetbuilder.PerPlotsDataSetBuilder(metadata)
+            .setCalendarName(calendarName)
+            .setCycleName(cycleName)
+            .setData(data)
+            .build();
     };
 
     perplot.PerPlot.prototype.onReset = function () {

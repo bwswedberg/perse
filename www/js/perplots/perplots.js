@@ -24,7 +24,7 @@ define([
         this.calendarName = 'islamic';
         this.cycleName = 'MonthOfYear';
         this.voronoiPolygons = undefined;
-        this.plots = [];
+        this.plots = {};
     };
 
     perplots.PerPlots.prototype.render = function (parent) {
@@ -32,91 +32,87 @@ define([
         return this;
     };
 
-    perplots.PerPlots.prototype.addNewPlot = function (plotData, extent) {
-        var plot = new perplot.PerPlot(plotData.id)
+    perplots.PerPlots.prototype.addNewPlot = function (updateObj) {
+        this.plots[updateObj.id] = new perplot.PerPlot(updateObj.id)
             .render(this.container)
             .registerListener(this.createPerPlotListener())
-            .setCalendarName(this.calendarName)
+            .setCalendar(this.calendarName)
             .setCycleName(this.cycleName)
             .setContentAttribute(this.contentAttribute)
-            .setPlotExtent(extent)
-            .setPosition(plotData.position);
+            .setPlotExtent(updateObj.extent)
+            .setPosition(updateObj.position);
 
-        this.plots.push(plot);
-        plot.onDataSetChanged(plotData.data, this.metadata);
-        return plot;
+        this.plots[updateObj.id].onDataSetChanged(updateObj.data, this.metadata);
     };
 
-    perplots.PerPlots.prototype.updatePlot = function (plot, plotData, extent) {
+    perplots.PerPlots.prototype.updatePlot = function (updateObj) {
         //plot.setPlotExtent(extent);
-        plot.setPlotExtent(extent)
-            .setPosition(plotData.position)
-            .onSelectionChanged(plotData.data);
-        return plot;
+        this.plots[updateObj.id]
+            .setPlotExtent(updateObj.extent)
+            .setPosition(updateObj.position)
+            .onSelectionChanged(updateObj.data);
     };
 
-    perplots.PerPlots.prototype.removePlot = function (plot) {
-        plot.destroy();
-        this.plots.splice(this.plots.indexOf(plot), 1);
+    perplots.PerPlots.prototype.removePlot = function (plotId) {
+        this.plots[plotId].destroy();
+        delete this.plots[plotId];
     };
 
     perplots.PerPlots.prototype.update = function (data) {
-        var processedData = this.processData(data),
-            updatedPlots = [],
-            extent = {
-                'x': this.getXExtent(processedData),
-                'y': this.getYExtent(processedData)
+        var parsedData = this.parseData(data),
+            builtData = this.getBuiltData(parsedData),
+            positions = this.getPositions(parsedData),
+            updatedIds = [],
+            extent = this.getExtent(builtData);
+
+        parsedData.forEach(function (d, i) {
+            var updateObj = {
+                id: d.id,
+                extent: extent,
+                data: builtData[i],
+                position: positions[d.id].position
             };
 
-        // add and update plots
-        processedData.forEach(function (d) {
-            var id = d.id,
-                matches = this.plots.filter(function (plot) {
-                    return plot.getId() === id;
-                }),
-                newPlot;
-            if (matches.length === 0) {
-                newPlot = this.addNewPlot(d, extent);
-                updatedPlots.push(newPlot);
-            } else if (matches.length === 1) {
-
-                this.updatePlot(matches[0], d, extent);
-                updatedPlots.push(matches[0]);
+            if (this.plots.hasOwnProperty(d.id)) {
+                this.updatePlot(updateObj);
             } else {
-                console.warn('Unexpected amount of matches.');
+                this.addNewPlot(updateObj);
             }
+            updatedIds.push(d.id);
         }, this);
 
-        // remove
-        this.plots
-            .filter(function (p) {return updatedPlots.indexOf(p) < 0; })
+        // remove extra plots
+        Object.keys(this.plots)
+            .filter(function (key) {
+                return updatedIds.indexOf(key) < 0;
+            })
             .forEach(this.removePlot, this);
     };
 
-    perplots.PerPlots.prototype.processData = function (data) {
-        var voronoiData = new voronoidatasetbuilder.VoronoiDataSetBuilder()
-                .setProjection(this.metadata.geospatial.projection)
-                .setPolygonVectorLayer(this.voronoiPolygons)
-                .setData(data)
-                .build(),
-            builder = new perplotsdatasetbuilder.PerPlotsDataSetBuilder(this.metadata)
-                .setCalendarName(this.calendarName)
-                .setCycleName(this.cycleName),
-            positionedData = new perplotspositioncalculator.PerPlotsPositionCalculator()
-                .setData(voronoiData)
-                .setExtent(this.voronoiPolygons.getSource().getExtent())
-                .calculate()
-                .map(function (elem) {
-                    elem.data = builder.setData(elem.data).build();
-                    return elem;
-                });
-        return positionedData;
+    perplots.PerPlots.prototype.parseData = function (data) {
+        return new voronoidatasetbuilder.VoronoiDataSetBuilder()
+            .setProjection(this.metadata.geospatial.projection)
+            .setPolygonVectorLayer(this.voronoiPolygons)
+            .setData(data)
+            .build();
     };
 
-    perplots.PerPlots.prototype.getEvents = function (lineValue, xValue) {
-        return this.plots
-            .map(function (plot) {return plot.getEvents(lineValue, xValue); })
-            .reduce(function (p, c) {return p.concat(c); }, []);
+    perplots.PerPlots.prototype.getPositions = function (parsedData) {
+        return new perplotspositioncalculator.PerPlotsPositionCalculator()
+            .setData(parsedData)
+            .setExtent(this.voronoiPolygons.getSource().getExtent())
+            .calculate();
+    };
+
+    perplots.PerPlots.prototype.getBuiltData = function (parsedData) {
+        return parsedData.map(function (d) {
+            return perplot.PerPlot.prototype.processData({
+                data: d.data,
+                calendarName: this.calendarName,
+                cycleName: this.cycleName,
+                metadata: this.metadata
+            });
+        }, this);
     };
 
     perplots.PerPlots.prototype.setVoronoiPolygons = function (voronoiPolygons) {
@@ -156,44 +152,18 @@ define([
         };
     };
 
-    perplots.PerPlots.prototype.getYExtent = function (data) {
-        var innerFunction = function (dataObj) {
-            var extent = {
-                max: dataObj.data[0].partitions[0].events.length || 0,
-                min: dataObj.data[0].partitions[0].events.length || 0
-            };
-
-            dataObj.data.forEach(function (part) {
-                part.partitions.forEach(function (member) {
-                    extent.max = Math.max(extent.max, member.events.length);
-                    extent.min = Math.min(extent.min, member.events.length);
-                });
+    perplots.PerPlots.prototype.getExtent = function (builtData) {
+        return builtData
+            .map(function (d) {
+                return perplot.PerPlot.prototype.getExtent(d);
+            })
+            .reduce(function (p, c) {
+                p.x.min = Math.min(c.x.min, p.x.min);
+                p.x.max = Math.max(c.x.max, p.x.max);
+                p.y.min = Math.min(c.y.min, p.y.min);
+                p.y.max = Math.max(c.y.max, p.y.max);
+                return p;
             });
-
-            return extent;
-        };
-
-        return data.map(innerFunction)
-            .reduce(function (prev, cur) {
-                prev.max = Math.max(prev.max, cur.max);
-                prev.min = Math.min(prev.min, cur.min);
-                return prev;
-            });
-    };
-
-    perplots.PerPlots.prototype.getXExtent = function (data) {
-        var dataObj = data[0],
-            extent = {
-                min: dataObj.data[0].partitions[0].value,
-                max: dataObj.data[0].partitions[0].value
-            };
-        dataObj.data.forEach(function (d) {
-            d.partitions.forEach(function (p) {
-                extent.min = Math.min(extent.min, p.value);
-                extent.max = Math.max(extent.max, p.value);
-            });
-        });
-        return extent;
     };
 
     perplots.PerPlots.prototype.createFilterChangedListener = function () {
@@ -214,8 +184,8 @@ define([
             },
             onCycleChanged: function (event) {
                 this.cycleName = event.cycleName;
-                Object.keys(this.plots).forEach(function (k) {
-                    this.plots[k].setCycleName(event.cycleName);
+                Object.keys(this.plots).forEach(function (key) {
+                    this.plots[key].setCycleName(event.cycleName);
                 }, this);
                 this.notifyListeners('onDataSetRequested', {context: this});
             }
@@ -227,26 +197,22 @@ define([
 
     perplots.PerPlots.prototype.setCalendar = function (calendarName) {
         this.calendarName = calendarName;
-        if (this.plots.length > 0) {
-            Object.keys(this.plots).forEach(function (k) {
-                this.plots[k].setCalendarName(calendarName);
-            }, this);
-        }
+        Object.keys(this.plots).forEach(function (key) {
+            this.plots[key].setCalendar(calendarName);
+        }, this);
     };
 
     perplots.PerPlots.prototype.setContentAttribute = function (contentAttribute) {
         this.contentAttribute = contentAttribute;
-        if (this.plots.length > 0) {
-            Object.keys(this.plots).forEach(function (k) {
-                this.plots[k].setContentAttribute(contentAttribute);
-            }, this);
-        }
+        Object.keys(this.plots).forEach(function (key) {
+            this.plots[key].setContentAttribute(contentAttribute);
+        }, this);
     };
 
     perplots.PerPlots.prototype.onReset = function () {
-        this.plots.forEach(function (plot) {
-            plot.onReset();
-        });
+        Object.keys(this.plots).forEach(function (key) {
+            this.plots[key].onReset();
+        }, this);
     };
 
     perplots.PerPlots.prototype.onSelectionChanged = function (data) {

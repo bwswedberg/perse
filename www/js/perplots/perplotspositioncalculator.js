@@ -125,7 +125,7 @@ define([
                 takenPosition = closestData.rank[0].name;
             closestData.data.position = closestData.rank[0].position;
 
-            positionedData.push(closestData.data);
+            positionedData.push({position: closestData.rank[0].position, id: closestData.data.id});
 
             notPositionedData.splice(notPositionedData.indexOf(closestData), 1);
 
@@ -149,40 +149,12 @@ define([
             notPositionedData = out.notPositionedData;
             positionedData = out.positionedData;
         }
-        return positionedData;
 
-    };
+        return positionedData.reduce(function (p, c) {
+            p[c.id] = c;
+            return p;
+        }, {});
 
-    calc.PerPlotsPositionCalculator.prototype.calculate_dep = function () {
-        var positionsTaken = [],
-            getDistance;
-        getDistance = function (p1, p2) {
-            // this is euclidean but shouldn't be
-            return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
-        };
-
-        var d = this.data.map(function (d) {
-            var i = 0, rank, seedCoord;
-
-            seedCoord = d.feature.getProperties().data.coord;
-
-            rank = this.getPositions();
-
-            rank.sort(function (a, b) {
-                return getDistance(seedCoord, a.coord) - getDistance(seedCoord, b.coord);
-            });
-
-            while (positionsTaken.indexOf(rank[i].name) > -1) {
-                i += 1;
-            }
-            positionsTaken.push(rank[i].name);
-
-            d.position = rank[i].position;
-
-            return d;
-        }, this);
-        console.log(d);
-        return d;
     };
 
     return calc;

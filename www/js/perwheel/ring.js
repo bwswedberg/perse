@@ -19,7 +19,7 @@ define([
         this.data = undefined;
         this.ring = undefined;
         this.listeners = [];
-        this.countExtent = undefined;
+        this.extent = undefined;
         this.disabledList = [];
         this.isFocusRing = true;
     };
@@ -42,14 +42,13 @@ define([
         this.setAllEnabled();
     };
 
-    timewheel.Ring.prototype.update = function (ringData) {
-        this.updateArcFills(ringData);
-        this.updateArcShells(ringData);
+    timewheel.Ring.prototype.update = function (data) {
+        this.updateArcFills(data);
+        this.updateArcShells(data);
     };
 
-    timewheel.Ring.prototype.updateArcShells = function (ringData) {
+    timewheel.Ring.prototype.updateArcShells = function (data) {
         var that = this,
-            data,
             arc = d3.svg.arc(),
             pie,
             pieShellData,
@@ -60,7 +59,7 @@ define([
             .value(function () {return 1; }); // equal arcs
 
         // for reuse of data on mouse overs if ringData is undefined
-        data = (ringData === undefined) ? this.ring.selectAll('g.timewheel-arc-background').data() : pie(ringData);
+        data = (data === undefined) ? this.ring.selectAll('g.timewheel-arc-background').data() : pie(data);
 
         // update data
         pieShellData = data.map(function (d) {
@@ -123,26 +122,23 @@ define([
 
     };
 
-    timewheel.Ring.prototype.updateArcFills = function (ringData) {
-        var data,
-            arc,
+    timewheel.Ring.prototype.updateArcFills = function (data) {
+        var arc,
             pie,
             radiusScale,
             pieFillData,
             arcGroupFill;
 
-        this.countExtent = (ringData === undefined) ? this.countExtent : this.getCountExtent(ringData);
-
         pie = d3.layout.pie()
             .sort(null) // preserve init order
             .value(function () {return 1; }); // equal arcs
 
-        radiusScale = d3.scale.linear()
-            .domain([this.countExtent.min, this.countExtent.max])
-            .range([this.radius.inner, this.radius.outer]);
-
         // for reuse of data on mouse overs if ringData is undefined
-        data = (ringData === undefined) ? this.ring.selectAll('g.timewheel-arc-fill').data() : pie(ringData);
+        data = (data === undefined) ? this.ring.selectAll('g.timewheel-arc-fill').data() : pie(data);
+
+        radiusScale = d3.scale.linear()
+            .domain([this.extent.y.min, this.extent.y.max])
+            .range([this.radius.inner, this.radius.outer]);
 
         // update the data
         pieFillData = data.map(function (d) {
@@ -213,23 +209,23 @@ define([
 
     };
 
-    timewheel.Ring.prototype.getData = function () {
-        //var data = this.ring.selectAll('g.timewheel-arc-fill').data();//.map(function (d) {return d; });
+    timewheel.Ring.prototype.getFilterData = function () {
         return {
             label: this.label,
             data: this.disabledList
         };
     };
 
-    timewheel.Ring.prototype.getCountExtent = function (ringData) {
-        var firstValue = ringData[0].events[ringData[0].events.length - 1].count.end,
-            countExtent = {min: firstValue, max: firstValue};
-        ringData.forEach(function (d) {
-            countExtent.min = Math.min(d.events[d.events.length - 1].count.end, countExtent.min);
-            countExtent.max = Math.max(d.events[d.events.length - 1].count.end, countExtent.max);
+    timewheel.Ring.prototype.getExtent = function (data) {
+        var extent = {
+                x: {min: 0, max: data.length},
+                y: {min: 0, max: data[0].events[data[0].events.length - 1].count.end}
+            };
+        data.forEach(function (d) {
+            extent.y.min = Math.min(d.events[d.events.length - 1].count.end, extent.y.min);
+            extent.y.max = Math.max(d.events[d.events.length - 1].count.end, extent.y.max);
         });
-        countExtent.min = 0;
-        return countExtent;
+        return extent;
     };
 
     timewheel.Ring.prototype.setIsFocusRing = function (isFocusRing) {
@@ -248,6 +244,11 @@ define([
     timewheel.Ring.prototype.setRadius = function (inner, outer) {
         this.radius.inner = inner;
         this.radius.outer = outer;
+        return this;
+    };
+
+    timewheel.Ring.prototype.setExtent = function (extentObj) {
+        this.extent = extentObj;
         return this;
     };
 

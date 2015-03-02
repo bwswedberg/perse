@@ -70,7 +70,7 @@ define([
 
         // perwheel section
         var perWheel = new perwheel.PerWheel()
-            .render(largeRight)
+            .render(largeRight, true)
             .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perWheel);
 

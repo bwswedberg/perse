@@ -23,13 +23,21 @@ define([
         this.filterButton = undefined;
         this.calendarButtons = {gregorian: undefined, islamic: undefined};
         this.filter = new filter.Filter({
-            uniqueId: 'perse-perwheel',
+            uniqueId: this.getUniqueId(),
             property: 'julianDate',
             filterOn: function () {return true; }
         });
     };
 
-    perwheel.PerWheel.prototype.render = function (parent) {
+    perwheel.PerWheel.prototype.instanceCount = 0;
+
+    perwheel.PerWheel.prototype.getUniqueId = function () {
+        var id = 'perse-perwheel-' + this.instanceCount;
+        this.instanceCount += 1;
+        return id;
+    };
+
+    perwheel.PerWheel.prototype.render = function (parent, shouldRenderToolbar) {
         var title = $('<p>')
                 .attr({'class': 'perse-header-title'})
                 .text('Time-Wheel'),
@@ -37,8 +45,13 @@ define([
                 .attr({'class': 'panel-heading perse-panel-heading'})
                 .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),
             panel = $('<div>')
-                .attr({'class': 'panel panel-default perse-perwheel'})
-                .append(panelHeader, this.container);
+                .attr({'class': 'panel panel-default perse-perwheel'});
+
+        if (shouldRenderToolbar) {
+            panel.append(panelHeader, this.container);
+        } else {
+            panel.append(this.container);
+        }
 
         $(parent).append(panel);
         this.container.append(this.createTimeWheel());
@@ -119,7 +132,7 @@ define([
     };
 
     perwheel.PerWheel.prototype.validateFilterButton = function () {
-        var twData = this.getData(),
+        var twData = this.getFilterData(),
             shouldEnable = Object.keys(twData.periodicity).every(function (key) {
                 return twData.periodicity[key].data.every(function (cycle) {
                     return cycle.isEnabled;
@@ -128,15 +141,30 @@ define([
         this.filterButton.toggleClass('disabled', shouldEnable);
     };
 
-    perwheel.PerWheel.prototype.getData = function () {
+    perwheel.PerWheel.prototype.reduceExtents = function (timeWheelExtents) {
+        return timeWheelExtents.reduce(function (pTimeWheel, cTimeWheel) {
+            return pTimeWheel.map(function (ringExtent, index) {
+                ringExtent.y.min = Math.min(ringExtent.y.min, cTimeWheel[index].y.min);
+                ringExtent.y.max = Math.max(ringExtent.y.max, cTimeWheel[index].y.max);
+            });
+        });
+    };
+
+    perwheel.PerWheel.prototype.getFilterData = function () {
         return {
             calendarName: this.calendarName,
-            periodicity: this.timeWheel.getData()
+            periodicity: this.timeWheel.getFilterData()
         };
     };
 
+    perwheel.PerWheel.prototype.destroy = function () {
+        var buttons = [this.filterButton, this.calendarButtons.islamic, this.calendarButtons.gregorian];
+        buttons.forEach(function (b) {b.off(); });
+        this.container.remove();
+    };
+
     perwheel.PerWheel.prototype.getFilter = function () {
-        var data = this.getData(),
+        var data = this.getFilterData(),
             cal = $.calendars.instance(data.calendarName);
         this.filter.filterOn = function (julianDate) {
             var date = cal.fromJD(julianDate);
@@ -166,7 +194,6 @@ define([
             this.calendarButtons[calendarName].append(
                 $('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})
             );
-
             this.calendarName = calendarName;
             this.timeWheel.setCalendar(this.calendarName);
             this.filter.filterOn = function () {return true; };

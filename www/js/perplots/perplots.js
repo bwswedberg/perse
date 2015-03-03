@@ -73,22 +73,13 @@ define([
             .setCalendar(this.calendarName)
             .setCycleName(this.cycleName)
             .setContentAttribute(this.contentAttribute);
-            //.setExtent(updateObj.extent)
-            //.setPosition(updateObj.position);
         this.container.append(perPlotDiv);
         this.plots[updateObj.id].onDataSetChanged({data: updateObj.data, extent: updateObj.extent}, this.metadata);
-
-
-        //this.setPerPlotPosition(updateObj.id, updateObj.position);
     };
 
     perplots.PerPlots.prototype.updatePlot = function (updateObj) {
-        //plot.setPlotExtent(extent);
         this.plots[updateObj.id]
-            //.setPlotExtent(updateObj.extent)
-            //.setPosition(updateObj.position)
             .onSelectionChanged({data: updateObj.data, extent: updateObj.extent});
-
         this.setPerPlotPosition(updateObj.id, updateObj.position);
     };
 
@@ -105,6 +96,7 @@ define([
             updatedIds = [],
             extent = this.getExtent(builtData);
 
+        // update and add new plots
         parsedData.forEach(function (d, i) {
             var updateObj = {
                 id: d.id,
@@ -190,7 +182,6 @@ define([
                 }
 
                 this.notifyListeners('onIndicationChanged', indicationEvent);
-
             }
         };
     };
@@ -198,20 +189,6 @@ define([
     perplots.PerPlots.prototype.getExtent = function (builtData) {
         var proto = this.getPerPlotPrototype(this.perPlotType);
         return proto.reduceExtents(builtData.map(proto.getExtent));
-    };
-
-    perplots.PerPlots.prototype.getExtent_dep = function (builtData) {
-        return builtData
-            .map(function (d) {
-                return perplot.PerPlot.prototype.getExtent(d);
-            })
-            .reduce(function (p, c) {
-                p.x.min = Math.min(c.x.min, p.x.min);
-                p.x.max = Math.max(c.x.max, p.x.max);
-                p.y.min = Math.min(c.y.min, p.y.min);
-                p.y.max = Math.max(c.y.max, p.y.max);
-                return p;
-            });
     };
 
     perplots.PerPlots.prototype.setPerPlotPosition = function (plotId, positionObj) {
@@ -222,7 +199,6 @@ define([
         } else {
             cssObj.removeProperty('right');
         }
-        //this.container.css(positionObj);
         plotContainer.animate(positionObj, 1000);
         return this;
     };

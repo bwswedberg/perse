@@ -7,12 +7,19 @@
 define([
     'jquery',
     'perplots/perplot',
-    'perplots/perplotsdatasetbuilder',
     'perplots/perplotspositioncalculator',
     'perplots/voronoidatasetbuilder',
+    'perlineplot/perlineplot',
+    'perwheel/perwheel',
     // no namespace
     'bootstrap'
-], function ($, perplot, perplotsdatasetbuilder, perplotspositioncalculator, voronoidatasetbuilder) {
+], function (
+    $,
+    perplot,
+    perplotspositioncalculator,
+    voronoidatasetbuilder,
+    perlineplot,
+    perwheel) {
 
     var perplots = {};
 
@@ -24,6 +31,7 @@ define([
         this.calendarName = 'islamic';
         this.cycleName = 'MonthOfYear';
         this.voronoiPolygons = undefined;
+        this.perPlotType = 'timewheel';
         this.plots = {};
     };
 
@@ -32,29 +40,61 @@ define([
         return this;
     };
 
+    perplots.PerPlots.prototype.getNewPerPlot = function (plotType) {
+        switch (plotType) {
+        case ('timewheel'):
+            return $.extend(new perwheel.PerWheel(), perplot.PerPlot.prototype);
+        case ('lineplot'):
+            return $.extend(new perlineplot.PerLinePlot(), perplot.PerPlot.prototype);
+        default:
+            console.warn('Case not supported');
+        }
+    };
+
+    perplots.PerPlots.prototype.getPerPlotPrototype = function (plotType) {
+        switch (plotType) {
+        case ('timewheel'):
+            return perwheel.PerWheel.prototype;
+        case ('lineplot'):
+            return perlineplot.PerLinePlot.prototype;
+        default:
+            console.warn('Case not supported');
+        }
+    };
+
     perplots.PerPlots.prototype.addNewPlot = function (updateObj) {
-        this.plots[updateObj.id] = new perplot.PerPlot(updateObj.id)
-            .render(this.container)
+        var perPlotDiv = $('<div>')
+            .attr({'class': 'perse-perplot', 'id': 'perse-perplot-' + updateObj.id})
+            .css(updateObj.position);
+        this.plots[updateObj.id] = this.getNewPerPlot(this.perPlotType)
+            .setPerPlotId(updateObj.id)
+            .render(perPlotDiv)
             .registerListener(this.createPerPlotListener())
             .setCalendar(this.calendarName)
             .setCycleName(this.cycleName)
-            .setContentAttribute(this.contentAttribute)
-            .setPlotExtent(updateObj.extent)
-            .setPosition(updateObj.position);
+            .setContentAttribute(this.contentAttribute);
+            //.setExtent(updateObj.extent)
+            //.setPosition(updateObj.position);
+        this.container.append(perPlotDiv);
+        this.plots[updateObj.id].onDataSetChanged({data: updateObj.data, extent: updateObj.extent}, this.metadata);
 
-        this.plots[updateObj.id].onDataSetChanged(updateObj.data, this.metadata);
+
+        //this.setPerPlotPosition(updateObj.id, updateObj.position);
     };
 
     perplots.PerPlots.prototype.updatePlot = function (updateObj) {
         //plot.setPlotExtent(extent);
         this.plots[updateObj.id]
-            .setPlotExtent(updateObj.extent)
-            .setPosition(updateObj.position)
-            .onSelectionChanged(updateObj.data);
+            //.setPlotExtent(updateObj.extent)
+            //.setPosition(updateObj.position)
+            .onSelectionChanged({data: updateObj.data, extent: updateObj.extent});
+
+        this.setPerPlotPosition(updateObj.id, updateObj.position);
     };
 
     perplots.PerPlots.prototype.removePlot = function (plotId) {
         this.plots[plotId].destroy();
+        this.container.find('#' + 'perse-perplot-' + plotId).remove();
         delete this.plots[plotId];
     };
 
@@ -101,13 +141,16 @@ define([
         return new perplotspositioncalculator.PerPlotsPositionCalculator()
             .setData(parsedData)
             .setExtent(this.voronoiPolygons.getSource().getExtent())
+            .setContainer(this.container)
             .calculate();
     };
 
     perplots.PerPlots.prototype.getBuiltData = function (parsedData) {
+        var proto = this.getPerPlotPrototype(this.perPlotType);
         return parsedData.map(function (d) {
-            return perplot.PerPlot.prototype.processData({
+            return proto.processData({
                 data: d.data,
+                contentAttribute: this.contentAttribute,
                 calendarName: this.calendarName,
                 cycleName: this.cycleName,
                 metadata: this.metadata
@@ -141,8 +184,8 @@ define([
                 } else {
                     indicationEvent = {
                         'context': this,
-                        'voronoiId': event.firingPlot.getId(),
-                        'indicationFilter': event.firingPlot.createIndicationFilter(event.data.lineValue, event.data.xValue)
+                        'voronoiId': event.firingPlot.getPerPlotId(),
+                        'indicationFilter': event.firingPlot.createIndicationFilter(event.data)
                     };
                 }
 
@@ -153,6 +196,11 @@ define([
     };
 
     perplots.PerPlots.prototype.getExtent = function (builtData) {
+        var proto = this.getPerPlotPrototype(this.perPlotType);
+        return proto.reduceExtents(builtData.map(proto.getExtent));
+    };
+
+    perplots.PerPlots.prototype.getExtent_dep = function (builtData) {
         return builtData
             .map(function (d) {
                 return perplot.PerPlot.prototype.getExtent(d);
@@ -164,6 +212,19 @@ define([
                 p.y.max = Math.max(c.y.max, p.y.max);
                 return p;
             });
+    };
+
+    perplots.PerPlots.prototype.setPerPlotPosition = function (plotId, positionObj) {
+        var plotContainer = this.container.find('#' + 'perse-perplot-' + plotId),
+            cssObj = plotContainer.prop('style');
+        if (positionObj.left === 'auto') {
+            cssObj.removeProperty('left');
+        } else {
+            cssObj.removeProperty('right');
+        }
+        //this.container.css(positionObj);
+        plotContainer.animate(positionObj, 1000);
+        return this;
     };
 
     perplots.PerPlots.prototype.createFilterChangedListener = function () {

@@ -5,15 +5,21 @@
  */
 
 define([
-
-], function () {
+    'jquery'
+], function ($) {
 
     var calc = {};
 
     calc.PerPlotsPositionCalculator = function () {
+        this.container = undefined;
         this.data = undefined;
         this.extent = undefined;
-        this.width = 20;
+        this.width = 1 / 5;
+    };
+
+    calc.PerPlotsPositionCalculator.prototype.setContainer = function (container) {
+        this.container = container;
+        return this;
     };
 
     calc.PerPlotsPositionCalculator.prototype.setData = function (data) {
@@ -53,8 +59,10 @@ define([
         };
     };
 
-    calc.PerPlotsPositionCalculator.prototype.getPositions = function () {
-        var height = 100 / 3, // this is a percent
+    calc.PerPlotsPositionCalculator.prototype.getPositions = function (containerWidth, containerHeight) {
+        var offset = {left: 5, right: 5, between: 2.5},
+            width = containerWidth * (1 / 5),
+            height = (containerHeight - (6 * offset.between)) * (1 / 3), // this is a percent
             leftSide,
             rightSide,
             extent = this.getExtent();
@@ -64,11 +72,11 @@ define([
                 name: name,
                 coord: [extent.x.min, (extent.y.max - (i * extent.y.dif / 2))],
                 position: {
-                    top: (height * i) + '%',
-                    left: '0px',
+                    top: (height * i) + offset.between * ((i * 2) + 1),
+                    left: offset.left,
                     right: 'auto',
-                    width: this.width + '%',
-                    height: height + '%'
+                    width: width,
+                    height: height
                 }
             };
         }, this);
@@ -78,11 +86,11 @@ define([
                 name: name,
                 coord: [extent.x.max, (extent.y.max - (i * extent.y.dif / 2))],
                 position: {
-                    top: (height * i) + '%',
+                    top: (height * i) + offset.between * ((i * 2) + 1),
                     left: 'auto',
-                    right: '0px',
-                    width: this.width + '%',
-                    height: height + '%'
+                    right: offset.right,
+                    width: width,
+                    height: height
                 }
             };
         }, this);
@@ -91,10 +99,12 @@ define([
     };
 
     calc.PerPlotsPositionCalculator.prototype.calculate = function () {
-        var getDistance = function (p1, p2) {
-            // this is euclidean but shouldn't be
-            return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
-        };
+        var containerWidth = $(this.container).width(),
+            containerHeight = $(this.container).height(),
+            getDistance = function (p1, p2) {
+                // this is euclidean but shouldn't be
+                return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+            };
 
         // Each data point ranks them
         var rankings = this.data.map(function (d) {
@@ -102,7 +112,7 @@ define([
 
             seedCoord = d.feature.getProperties().data.coord;
 
-            rank = this.getPositions();
+            rank = this.getPositions(containerWidth, containerHeight);
 
             rank.sort(function (a, b) {
                 return getDistance(seedCoord, a.coord) - getDistance(seedCoord, b.coord);

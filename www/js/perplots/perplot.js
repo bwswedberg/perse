@@ -1,359 +1,38 @@
 /**
-*  This file is part of PerSE. PerSE is a visual analytics app for
-*  event periodicity detection and analysis.
-*  Copyright (C) 2015  Brian Swedberg
-*/
+ *  This file is part of PerSE. PerSE is a visual analytics app for
+ *  event periodicity detection and analysis.
+ *  Copyright (C) 2015  Brian Swedberg
+ */
 
 define([
     'jquery',
-    'd3',
-    'data/filter',
-    'perplots/perplotsdatasetbuilder',
-    // no namespace
-    '$.calendars',
+    // no namesapce
     'bootstrap'
-], function ($, d3, filter, perplotsdatasetbuilder) {
+], function ($) {
 
     var perplot = {};
 
-    perplot.PerPlot = function (uniqueId) {
-        this.id = uniqueId;
-        this.container = $('<div>').attr({'class': 'perse-perplot', 'id': 'perse-perplot-' + uniqueId});
-        this.listeners = [];
-        this.svg = undefined;
-        this.contentAttribute = undefined;
-        this.calendarName = 'Gregorian';
-        this.cycleName = 'MonthOfYear';
-        this.margin = {'top': 0, 'bottom': 10, 'left': 15, 'right': 0};
-        this.viewBox = {'width': 150, 'height': 100};
-        this.size = {
-            'width': this.viewBox.width - this.margin.left - this.margin.right,
-            'height': this.viewBox.height - this.margin.top - this.margin.top
-        };
-        this.filter = new filter.Filter({
-            uniqueId: 'perse-perplot-' + uniqueId,
-            property: 'coord',
-            filterOn: function (d) {
-                return true;
-            }
-        });
-        this.plotExtent = undefined;
-        this.xScale = undefined;
-        this.yScale = undefined;
+    perplot.PerPlot = function () {
+        this.perPlotId = undefined;
     };
 
-    perplot.PerPlot.prototype.render = function (parent) {
-        $(parent).append(this.container);
+    perplot.PerPlot.prototype.getPerPlotId = function () {
+        return this.perPlotId;
+    };
+
+    perplot.PerPlot.prototype.setPerPlotId = function (id) {
+        this.perPlotId = id;
         return this;
     };
 
-    perplot.PerPlot.prototype.build = function (data) {
-        var that = this;
-        this.svg = d3.select(this.container.get(0))
-            .append('svg')
-            .attr('viewBox', '0 0 ' + this.viewBox.width + ' ' + this.viewBox.height)
-            .append('g')
-            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
-
-        this.svg.append('g')
-            .attr('id', 'perplot-voronoi')
-            .on('mouseout', function () {
-                that.notifyListeners('onHoverEvent', {'context': that, 'firingPlot': that, 'data': undefined});
-            });
-
-        this.svg.append('text')
-            .attr('class', 'perplot-label');
-
-        this.update(data);
-    };
-
-    perplot.PerPlot.prototype.update = function (data) {
-        var that = this,
-            xAxisBuilder,
-            yAxisBuilder,
-            xLabels = data[0].partitions.map(function (d) {return d.label; }),
-            line,
-            pathsG,
-            tickStep = Math.round(xLabels.length / 6);
-
-        this.xScale = d3.scale.ordinal()
-            .domain(d3.range(this.plotExtent.x.max + 1))
-            .rangePoints([0, this.size.width]);
-
-        this.yScale = d3.scale.linear()
-            .domain([this.plotExtent.y.min, this.plotExtent.y.max])
-            .range([this.size.height, 0]);
-
-        line = d3.svg.line()
-            .interpolate('monotone')
-            .x(function (d) { return that.xScale(d.value); })
-            .y(function (d) {return that.yScale(d.events.length); });
-
-        pathsG = this.svg.selectAll('path.perplot-path')
-            .data(data);
-
-        pathsG.enter().append('path');
-
-        pathsG.transition()
-            .duration(500)
-            .attr('d', function (d) {return line(d.partitions); })
-            .attr('class', function (d) {
-                return 'perplot-path ' + that.getLineClass(d.value).replace('.', '');
-            });
-
-        pathsG.exit().remove();
-
-        // voronoi
-        var verticies = this.getVerticies(data);
-
-        var voronoiPolys = d3.geom.voronoi()
-            .clipExtent([[0, 0], [this.size.width, this.size.height]])
-            .x(function (d) {return that.xScale(d.xValue); })
-            .y(function (d) {return that.yScale(d.yValue); })
-        (verticies);
-
-        var voronoiG = this.svg.select('#perplot-voronoi')
-            .selectAll('path')
-            .data(verticies);
-
-        voronoiG.enter().append('path')
-            .attr('class', function (d) {
-                return that.getLineClass(d.lineValue).replace('.', '') + ' ' + that.getXClass(d.xValue).replace('.', '');
-            })
-            .on('mouseover', function () {
-                var d = d3.select(this).datum();
-                that.notifyListeners('onHoverEvent', {'context': that, 'firingPlot': that, 'data': d});
-            });
-
-        voronoiG.attr('d', function (d, i) {
-            if (!voronoiPolys[i]) {
-                return '';
-            }
-            return 'M' + voronoiPolys[i].join('L') + 'Z';
-        });
-
-        // axis jazz
-        this.svg.selectAll('.perplot-axis').remove();
-
-        xAxisBuilder = d3.svg.axis()
-            .scale(that.xScale)
-            .tickFormat(function (v) {
-                if (!(v % tickStep)) {
-                    return xLabels[v];
-                }
-            })
-            .innerTickSize(2)
-            .outerTickSize(2)
-            .orient('bottom');
-
-        this.svg.append("g")
-            .attr('class', 'perplot-axis')
-            .attr('transform', 'translate(0,' + (this.size.height - 1) + ')')
-            .call(xAxisBuilder);
-
-        yAxisBuilder = d3.svg.axis()
-            .scale(that.yScale)
-            .innerTickSize(2)
-            .outerTickSize(2)
-            .orient('left');
-
-        this.svg.append("g")
-            .attr('class', 'perplot-axis')
-            .attr('transform', 'translate(-1, 0)')
-            .call(yAxisBuilder);
-
-    };
-
-    perplot.PerPlot.prototype.getVerticies = function (data) {
-        var verticies = [];
-        data.forEach(function (d) {
-            d.partitions.forEach(function (p) {
-                verticies.push({
-                    julianDateExtent: p.julianDateExtent,
-                    lineValue: d.value,
-                    lineLabel: d.label,
-                    xValue: p.value,
-                    xLabel: p.label,
-                    yValue: p.events.length,
-                    yLabel: p.events.length.toString()
-                });
-            });
-
-        });
-        return verticies;
-    };
-
-    perplot.PerPlot.prototype.getId = function () {
-        return this.id;
-    };
-
-    perplot.PerPlot.prototype.updateLabel = function (d) {
-        var label = d.xLabel + ' ' + d.lineLabel + ', Freq ' + d.yLabel,
-            labelNode = this.svg.select('.perplot-label')
-                .text(label),
-            bbox = labelNode.node().getBBox();
-        labelNode
-            .attr('x', this.size.width - bbox.width)
-            .attr('y', -3);
-    };
-
-    perplot.PerPlot.prototype.showAxes = function (shouldShowAxes) {
-        this.svg.selectAll('.perplot-axis')
-            .classed('active', shouldShowAxes);
-    };
-
-    perplot.PerPlot.prototype.getLineClass = function (lineValue) {
-        return '.line-id-' + lineValue;
-    };
-
-    perplot.PerPlot.prototype.getXClass = function (xValue) {
-        return '.x-id-' + xValue;
-    };
-
-    perplot.PerPlot.prototype.onHover = function (hoverObj) {
-        if (hoverObj.data === undefined || hoverObj.data === null) {
-            this.svg.selectAll('.perplot-path.active')
-                .classed('active', false);
-            this.svg.selectAll('circle')
-                .remove();
-            this.svg.selectAll('.perplot-label')
-                .text('');
-            this.showAxes(false);
-        } else {
-            var lineClass = this.getLineClass(hoverObj.data.lineValue),
-                xClass = this.getXClass(hoverObj.data.xValue);
-            this.svg.selectAll('.perplot-path.active')
-                .classed('active', false);
-            this.svg.selectAll('.perplot-path' + lineClass)
-                .classed('active', true);
-            var d = this.svg.select('#perplot-voronoi ' + lineClass + xClass)
-                .datum();
-            this.svg.selectAll('circle')
-                .remove();
-            this.svg.append('circle')
-                .attr("transform", 'translate(' + this.xScale(d.xValue) + ',' + this.yScale(d.yValue) + ')')
-                .attr("r", 1.5);
-            this.updateLabel(d);
-            this.showAxes(hoverObj.firingPlot === this);
-        }
-    };
-
-    perplot.PerPlot.prototype.setCalendar = function (calendarName) {
-        this.calendarName = calendarName;
-        if (this.svg) {
-            this.svg.select('#perplot-voronoi')
-                .selectAll('*')
-                .on('mouseover', null)
-                .remove();
-        }
+    perplot.PerPlot.prototype.setCalendar = function () {
+        // in case sub class doesn't have it
         return this;
     };
 
-    perplot.PerPlot.prototype.setCycleName = function (cycleName) {
-        this.cycleName = cycleName;
-        if (this.svg) {
-            this.svg.select('#perplot-voronoi')
-                .selectAll('*')
-                .on('mouseover', null)
-                .remove();
-        }
+    perplot.PerPlot.prototype.setCycleName = function () {
+        // in case sub class doesn't have it
         return this;
-    };
-
-    perplot.PerPlot.prototype.setPosition = function (positionObj) {
-        var cssObj = this.container.prop('style');
-        cssObj.removeProperty('left');
-        cssObj.removeProperty('right');
-        //this.container.css(positionObj);
-        this.container.animate(positionObj, 1000);
-        return this;
-    };
-
-    perplot.PerPlot.prototype.setPlotExtent = function (plotExtent) {
-        this.plotExtent = plotExtent;
-        return this;
-    };
-
-    perplot.PerPlot.prototype.getExtent = function (data) {
-        var firstX = data[0].partitions[0].value,
-            firstY = data[0].partitions[0].events.length,
-            extent = {
-                x: {min: firstX, max: firstX},
-                y: {min: firstY, max: firstY}
-            };
-        data.forEach(function (d) {
-            d.partitions.forEach(function (p) {
-                extent.x.min = Math.min(extent.x.min, p.value);
-                extent.x.max = Math.max(extent.x.max, p.value);
-                extent.y.max = Math.max(extent.y.max, p.events.length);
-                extent.y.min = Math.min(extent.y.min, p.events.length);
-            });
-        });
-        return extent;
-    };
-
-    perplot.PerPlot.prototype.getFilter = function () {
-        return this.filter;
-    };
-
-    perplot.PerPlot.prototype.createIndicationFilter = function (lineValue, xValue) {
-        var data = this.svg.select('.perplot-path' + this.getLineClass(lineValue))
-                .datum(),
-            extent = data.partitions[xValue].julianDateExtent;
-        return function (d) {
-            return extent.min <= d.julianDate && d.julianDate < extent.max;
-        };
-    };
-
-    perplot.PerPlot.prototype.destroy = function () {
-        this.svg.select('#perplot-voronoi')
-            .selectAll('*')
-            .on('mouseover', null);
-        this.container.remove();
-        this.listeners = null;
-    };
-
-    perplot.PerPlot.prototype.processData = function (obj) {
-        var data = obj.data,
-            metadata = obj.metadata || this.metadata,
-            calendarName = obj.calendarName || this.calendarName,
-            cycleName = obj.cycleName || this.cycleName;
-        return new perplotsdatasetbuilder.PerPlotsDataSetBuilder(metadata)
-            .setCalendarName(calendarName)
-            .setCycleName(cycleName)
-            .setData(data)
-            .build();
-    };
-
-    perplot.PerPlot.prototype.onReset = function () {
-        this.filter.filterOn = function () {
-            return true;
-        };
-    };
-
-    perplot.PerPlot.prototype.setContentAttribute = function (contentAttribute) {
-        this.contentAttribute = contentAttribute;
-        return this;
-    };
-
-    perplot.PerPlot.prototype.notifyListeners = function (callbackStr, event) {
-        this.listeners.forEach(function (listenerObj) {
-            listenerObj[callbackStr].call(listenerObj.context, event);
-        }, this);
-    };
-
-    perplot.PerPlot.prototype.registerListener = function (callbackObj) {
-        this.listeners.push(callbackObj);
-        return this;
-    };
-
-    perplot.PerPlot.prototype.onSelectionChanged = function (data) {
-        this.update(data);
-    };
-
-    perplot.PerPlot.prototype.onDataSetChanged = function (data, metadata) {
-        this.metadata = metadata;
-        this.build(data);
     };
 
     return perplot;

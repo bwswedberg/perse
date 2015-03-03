@@ -18,7 +18,7 @@ define([
     timewheel.TimeWheel = function (calendarName) {
         this.calendarName = calendarName;
         this.contentAttribute = undefined;
-        this.container = $('<div>').attr({'class': 'perse-perwheel-timewheel'});
+        this.container = $('<div>').attr({'class': 'timewheel'});
         this.svg = undefined;
         this.margin = {left: 4.5, right: 4.5, top: 8, bottom: 1};
         this.viewBox = {width: 100 - this.margin.left - this.margin.right, height: 100 - this.margin.top - this.margin.bottom};
@@ -26,9 +26,8 @@ define([
             max: this.viewBox.width / 2.0,
             min: (this.viewBox.width / 2.0) * 0.2
         };
-        this.extents = undefined;
         this.rings = [];
-        this.focusRing = null;
+        this.focusRingId = undefined;
         this.listeners = [];
         //this.originalData = [];
     };
@@ -39,10 +38,9 @@ define([
     };
 
     timewheel.TimeWheel.prototype.build = function (dataObj) {
-        console.log(dataObj);
         var that = this;
         this.svg = d3.select(this.container.get(0)).append('svg')
-            .attr('class', 'timewheel')
+            .attr('preserveAspectRatio', 'xMinYMin meet')
             .attr('viewBox', [
                 0,
                 0,
@@ -57,8 +55,10 @@ define([
                     centerY = that.viewBox.height / 2.0,
                     distance = Math.sqrt(Math.pow(centerX - xy[0], 2) + Math.pow(centerY - xy[1], 2));
                 if (distance > that.radius.max || distance < that.radius.min) {
-                    that.changeRingSize(null);
-                    that.updateLabel(null, null);
+                    //that.onHover();
+                    that.notifyListeners('onHoverEvent', {'context': that, 'data': undefined});
+                    //that.changeRingSize(null);
+                    //that.updateLabel(null, null);
                 }
             })
             .append('g')
@@ -93,47 +93,62 @@ define([
         }, this);
     };
 
-    timewheel.TimeWheel.prototype.changeRingSize = function (focusRing) {
-        var scaleFactor = focusRing ? 2 : 0,
+    timewheel.TimeWheel.prototype.onHover = function (event) {
+        if (event === undefined || event.data === undefined || event.data.ringId === undefined) {
+            this.changeRingSize(null);
+            this.updateLabel(null, null);
+        } else {
+            this.changeRingSize(event.data.ringId);
+            this.updateLabel(event.data.label, event.data.long);
+        }
+    };
+
+    timewheel.TimeWheel.prototype.changeRingSize = function (focusRingId) {
+        var scaleFactor = (focusRingId === undefined || focusRingId === null) ? 0 : 2,
             ringRadius = (this.radius.max - this.radius.min) / (this.rings.length + scaleFactor),
             endRadius = this.radius.max,
             startRadius;
-        if (focusRing !== this.focusRing) {
-            if (this.focusRing) {
-                this.focusRing.setIsFocusRing(false);
-            }
-            this.focusRing = focusRing;
-            if (this.focusRing) {
-                this.rings.forEach(function (r) {r.setIsFocusRing(false); });
-                this.focusRing.setIsFocusRing(true);
-            } else {
+
+        if (focusRingId !== this.focusRingId) {
+
+            if (focusRingId === undefined || focusRingId === null) {
                 this.rings.forEach(function (r) {r.setIsFocusRing(true); });
+            } else {
+                this.rings.forEach(function (r) {r.setIsFocusRing(r.getRingId() === focusRingId); });
             }
-            this.rings.forEach(function (someRing) {
-                if (someRing === focusRing) {
+
+            this.rings.forEach(function (ring) {
+
+                if (ring.getRingId() === focusRingId) {
                     startRadius = endRadius - ((scaleFactor + 1) * ringRadius);
-                    someRing
+                    ring
                         .setRadius(startRadius, endRadius)
                         .update();
 
                 } else {
                     startRadius = endRadius - ringRadius;
-                    someRing
+                    ring
                         .setRadius(startRadius, endRadius)
                         .update();
 
                 }
                 endRadius = startRadius;
             }, this);
+            this.focusRingId = focusRingId;
         }
+
     };
 
     timewheel.TimeWheel.prototype.createRingListener = function () {
         return {
             context: this,
             onMouseOver: function (event) {
-                this.changeRingSize(event.ring);
-                this.updateLabel(event.ring.label, event.data.long);
+                //this.onHover(event);
+                var data = event.data;
+                data.calendarName = this.calendarName;
+                this.notifyListeners('onHoverEvent', {'context': this, 'data': data});
+                //this.changeRingSize(event.ring);
+                //this.updateLabel(event.ring.label, event.data.long);
             },
             onMouseClick: function () {
                 this.notifyListeners('onTimeWheelSelectionChanged', {context: this});
@@ -163,7 +178,7 @@ define([
         });
     };
 
-    timewheel.TimeWheel.prototype.getExtents = function (dataObj) {
+    timewheel.TimeWheel.prototype.getExtent = function (dataObj) {
         return dataObj.map(function (d) {
             return ring.Ring.prototype.getExtent(d.data);
         });
@@ -176,17 +191,17 @@ define([
         }, {});
     };
 
-    timewheel.TimeWheel.prototype.processData = function (data) {
-        var cal = $.calendars.instance(this.calendarName),
+    timewheel.TimeWheel.prototype.processData = function (params) {
+        var cal = $.calendars.instance(params.calendarName),
             twBuilder = new timewheeldatasetbuilder.TimeWheelDataSetBuilder();
         return twBuilder
-            .setCalendarName(this.calendarName)
-            .setContentAttribute(this.contentAttribute)
-            .setMetadata(this.metadata)
+            .setCalendarName(params.calendarName)
+            .setContentAttribute(params.contentAttribute)
+            .setMetadata(params.metadata)
             .addRing(twBuilder.getJQueryCalendarDayInMonthData(cal))
             .addRing(twBuilder.getJQueryCalendarMonthInYearData(cal))
             .addRing(twBuilder.getJQueryCalendarDayInWeekData(cal))
-            .setRawData(data)
+            .setRawData(params.data)
             .build();
     };
 
@@ -199,13 +214,17 @@ define([
         if (dataObj.hasOwnProperty('data') && dataObj.hasOwnProperty('extent')) {
             this.update(dataObj);
         } else {
-            data = this.processData(dataObj);
+            data = this.processData({
+                calendarName: this.calendarName,
+                contentAttribute: this.contentAttribute,
+                metadata: this.metadata,
+                data: dataObj
+            });
             this.update({
                 'data': data,
-                'extent': this.getExtents(data)
+                'extent': this.getExtent(data)
             });
         }
-
     };
 
     timewheel.TimeWheel.prototype.onDataSetChanged = function (dataObj, metadata) {
@@ -214,10 +233,15 @@ define([
         if (dataObj.hasOwnProperty('data') && dataObj.hasOwnProperty('extent')) {
             this.build(dataObj);
         } else {
-            data = this.processData(dataObj);
+            data = this.processData({
+                calendarName: this.calendarName,
+                contentAttribute: this.contentAttribute,
+                metadata: this.metadata,
+                data: dataObj
+            });
             this.build({
                 'data': data,
-                'extent': this.getExtents(data)
+                'extent': this.getExtent(data)
             });
         }
     };

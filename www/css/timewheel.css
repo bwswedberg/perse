@@ -1,7 +1,13 @@
-svg.timewheel {
+.timewheel {
     width: 100%;
     height: 100%;
+
+}
+
+.timewheel > svg {
+    height: 100%;
     margin: 0 auto;
+    display: block;
 }
 
 .timewheel-arc-background {

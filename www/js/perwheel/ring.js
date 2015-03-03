@@ -49,52 +49,56 @@ define([
 
     timewheel.Ring.prototype.updateArcShells = function (data) {
         var that = this,
-            arc = d3.svg.arc(),
+            arc = d3.svg.arc()
+                .innerRadius(this.radius.inner)
+                .outerRadius(this.radius.outer),
             pie,
-            pieShellData,
             arcGroup;
 
         pie = d3.layout.pie()
             .sort(null) // preserve init order
             .value(function () {return 1; }); // equal arcs
 
-        // for reuse of data on mouse overs if ringData is undefined
-        data = (data === undefined) ? this.ring.selectAll('g.timewheel-arc-background').data() : pie(data);
-
         // update data
-        pieShellData = data.map(function (d) {
-            d.innerRadius = this.radius.inner;
-            d.outerRadius = this.radius.outer;
-            return d;
-        }, this);
-        arcGroup = this.ring.selectAll('g.timewheel-arc-background')
-            .data(pieShellData);
+        if (data !== undefined) {
+            arcGroup = this.ring.selectAll('g.timewheel-arc-background')
+                .data(pie(data));
 
-        // add any additional
-        arcGroup.enter().append('g')
-            .classed({'enabled': true, 'timewheel-arc': true, 'timewheel-arc-background': true})
-            .on('mouseenter', function (d) {
-                that.notifyListeners('onMouseOver', {
-                    context: that,
-                    ring: that,
-                    data: d.data
+            // add any additional
+            arcGroup.enter().append('g')
+                .classed({'enabled': true, 'timewheel-arc': true, 'timewheel-arc-background': true})
+                .on('mouseenter', function (d) {
+                    data = {
+                        long: d.data.long,
+                        short: d.data.short,
+                        ringId: that.ringId,
+                        label: that.label,
+                        value: d.data.value
+                    };
+                    that.notifyListeners('onMouseOver', {
+                        context: that,
+                        //ring: that,
+                        data: data
+                    });
+                })
+                .on('click', function () {
+                    var value = d3.select(this).datum().data.value;
+                    that.disabledList[value].isEnabled = !that.disabledList[value].isEnabled;
+                    that.notifyListeners('onMouseClick', {
+                        context: that
+                    });
+                })
+                .call(function (selection) {
+                    selection.append('path');
+                    selection.append('text')
+                        .style('text-anchor', 'middle');
                 });
-            })
-            .on('click', function () {
-                var value = d3.select(this).datum().data.value;
-                that.disabledList[value].isEnabled = !that.disabledList[value].isEnabled;
-                that.notifyListeners('onMouseClick', {
-                    context: that
-                });
-            })
-            .call(function (selection) {
-                selection.append('path');
-                selection.append('text')
-                    .style('text-anchor', 'middle');
-            });
 
-        // remove any extra
-        arcGroup.exit().remove();
+            // remove any extra
+            arcGroup.exit().remove();
+        }
+
+        arcGroup = this.ring.selectAll('g.timewheel-arc-background');
 
         // update the style
         arcGroup.select('path')
@@ -104,7 +108,6 @@ define([
         arcGroup.select('text')
             .transition()
             .duration(500)
-            //.attr('font-size', 0)
             .text(function (d) { return d.data.short; })
             .attr('transform', function (d) {
                 return 'translate(' + arc.centroid(d) + ')';
@@ -126,7 +129,6 @@ define([
         var arc,
             pie,
             radiusScale,
-            pieFillData,
             arcGroupFill;
 
         pie = d3.layout.pie()
@@ -134,29 +136,9 @@ define([
             .value(function () {return 1; }); // equal arcs
 
         // for reuse of data on mouse overs if ringData is undefined
-        data = (data === undefined) ? this.ring.selectAll('g.timewheel-arc-fill').data() : pie(data);
-
         radiusScale = d3.scale.linear()
             .domain([this.extent.y.min, this.extent.y.max])
             .range([this.radius.inner, this.radius.outer]);
-
-        // update the data
-        pieFillData = data.map(function (d) {
-            d.innerRadius = this.radius.inner;
-            d.outerRadius = radiusScale(d.data.events[d.data.events.length - 1].count.end);
-            return d;
-        }, this);
-
-        arcGroupFill = this.ring.selectAll('g.timewheel-arc-fill')
-            .data(pieFillData);
-
-        // add any needed
-        arcGroupFill.enter().append('g')
-            .classed({'timewheel-arc': true, 'timewheel-arc-fill': true});
-        /*
-            .call(function (selection) {
-                selection.append('path');
-            });*/
 
         arc = d3.svg.arc()
             .innerRadius(function (d) {
@@ -165,15 +147,29 @@ define([
             .outerRadius(function (d) {
                 return radiusScale(d.count.end);
             });
-        arcGroupFill.each(function () {
+
+
+        if (data !== undefined) {
+            arcGroupFill = this.ring.selectAll('g.timewheel-arc-fill')
+                .data(pie(data));
+
+            // add any needed
+            arcGroupFill.enter().append('g')
+                .classed({'timewheel-arc': true, 'timewheel-arc-fill': true});
+
+            // remove any extra
+            arcGroupFill.exit().remove();
+        }
+
+        this.ring.selectAll('g.timewheel-arc-fill').each(function () {
             var g = d3.select(this),
                 gData = g.datum(),
                 paths = g.selectAll('path')
-                    .data(gData.data.events.map(function (d) {
-                        d.startAngle = gData.startAngle;
-                        d.endAngle = gData.endAngle;
-                        return d;
-                    }));
+                    .data(gData.data.events);
+
+            arc
+                .startAngle(gData.startAngle)
+                .endAngle(gData.endAngle);
 
             paths.enter().append('path')
                 .attr('stroke', 'none');
@@ -191,22 +187,10 @@ define([
             paths.exit().remove();
         });
 
-        // remove any extra
-        arcGroupFill.exit().remove();
+    };
 
-        /*
-        // update the style
-        arcGroupFill.select('path')
-            .attr('stroke', 'none')
-            .style('fill', function (d) {
-                return d.data.events[0].color;
-            });
-
-        arcGroupFill.select('path')
-            .transition()
-            .duration(200)
-            .attr('d', arc);*/
-
+    timewheel.Ring.prototype.getRingId = function () {
+        return this.ringId;
     };
 
     timewheel.Ring.prototype.getFilterData = function () {
@@ -238,7 +222,6 @@ define([
             d.isEnabled = true;
             return d;
         });
-        //this.setIsEnabledArc(function () {return true; }, true);
     };
 
     timewheel.Ring.prototype.setRadius = function (inner, outer) {

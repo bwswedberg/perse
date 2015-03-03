@@ -118,7 +118,7 @@ define([
     };
 
     perwheel.PerWheel.prototype.createTimeWheel = function () {
-        var timeWheelDiv = $('<div>');
+        var timeWheelDiv = $('<div>').attr({'class': 'perse-perwheel-timewheel'});
         this.timeWheel = new timewheel.TimeWheel(this.calendarName)
             .render(timeWheelDiv.get(0))
             .registerListener({
@@ -126,9 +126,53 @@ define([
                 onTimeWheelSelectionChanged: function () {
                     this.notifyListeners('onFilterChanged', {context: this, filter: this.getFilter()});
                     this.validateFilterButton();
+                },
+                onHoverEvent: function (event) {
+                    var hoverListeners = this.listeners.filter(function (listener) {
+                        return listener.hasOwnProperty('onHoverEvent');
+                    });
+                    if (hoverListeners.length === 0) {
+                        this.timeWheel.onHover(event);
+                    } else {
+                        this.notifyListeners('onHoverEvent', {context: this, firingPlot: this, data: event.data});
+                    }
+
                 }
             });
         return timeWheelDiv;
+    };
+
+    perwheel.PerWheel.prototype.createIndicationFilter = function (event) {
+        var cal = $.calendars.instance(event.calendarName);
+        switch (event.ringId) {
+        case ('dayOfMonth'):
+            return function (d) {
+                var date = cal.fromJD(d.julianDate);
+                if (date.day() === event.value) {
+                    return true;
+                }
+                return false;
+            };
+
+        case ('dayOfWeek'):
+            return function (d) {
+                var date = cal.fromJD(d.julianDate);
+                if (date.dayOfWeek() === event.value) {
+                    return true;
+                }
+                return false;
+            };
+        case ('monthOfYear'):
+            return function (d) {
+                var date = cal.fromJD(d.julianDate);
+                if (date.month() === event.value) {
+                    return true;
+                }
+                return false;
+            };
+        default:
+            console.warn('Case not supported');
+        }
     };
 
     perwheel.PerWheel.prototype.validateFilterButton = function () {
@@ -141,11 +185,16 @@ define([
         this.filterButton.toggleClass('disabled', shouldEnable);
     };
 
+    perwheel.PerWheel.prototype.getExtent = function (data) {
+        return timewheel.TimeWheel.prototype.getExtent(data);
+    };
+
     perwheel.PerWheel.prototype.reduceExtents = function (timeWheelExtents) {
         return timeWheelExtents.reduce(function (pTimeWheel, cTimeWheel) {
             return pTimeWheel.map(function (ringExtent, index) {
                 ringExtent.y.min = Math.min(ringExtent.y.min, cTimeWheel[index].y.min);
                 ringExtent.y.max = Math.max(ringExtent.y.max, cTimeWheel[index].y.max);
+                return ringExtent;
             });
         });
     };
@@ -160,7 +209,7 @@ define([
     perwheel.PerWheel.prototype.destroy = function () {
         var buttons = [this.filterButton, this.calendarButtons.islamic, this.calendarButtons.gregorian];
         buttons.forEach(function (b) {b.off(); });
-        this.container.remove();
+        this.container.parent().remove();
     };
 
     perwheel.PerWheel.prototype.getFilter = function () {
@@ -182,8 +231,13 @@ define([
         return this.filter;
     };
 
+    perwheel.PerWheel.prototype.processData = function (params) {
+        return timewheel.TimeWheel.prototype.processData(params);
+    };
+
     perwheel.PerWheel.prototype.setContentAttribute = function (contentAttribute) {
         this.timeWheel.setContentAttribute(contentAttribute);
+        return this;
     };
 
     perwheel.PerWheel.prototype.setCalendar = function (calendarName) {
@@ -199,6 +253,11 @@ define([
             this.filter.filterOn = function () {return true; };
             this.notifyListeners('onFilterChanged', {context: this, filter: this.filter});
         }
+        return this;
+    };
+
+    perwheel.PerWheel.prototype.onHover = function (event) {
+        this.timeWheel.onHover(event);
     };
 
     perwheel.PerWheel.prototype.onReset = function () {

@@ -87,7 +87,10 @@ define([
     perwheel.PerWheel.prototype.createCalendarButtonGroup = function () {
         var // menu
             calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Calendar'),
-            gregorian = $('<a>').attr({'role': 'menuitem'}).text('Gregorian ').append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
+            gregorian = $('<a>')
+            .attr({'role': 'menuitem'})
+            .text('Gregorian ')
+            .append($('<span>').attr({'class': 'glyphicon glyphicon-ok-sign', 'aria-hidden': 'true'})),
             islamic = $('<a>').attr({'role': 'menuitem'}).text('Islamic '),
             menu = $('<ul>')
             .attr({'class': 'dropdown-menu', 'role': 'menu'})
@@ -96,11 +99,16 @@ define([
                 $('<li>').attr({'role': 'presentation'}).append(gregorian),
                 $('<li>').attr({'role': 'presentation'}).append(islamic)
             ]),
-        // button
+            // button
             calendarIcon = $('<span>').attr({'class': 'glyphicon glyphicon-calendar', 'aria-hidden': 'true'}),
             calendarButton = $('<button>')
-                .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown', 'title': 'Change Calendar System'})
-                .append(calendarIcon, ' ', $('<span>').attr({'class': 'caret'}));
+            .attr({
+                'class': 'btn btn-default btn-xs dropdown-toggle',
+                'type': 'button',
+                'data-toggle': 'dropdown',
+                'title': 'Change Calendar System'
+            })
+            .append(calendarIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here
         gregorian.on('mouseup', $.proxy(function () {

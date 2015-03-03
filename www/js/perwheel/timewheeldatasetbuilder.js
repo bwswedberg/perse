@@ -154,9 +154,7 @@ define([
     timewheel.TimeWheelDataSetBuilder.prototype.getEventTypeLookUpMap = function () {
         var eventTypeLookUpMap = {},
             uniqueValues;
-        if (this.contentAttribute === undefined) {
-
-        } else {
+        if (this.contentAttribute !== undefined && this.contentAttribute !== null) {
             uniqueValues = this.metadata.attribute.attributes[this.contentAttribute].uniqueValues;
             eventTypeLookUpMap = Object.keys(uniqueValues)
                 .map(function (key) {

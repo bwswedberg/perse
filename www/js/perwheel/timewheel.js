@@ -21,7 +21,10 @@ define([
         this.container = $('<div>').attr({'class': 'timewheel'});
         this.svg = undefined;
         this.margin = {left: 4.5, right: 4.5, top: 8, bottom: 1};
-        this.viewBox = {width: 100 - this.margin.left - this.margin.right, height: 100 - this.margin.top - this.margin.bottom};
+        this.viewBox = {
+            width: 100 - this.margin.left - this.margin.right,
+            height: 100 - this.margin.top - this.margin.bottom
+        };
         this.radius = {
             max: this.viewBox.width / 2.0,
             min: (this.viewBox.width / 2.0) * 0.2
@@ -38,7 +41,8 @@ define([
     };
 
     timewheel.TimeWheel.prototype.build = function (dataObj) {
-        var that = this;
+        var that = this,
+            ringRadius;
         this.svg = d3.select(this.container.get(0)).append('svg')
             .attr('preserveAspectRatio', 'xMinYMin meet')
             .attr('viewBox', [
@@ -64,7 +68,7 @@ define([
             .append('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
-        var ringRadius = (this.radius.max - this.radius.min) / dataObj.data.length;
+        ringRadius = (this.radius.max - this.radius.min) / dataObj.data.length;
         dataObj.data.forEach(function (item, index) {
             var outerRadius = this.radius.max - (ringRadius * index),
                 innerRadius = outerRadius - ringRadius,

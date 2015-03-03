@@ -112,7 +112,7 @@ define([
             .attr('transform', function (d) {
                 return 'translate(' + arc.centroid(d) + ')';
             })
-            .attr('font-size', function (d) {
+            .attr('font-size', function () {
                 return (that.isFocusRing) ? '.35' + 'em' : '.15' + 'em';
             })
             .attr('dy', '.35em');

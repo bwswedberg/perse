@@ -163,7 +163,6 @@ define([
         var cal = $.calendars.instance(this.calendarName),
             newData = [],
             extent = this.getExtent(),
-            minDate = cal.fromJD(extent.min),
             myDate = cal.fromJD(extent.min),
             agg = this.createAggregate('0', 0);
 
@@ -211,7 +210,8 @@ define([
         } else {
             uniqueValues = this.metadata.attribute.attributes[attr].uniqueValues;
             parsedData = data.map(function (chunk) {
-                var out = chunk.composite.reduce(function (p, c) {
+                var out, y;
+                out = chunk.composite.reduce(function (p, c) {
                     if (p.hasOwnProperty(c[attr])) {
                         p[c[attr]].events.push(c);
                     } else {
@@ -220,7 +220,7 @@ define([
                     return p;
                 }, {});
 
-                var y = 0;
+                y = 0;
                 chunk.composite = Object.keys(out)
                     .map(function (k) {
                         return out[k];

@@ -15,7 +15,7 @@ define([
     'perattrs/perattrs',
     'pertimeline/pertimeline',
     'pertable/pertable',
-    'general/waitmodal',
+    'pertoolbar/pertoolbar',
     // No namespace
     'bootstrap'
 ], function (
@@ -29,7 +29,7 @@ define([
     perattrs,
     pertimeline,
     pertable,
-    waitmodal
+    pertoolbar
 ) {
 
     //localhost:8080/WebStormProjects/perse-two/www/index.html
@@ -70,6 +70,20 @@ define([
             .render(largeLeft)
             .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perMap);
+
+        // pertoolbar section
+        var perToolbar = new pertoolbar.PerToolbar()
+            .render(largeRight)
+            .registerListener({
+                'context': this,
+                'onReset': function () {
+                    this.coordinator.onReset();
+                },
+                'onCalendarChanged': function (event) {
+                    this.coordinator.setCalendar(event.calendarName);
+                    this.coordinator.onRefresh();
+                }
+            });
 
         // perattr section
         var perAttrs = new perattrs.PerAttrs()

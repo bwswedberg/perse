@@ -156,7 +156,7 @@ define([
         case ('dayOfMonth'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                if (date.day() === event.value) {
+                if (date.day() - 1 === event.value) {
                     return true;
                 }
                 return false;
@@ -173,7 +173,7 @@ define([
         case ('monthOfYear'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                if (date.month() === event.value) {
+                if (date.month() - 1 === event.value) {
                     return true;
                 }
                 return false;

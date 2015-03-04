@@ -1,13 +1,16 @@
 .timewheel {
+    display: block;
+    position: relative;
     width: 100%;
     height: 100%;
-
 }
 
 .timewheel > svg {
-    height: 100%;
     margin: 0 auto;
     display: block;
+    position: relative;
+    height: 100%;
+    width: 100%;
 }
 
 .timewheel-arc-background {
@@ -47,5 +50,5 @@
 }
 
 #timewheel-label {
-    font-size: .4em;
+    font-size: .43em;
 }

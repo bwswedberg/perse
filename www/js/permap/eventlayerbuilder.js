@@ -41,7 +41,7 @@ define([
         var uniqueValues = this.metadata.attribute.attributes[this.attributeName].uniqueValues,
             styles = {},
             colors = Object.keys(uniqueValues).map(function (key) {return uniqueValues[key].color; }),
-            opacities = {'max': 0.8, 'med': 0.5, 'min': 0.1};
+            opacities = {'max': 0.8, 'med': 0.5, 'min': 0.01};
 
         Object.keys(opacities).forEach(function (highlightLevel) {
             colors.forEach(function (color) {
@@ -77,7 +77,7 @@ define([
                 geometry: new ol.geom.Point(ol.proj.transform(obj.coord, this.projection, 'EPSG:3857')),
                 data: obj,
                 color: uniqueValues[obj[attrName]].color,
-                highlightLevel: 'med'
+                highlightLevel: 'max'
             });
             features.push(feature);
         }, this);

@@ -26,7 +26,7 @@ define([
         this.margin = {left: 30, right: 3, top: 10, bottom: 15};
         this.size = {
             width: 1125 - this.margin.right - this.margin.left,
-            height: 80 - this.margin.top - this.margin.bottom
+            height: 70 - this.margin.top - this.margin.bottom
         };
         this.xScale = undefined;
         this.yScale = undefined;

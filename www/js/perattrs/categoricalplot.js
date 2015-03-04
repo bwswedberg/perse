@@ -28,7 +28,7 @@ define([
             width: 150 - this.margin.left - this.margin.right,
             height: 170 - this.margin.top - this.margin.bottom
         };
-        this.barSize = {height: 20, offset: 1};
+        this.barSize = {height: 18, offset: 1};
         this.buttons = {'none': undefined, 'filter': undefined};
         this.metadata = undefined;
         this.deselected = [];

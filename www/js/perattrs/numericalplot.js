@@ -20,8 +20,8 @@ define([
         this.container = $('<div>').attr({'class': 'perse-perattr-numericalplot'});
         this.listeners = [];
         this.svg = undefined;
-        this.margin = {top: 0, right: 5, bottom: 14, left: 25};
-        this.viewBox = {width: 150, height: 190};
+        this.margin = {top: 14, right: 7, bottom: 15, left: 25};
+        this.viewBox = {width: 150, height: 174};
         this.xScale = undefined;
         this.yScale = undefined;
         this.brush = undefined;

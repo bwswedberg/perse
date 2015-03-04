@@ -1,12 +1,7 @@
 .perse-perplot {
     position: absolute;
-    min-height: 100px;
-    min-width: 100px;
     pointer-events: all;
-    /*padding-right: 5px;*/
-}
-
-.perse-perplot > .panel.panel-default {
     background-color: rgba(240, 240, 240, 0.85);
-    /*box-shadow: 1px 1px 5px #C0C0C0;*/
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }

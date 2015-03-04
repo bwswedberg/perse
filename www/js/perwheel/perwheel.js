@@ -49,11 +49,13 @@ define([
 
         if (shouldRenderToolbar) {
             panel.append(panelHeader, this.container);
+            $(parent).append(panel);
         } else {
-            panel.append(this.container);
+            //panel.append(this.container);
+            this.container = parent;
         }
 
-        $(parent).append(panel);
+
         this.container.append(this.createTimeWheel());
         return this;
     };

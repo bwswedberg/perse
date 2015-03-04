@@ -1,6 +1,6 @@
 .perse-perattr-categoricalplot {
     width: 150px;
-    height: 190px;/*210px;*/
+    height: 174px;
     margin: 0 auto;
 }
 
@@ -14,7 +14,7 @@
 
 .categoricalplot-chart {
     width: 150px;
-    max-height: 162px;
+    max-height: 144px;/*162px*/
     overflow: auto;
 }
 

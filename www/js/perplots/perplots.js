@@ -31,7 +31,7 @@ define([
         this.calendarName = 'islamic';
         this.cycleName = 'MonthOfYear';
         this.voronoiPolygons = undefined;
-        this.perPlotType = 'timewheel';
+        this.perPlotType = 'timewheel';//'lineplot';
         this.plots = {};
     };
 

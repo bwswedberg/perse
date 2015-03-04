@@ -62,7 +62,7 @@ define([
     calc.PerPlotsPositionCalculator.prototype.getPositions = function (containerWidth, containerHeight) {
         var offset = {left: 5, right: 5, between: 2.5},
             width = containerWidth * (1 / 5),
-            height = (containerHeight - (6 * offset.between)) * (1 / 3), // this is a percent
+            height = containerHeight * (1 / 3) - (2 * offset.between), // this is a percent
             leftSide,
             rightSide,
             extent = this.getExtent();
@@ -105,6 +105,8 @@ define([
                 // this is euclidean but shouldn't be
                 return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
             };
+
+        console.log('height', containerHeight + ' ');
 
         // Each data point ranks them
         var rankings = this.data.map(function (d) {

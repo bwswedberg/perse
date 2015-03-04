@@ -1,3 +1,7 @@
-.perse-permap .perse-panel-body {
+.perse-permap {
+}
+
+.perse-permap > .perse-panel-body {
     position: relative;
+    height: 450px;
 }

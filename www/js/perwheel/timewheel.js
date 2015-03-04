@@ -20,7 +20,7 @@ define([
         this.contentAttribute = undefined;
         this.container = $('<div>').attr({'class': 'timewheel'});
         this.svg = undefined;
-        this.margin = {left: 4.5, right: 4.5, top: 8, bottom: 1};
+        this.margin = {left: 5, right: 5, top: 9, bottom: 1};
         this.viewBox = {
             width: 100 - this.margin.left - this.margin.right,
             height: 100 - this.margin.top - this.margin.bottom
@@ -32,7 +32,6 @@ define([
         this.rings = [];
         this.focusRingId = undefined;
         this.listeners = [];
-        //this.originalData = [];
     };
 
     timewheel.TimeWheel.prototype.render = function (parent) {
@@ -44,13 +43,13 @@ define([
         var that = this,
             ringRadius;
         this.svg = d3.select(this.container.get(0)).append('svg')
-            .attr('preserveAspectRatio', 'xMinYMin meet')
             .attr('viewBox', [
                 0,
                 0,
                 this.viewBox.width + this.margin.left + this.margin.right,
                 this.viewBox.height + this.margin.top + this.margin.bottom
             ].join(' '))
+            .attr('preserveAspectRatio', 'xMidYMid meet')
             .on('mouseleave', function () {
                 // A more sophisticated function to reliably check if mouse outside of or inside
                 // of the wheel/annulus

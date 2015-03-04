@@ -1,6 +1,6 @@
 .perse-perattr-numericalplot {
     width: 150px;
-    height: 190px;
+    height: 174px;
     /*font-size: .7em;*/
     position: relative;
     margin: 0 auto;
@@ -35,7 +35,7 @@
 }
 
 .numericalplot-axis text {
-    font-size: .55em;
+    font-size: .65em;
 }
 
 .numericalplot-axis text.numericalplot-axis-label {
@@ -46,5 +46,5 @@
 
 #numericalplot-label {
     text-anchor: top;
-    font-size: .69em;
+    font-size: .71em;
 }

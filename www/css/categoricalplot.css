@@ -1,11 +1,11 @@
 .perse-perattr-categoricalplot {
     width: 150px;
-    height: 210px;
+    height: 190px;/*210px;*/
     margin: 0 auto;
 }
 
 .categoricalplot-chart {
-     font-size: .7em;
+    font-size: .7em;
  }
 
 .categoricalplot-axis {
@@ -14,7 +14,7 @@
 
 .categoricalplot-chart {
     width: 150px;
-    max-height: 170px;
+    max-height: 162px;
     overflow: auto;
 }
 
@@ -69,4 +69,15 @@
 
 .categoricalplot-bar rect {
     stroke: none;
+}
+
+#categoricalplot-label-text {
+    text-anchor: top;
+    font-size: .69em;
+}
+
+.categoricalplot-label > svg,
+.categoricalplot-chart > svg,
+.categoricalplot-axis > svg {
+    display: block;
 }

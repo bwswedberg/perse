@@ -21,6 +21,7 @@ define([
         this.listeners = [];
         this.svgChart = undefined;
         this.svgXAxis = undefined;
+        this.svgLabel = undefined;
         this.margin = {top: 1, right: 3, bottom: 1, left: 3};
         this.xScale = undefined;
         this.size = {
@@ -88,22 +89,45 @@ define([
     };
 
     categoricalplot.CategoricalPlot.prototype.build = function (data) {
-        var chartContainer = $('<div>').attr({'class': 'categoricalplot-chart'}),
+        var labelContainer = $('<div>').attr({'class': 'categoricalplot-label'}),
+            chartContainer = $('<div>').attr({'class': 'categoricalplot-chart'}),
             axisContainer = $('<div>').attr({'class': 'categoricalplot-axis'}),
             xExtent = this.getXExtent(data);
 
         this.xScale = d3.scale.linear()
             .domain([xExtent.min, xExtent.max])
             .range([0, this.size.width]);
-
+        this.buildLabel(labelContainer.get(0));
         this.buildChart(chartContainer.get(0), data);
         this.buildAxis(axisContainer.get(0));
-        this.container.append(chartContainer, axisContainer);
+        this.container.append(labelContainer, chartContainer, axisContainer);
+    };
+
+    categoricalplot.CategoricalPlot.prototype.buildLabel = function (container) {
+        this.svgLabel = d3.select(container).append('svg')
+            .attr('height', '14px')
+            .attr('width', (this.size.width + this.margin.left + this.margin.right) + 'px')
+            .append('g')
+            .attr('transform', 'translate(' + this.margin.left + ',0)');
+
+        this.svgLabel.append('text')
+            .attr('id', 'categoricalplot-label-text');
+
+        this.updateLabel('');
+    };
+
+    categoricalplot.CategoricalPlot.prototype.updateLabel = function (label) {
+        var labelNode = this.svgLabel.select('#categoricalplot-label-text')
+                .text(label),
+            bbox = labelNode.node().getBBox();
+        labelNode
+            .attr('x', this.size.width - bbox.width)
+            .attr('y', bbox.height);
     };
 
     categoricalplot.CategoricalPlot.prototype.buildAxis = function (container) {
         this.svgXAxis = d3.select(container).append('svg')
-            .attr('height', '35px')
+            .attr('height', '14px')
             .attr('width', this.size.width + this.margin.left + this.margin.right + 'px')
             .append('g')
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
@@ -116,9 +140,9 @@ define([
             xAxisBuilder = d3.svg.axis()
                 .scale(that.xScale)
                 .ticks(4)
-                .innerTickSize(5)
-                .outerTickSize(5)
-                .tickPadding(5)
+                .innerTickSize(3)
+                .outerTickSize(0)
+                .tickPadding(3)
                 .orient('bottom');
 
         this.svgXAxis.selectAll('.categoricalplot-axis').remove();
@@ -126,13 +150,15 @@ define([
         this.svgXAxis.append('g')
             .attr('transform', 'translate(0, 0)')
             .attr('class', 'categoricalplot-axis')
-            .call(xAxisBuilder)
+            .call(xAxisBuilder);
+            /*
             .append('text')
             .attr('class', 'categoricalplot-axis-label')
             .attr('transform', 'translate(' + (this.size.width / 2) + ',' + 23 + ')')
             .attr('dy', '.71em')
             .style('text-anchor', 'middle')
             .text('Frequency');
+            */
     };
 
     categoricalplot.CategoricalPlot.prototype.buildChart = function (container, data) {
@@ -196,7 +222,14 @@ define([
                 }
                 that.validateButtons();
                 that.notifyListeners('onPlotSelectionChanged', {context: that});
-
+            })
+            .on('mouseenter', function () {
+                var d = d3.select(this).datum(),
+                    total = d.events[d.events.length - 1].count.end;
+                that.updateLabel('Frequency: ' + total);
+            })
+            .on('mouseleave', function () {
+                that.updateLabel('');
             })
             .call(function (selection) {
                 selection.append('g')
@@ -224,7 +257,6 @@ define([
                 var g = d3.select(this),
                     segData = g.datum().events,
                     segments;
-
 
                 // bind new data
                 segments = g.selectAll('rect')

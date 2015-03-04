@@ -1,7 +1,7 @@
 .perse-perattr-numericalplot {
     width: 150px;
-    height: 210px;
-    font-size: .7em;
+    height: 190px;
+    /*font-size: .7em;*/
     position: relative;
     margin: 0 auto;
 }
@@ -31,7 +31,7 @@
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
-    stroke-width: .7px;
+    stroke-width: 1px;
 }
 
 .numericalplot-axis text {
@@ -43,7 +43,6 @@
     letter-spacing: .05em;
     shape-rendering: precision;
 }
-
 
 #numericalplot-label {
     text-anchor: top;

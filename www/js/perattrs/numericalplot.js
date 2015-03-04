@@ -20,8 +20,8 @@ define([
         this.container = $('<div>').attr({'class': 'perse-perattr-numericalplot'});
         this.listeners = [];
         this.svg = undefined;
-        this.margin = {top: 10, right: 5, bottom: 10, left: 15};
-        this.viewBox = {width: 100, height: 140};
+        this.margin = {top: 0, right: 5, bottom: 14, left: 25};
+        this.viewBox = {width: 150, height: 190};
         this.xScale = undefined;
         this.yScale = undefined;
         this.brush = undefined;
@@ -66,7 +66,9 @@ define([
         var xExtent = this.getXExtent(data);
 
         this.svg = d3.select(this.container.get(0)).append('svg')
-            .attr('viewBox', [0, 0, this.viewBox.width, this.viewBox.height].join(' '))
+            //.attr('viewBox', [0, 0, this.viewBox.width, this.viewBox.height].join(' '))
+            .attr('width', this.viewBox.width)
+            .attr('height', this.viewBox.height)
             .append('g')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
@@ -147,16 +149,16 @@ define([
         xAxisBuilder = d3.svg.axis()
             .scale(this.xScale)
             .ticks(5)
-            .innerTickSize(2)
-            .outerTickSize(2)
-            .tickPadding(2)
+            .innerTickSize(3)
+            .outerTickSize(0)
+            .tickPadding(3)
             .orient('bottom');
 
         yAxisBuilder = d3.svg.axis()
             .scale(this.yScale)
-            .innerTickSize(2)
-            .outerTickSize(2)
-            .tickPadding(2)
+            .innerTickSize(3)
+            .outerTickSize(0)
+            .tickPadding(3)
             .tickFormat(function (d) {
                 var prefix = d3.formatPrefix(d);
                 return (d >= 1000) ? prefix.scale(d) + prefix.symbol : d;
@@ -171,7 +173,7 @@ define([
 
         this.svg.append('g')
             .attr('class', 'numericalplot-axis')
-            .attr('transform', 'translate(-1,0)')
+            .attr('transform', 'translate(-2,0)')
             .call(yAxisBuilder);
     };
 

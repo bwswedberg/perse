@@ -76,16 +76,27 @@ define([
 
         this.update(data);
         this.buildBrush();
+
     };
 
     numericalplot.NumericalPlot.prototype.update = function (data) {
         var that = this,
             yExtent = this.getYExtent(data),
+            xExtent = this.getXExtent(data),
             bars;
+        console.log(xExtent);
+        this.xScale = d3.scale.linear()
+            .domain([xExtent.min, xExtent.max])
+            .range([0, this.size.width]);
 
         this.yScale = d3.scale.linear()
             .domain([yExtent.min, yExtent.max])
             .range([this.size.height, 0]);
+
+        if (this.brush !== undefined) {
+            this.brush.x(this.xScale);
+            this.svg.select('.brush').call(this.brush.clear());
+        }
 
         bars = this.svg.selectAll('.numericalplot-bin')
             .data(data);
@@ -96,7 +107,8 @@ define([
         bars.each(function () {
             var g = d3.select(this),
                 gData = g.datum(),
-                rects;
+                rects,
+                barWidth = (gData.dx === 0) ? that.size.width : that.xScale(gData.x + gData.dx) - that.xScale(gData.x);
 
             rects = g.selectAll('rect')
                 .data(gData.events);
@@ -113,7 +125,7 @@ define([
                 .attr('y', function (d) {
                     return that.yScale(d.count.end);
                 })
-                .attr('width', that.xScale(gData.dx))
+                .attr('width', barWidth)
                 .attr('height', function (d) {
                     return that.yScale(d.count.begin) - that.yScale(d.count.end);
                 });
@@ -123,6 +135,7 @@ define([
         });
 
         bars.attr('transform', function (d) {
+            console.log(d);
             return 'translate(' + that.xScale(d.x) + ',0)';
         });
 
@@ -135,6 +148,7 @@ define([
         var xAxisBuilder, yAxisBuilder;
         xAxisBuilder = d3.svg.axis()
             .scale(this.xScale)
+            .ticks(5)
             .innerTickSize(2)
             .outerTickSize(2)
             .tickPadding(2)
@@ -218,6 +232,7 @@ define([
     };
 
     numericalplot.NumericalPlot.prototype.getXExtent = function (data) {
+        console.log(data);
         return {
             min: data[0].x,
             max: data[data.length - 1].x + data[data.length - 1].dx

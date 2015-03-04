@@ -230,6 +230,9 @@ define([
     };
 
     numericalplot.NumericalPlot.prototype.getXExtent = function (data) {
+        if (data.length === 0) {
+            return {min: 0, max: 0};
+        }
         return {
             min: data[0].x,
             max: data[data.length - 1].x + data[data.length - 1].dx

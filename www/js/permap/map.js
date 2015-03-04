@@ -42,6 +42,7 @@ define([
 
     map.Map.prototype.render = function (parent) {
         this.theMap = new ol.Map({
+            interactions: ol.interaction.defaults({'mouseWheelZoom': false}),
             controls: [],
             view: new ol.View({
                 projection: 'EPSG:900913',

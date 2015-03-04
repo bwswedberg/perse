@@ -270,7 +270,7 @@ define([
 
     perwheel.PerWheel.prototype.onReset = function () {
         this.filterButton.toggleClass('disabled', true);
-        this.filter.filterOn = function () {return true; };
+        // this.filter.filterOn = function () {return true; };
         this.timeWheel.setAllEnabled();
     };
 

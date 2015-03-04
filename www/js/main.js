@@ -42,8 +42,7 @@ require([
 
     load = function () {
         app.show();
-        modal.off();
-        modal.remove();
+        modal.modal('hide');
     };
 
     modal.on('shown.bs.modal', function () {
@@ -54,6 +53,12 @@ require([
             .init();
         $('body').prepend(app.createNavBar());
     });
+
+    modal.on('hidden.bs.modal', function () {
+        modal.off();
+        modal.remove();
+    });
+
     $(modal).modal({
         keyboard: false,
         background: 'static'

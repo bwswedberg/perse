@@ -64,6 +64,7 @@ define([
         builder.setGeospatial({id: 'coord'});
         builder.setDescriptionAttribute({id: 'description', label: columns.description});
         columns.attributes.forEach(function (a) {
+            var uniqueColors;
             attributes[a] = {
                 label: a,
                 isNumeric: data.every(function (d) {
@@ -84,10 +85,16 @@ define([
                     }
                 });
 
+                if (Object.keys(attributes[a].uniqueValues).length > 9) {
+                    uniqueColors = colorbrewer.Set1['9'].reverse();
+                } else {
+                    uniqueColors = colorbrewer.Set1[Object.keys(attributes[a].uniqueValues).length].reverse();
+                }
+
                 Object.keys(attributes[a].uniqueValues)
                     .sort(function (key1, key2) {return attributes[a].uniqueValues[key1].count - attributes[a].uniqueValues[key2].count; })
-                    .forEach(function (k, i) {
-                        attributes[a].uniqueValues[k].color = colorbrewer.Set1['9'][i % 9];
+                    .forEach(function (k, i, arr) {
+                        attributes[a].uniqueValues[k].color = uniqueColors[i % arr.length];
                     });
 
             } else {

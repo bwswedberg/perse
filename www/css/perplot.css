@@ -2,7 +2,7 @@
     position: absolute;
     min-height: 100px;
     min-width: 100px;
-
+    pointer-events: all;
     /*padding-right: 5px;*/
 }
 

@@ -48,7 +48,7 @@ define([
     };
 
     data.CrossfilterDataSet.prototype.containsDimension = function (someFilter) {
-        return (this.dimensions[someFilter.uniqueId]);
+        return this.dimensions.hasOwnProperty(someFilter.uniqueId);
     };
 
     data.CrossfilterDataSet.prototype.addDimension = function (someFilter) {
@@ -79,6 +79,13 @@ define([
         if (this.containsDimension(someFilter)) {
             this.removeDimension(someFilter); // For sanity. Replace later.
         }
+    };
+
+    data.CrossfilterDataSet.prototype.removeAllFilters = function () {
+        Object.keys(this.dimensions).forEach(function (key) {
+            this.dimensions[key].dispose();
+            delete this.dimensions[key];
+        }, this);
     };
 
     return data;

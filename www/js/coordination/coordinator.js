@@ -63,10 +63,11 @@ define([], function () {
     };
 
     coordination.Coordinator.prototype.onReset = function () {
+        this.dataSetAdapter.removeAllFilters();
         this.observers.forEach(function (obs) {
-            console.log(obs);
             obs.onReset();
         }, this);
+        this.onRefresh();
     };
 
     coordination.Coordinator.prototype.updateFilter = function (filterObject) {

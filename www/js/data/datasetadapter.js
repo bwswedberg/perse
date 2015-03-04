@@ -18,7 +18,7 @@ define([], function () {
      * @constructor
      */
     data.DataSetAdapter = function (dataSetObject) {
-        var verifyCall, getSize, updateFilter, removeFilter, getAllData, getData, getMetadata;
+        var verifyCall, getSize, updateFilter, removeFilter, removeAllFilters, getAllData, getData, getMetadata;
 
         verifyCall = function (someFunction, args) {
             var value;
@@ -38,6 +38,10 @@ define([], function () {
             return verifyCall(dataSetObject.removeFilter, [someFilterUniqueId]);
         };
 
+        removeAllFilters = function () {
+            return verifyCall(dataSetObject.removeAllFilters);
+        };
+
         getData = function () {
             return verifyCall(dataSetObject.getData, []);
         };
@@ -54,6 +58,7 @@ define([], function () {
             getSize: getSize,
             updateFilter: updateFilter,
             removeFilter: removeFilter,
+            removeAllFilters: removeAllFilters,
             getAllData: getAllData,
             getData: getData,
             getMetadata: getMetadata

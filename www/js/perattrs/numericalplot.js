@@ -135,7 +135,6 @@ define([
         });
 
         bars.attr('transform', function (d) {
-            console.log(d);
             return 'translate(' + that.xScale(d.x) + ',0)';
         });
 
@@ -232,7 +231,6 @@ define([
     };
 
     numericalplot.NumericalPlot.prototype.getXExtent = function (data) {
-        console.log(data);
         return {
             min: data[0].x,
             max: data[data.length - 1].x + data[data.length - 1].dx

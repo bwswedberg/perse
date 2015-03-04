@@ -84,7 +84,6 @@ define([
             yExtent = this.getYExtent(data),
             xExtent = this.getXExtent(data),
             bars;
-        console.log(xExtent);
         this.xScale = d3.scale.linear()
             .domain([xExtent.min, xExtent.max])
             .range([0, this.size.width]);

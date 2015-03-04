@@ -32,10 +32,35 @@ require.config({
 });
 
 require([
-    'perse',
-    'jquery'
-], function (perse, $) {
-    var app = new perse.PerSE(document.getElementById('perse'));
-    $('body').prepend(app.createNavBar());
-    app.init();
+    'jquery',
+    'general/waitmodal',
+    'perse'
+], function ($, waitmodal, perse) {
+    var app,
+        load,
+        modal = waitmodal.createWaitModal();
+
+    load = function () {
+        app.show();
+        modal.off();
+        modal.remove();
+    };
+
+    modal.on('shown.bs.modal', function () {
+        app = new perse.PerSE()
+            .render($('#perse'))
+            .onLoadEnd(load)
+            .hide()
+            .init();
+        $('body').prepend(app.createNavBar());
+    });
+    $(modal).modal({
+        keyboard: false,
+        background: 'static'
+    });
+
+
+
+
+
 });

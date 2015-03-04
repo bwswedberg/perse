@@ -15,6 +15,7 @@ define([
     'perattrs/perattrs',
     'pertimeline/pertimeline',
     'pertable/pertable',
+    'general/waitmodal',
     // No namespace
     'bootstrap'
 ], function (
@@ -27,20 +28,28 @@ define([
     perwheel,
     perattrs,
     pertimeline,
-    pertable
+    pertable,
+    waitmodal
 ) {
 
     //localhost:8080/WebStormProjects/perse-two/www/index.html
     var perse = {};
 
-    perse.PerSE = function (parent) {
-        this.container = $(parent).addClass('container');
+    perse.PerSE = function () {
+        this.container = undefined;
         this.coordinator = new coordination.Coordinator();
+        this.onLoadEndCallback = undefined;
+    };
+
+    perse.PerSE.prototype.render = function (parent) {
+        this.container = $(parent).addClass('container');
+        return this;
     };
 
     perse.PerSE.prototype.init = function () {
         this.build();
         this.loadData();
+        return this;
     };
 
     perse.PerSE.prototype.build = function () {
@@ -126,6 +135,21 @@ define([
         return header;
     };
 
+    perse.PerSE.prototype.onLoadEnd = function (callback) {
+        this.onLoadEndCallback = callback;
+        return this;
+    };
+
+    perse.PerSE.prototype.show = function () {
+        this.container.css({'visibility': 'visible'});
+        return this;
+    };
+
+    perse.PerSE.prototype.hide = function () {
+        this.container.css({'visibility': 'hidden'});
+        return this;
+    };
+
     perse.PerSE.prototype.createFooter = function () {
 
     };
@@ -144,6 +168,7 @@ define([
                     this.coordinator.setCalendar('gregorian');
                     this.coordinator.setContentAttribute('attribute_0');
                     this.coordinator.onRefresh();
+                    this.onLoadEndCallback();
                 }, this));
             },
             onCancel: function () {

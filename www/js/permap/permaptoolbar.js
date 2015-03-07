@@ -103,7 +103,11 @@ define([
             if (draw.parent().hasClass('disabled')) {
                 return;
             }
-            this.notifyListeners('onInteractionModeChanged', {'context': this, 'mode': 'drawFilter', 'shape': 'Polygon'});
+            this.notifyListeners('onInteractionModeChanged', {
+                'context': this,
+                'mode': 'drawFilter',
+                'shape': 'Polygon'}
+            );
         }, this));
 
         modify.on('mouseup', $.proxy(function () {
@@ -280,7 +284,9 @@ define([
 
     permaptoolbar.PerMapToolbar.prototype.createSeedControlButtonGroup = function () {
         var // menu
-            positioningHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Positioning'),
+            positioningHeader = $('<li>')
+                .attr({'class': 'dropdown-header', 'role': 'presentation'})
+                .text('Positioning'),
             auto = $('<a>').attr({'role': 'menuitem'}).text('Auto '),
             fixed = $('<a>').attr({'role': 'menuitem'}).text('Fixed '),
             divider1 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
@@ -409,7 +415,7 @@ define([
                 }, this);
                 this.buttons.filterDraw.parent().toggleClass('disabled', event.isEnabled);
             },
-            'onClearFilterButtons': function (event) {
+            'onClearFilterButtons': function () {
                 ['filterMove', 'filterMove'].forEach(function (buttonName) {
                     this.removeGlyphIcon(this.buttons[buttonName]);
                 }, this);
@@ -423,7 +429,7 @@ define([
                     }
                 }, this);
             },
-            'onClearVoronoiButtons': function (event) {
+            'onClearVoronoiButtons': function () {
                 ['voronoiAdd', 'voronoiMove', 'voronoiRemove'].forEach(function (buttonName) {
                     this.removeGlyphIcon(this.buttons[buttonName]);
                 }, this);

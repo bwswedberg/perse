@@ -106,8 +106,6 @@ define([
                 return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
             };
 
-        console.log('height', containerHeight + ' ');
-
         // Each data point ranks them
         var rankings = this.data.map(function (d) {
             var rank, seedCoord;
@@ -125,7 +123,8 @@ define([
 
         var getClosestToAnyPosition = function (dataList) {
             return dataList.reduce(function (pData, cData) {
-                if (getDistance(pData.seedCoord, pData.rank[0].coord) > getDistance(cData.seedCoord, cData.rank[0].coord)) {
+                if (getDistance(pData.seedCoord, pData.rank[0].coord) >
+                    getDistance(cData.seedCoord, cData.rank[0].coord)) {
                     return cData;
                 }
                 return pData;

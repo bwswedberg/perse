@@ -22,6 +22,7 @@ define([
         this.timeWheel = undefined;
         this.filterButton = undefined;
         this.calendarButtons = {gregorian: undefined, islamic: undefined};
+        this.shouldAnimate = false;
         this.filter = new filter.Filter({
             uniqueId: this.getUniqueId(),
             property: 'julianDate',
@@ -131,6 +132,7 @@ define([
         var timeWheelDiv = $('<div>').attr({'class': 'perse-perwheel-timewheel'});
         this.timeWheel = new timewheel.TimeWheel(this.calendarName)
             .render(timeWheelDiv.get(0))
+            .setShouldAnimate(this.shouldAnimate)
             .registerListener({
                 context: this,
                 onTimeWheelSelectionChanged: function () {
@@ -227,6 +229,14 @@ define([
 
     perwheel.PerWheel.prototype.processData = function (params) {
         return timewheel.TimeWheel.prototype.processData(params);
+    };
+
+    perwheel.PerWheel.prototype.setShouldAnimate = function (someBool) {
+        this.shouldAnimate = someBool;
+        if (this.timeWheel !== undefined || this.timeWheel !== null) {
+            this.timeWheel.setShouldAnimate(someBool);
+        }
+        return this;
     };
 
     perwheel.PerWheel.prototype.setContentAttribute = function (contentAttribute) {

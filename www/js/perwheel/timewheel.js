@@ -17,6 +17,7 @@ define([
 
     timewheel.TimeWheel = function (calendarName) {
         this.calendarName = calendarName;
+        this.shouldAnimate = undefined;
         this.contentAttribute = undefined;
         this.container = $('<div>').attr({'class': 'timewheel'});
         this.svg = undefined;
@@ -72,6 +73,7 @@ define([
             var outerRadius = this.radius.max - (ringRadius * index),
                 innerRadius = outerRadius - ringRadius,
                 twr = new ring.Ring(this.svg)
+                    .setShouldAnimate(this.shouldAnimate)
                     .setLabel(item.label)
                     .setRingId(item.ringId)
                     .setCenter(this.viewBox.width / 2.0, this.viewBox.height / 2.0)
@@ -168,6 +170,14 @@ define([
         text
             .attr('x', this.viewBox.width - bbox.width)
             .attr('y', -3);
+    };
+
+    timewheel.TimeWheel.prototype.setShouldAnimate = function (someBool) {
+        this.shouldAnimate = someBool;
+        if (this.rings.length > 0) {
+            this.rings.setShouldAnimate(someBool);
+        }
+        return this;
     };
 
     timewheel.TimeWheel.prototype.setCalendar = function (calendarName) {

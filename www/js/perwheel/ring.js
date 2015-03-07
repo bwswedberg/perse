@@ -22,6 +22,7 @@ define([
         this.extent = undefined;
         this.disabledList = [];
         this.isFocusRing = true;
+        this.shouldAnimate = undefined;
     };
 
     timewheel.Ring.prototype.build = function (ringData) {
@@ -105,28 +106,48 @@ define([
             .attr('stroke', '#000')
             .attr('fill', '#FFF');
 
-        arcGroup.select('text')
-            .transition()
-            .duration(500)
-            .text(function (d) { return d.data.short; })
-            .attr('transform', function (d) {
-                return 'translate(' + arc.centroid(d) + ')';
-            })
-            .attr('font-size', function () {
-                return (that.isFocusRing) ? '.35' + 'em' : '.15' + 'em';
-            })
-            .attr('dy', '.35em');
+        if (this.shouldAnimate) {
+            arcGroup.select('text')
+                .transition()
+                .duration(500)
+                .text(function (d) {
+                    return d.data.short;
+                })
+                .attr('transform', function (d) {
+                    return 'translate(' + arc.centroid(d) + ')';
+                })
+                .attr('font-size', function () {
+                    return (that.isFocusRing) ? '.35' + 'em' : '.15' + 'em';
+                })
+                .attr('dy', '.35em');
 
+            arcGroup.select('path')
+                .transition()
+                .duration(500)
+                .attr('d', arc);
+        } else {
 
-        arcGroup.select('path')
-            .transition()
-            .duration(500)
-            .attr('d', arc);
+            arcGroup.select('text')
+                .text(function (d) {
+                    return d.data.short;
+                })
+                .attr('transform', function (d) {
+                    return 'translate(' + arc.centroid(d) + ')';
+                })
+                .attr('font-size', function () {
+                    return (that.isFocusRing) ? '.35' + 'em' : '.15' + 'em';
+                })
+                .attr('dy', '.35em');
+
+            arcGroup.select('path')
+                .attr('d', arc);
+        }
 
     };
 
     timewheel.Ring.prototype.updateArcFills = function (data) {
-        var arc,
+        var that = this,
+            arc,
             pie,
             radiusScale,
             arcGroupFill;
@@ -174,15 +195,25 @@ define([
             paths.enter().append('path')
                 .attr('stroke', 'none');
 
-            paths
-                .transition()
-                .duration(500)
-                .style('fill', function (d) {
-                    return d.color;
-                })
-                .attr('d', function (d) {
-                    return arc(d);
-                });
+            if (that.shouldAnimate) {
+                paths
+                    .transition()
+                    .duration(500)
+                    .style('fill', function (d) {
+                        return d.color;
+                    })
+                    .attr('d', function (d) {
+                        return arc(d);
+                    });
+            } else {
+                paths
+                    .style('fill', function (d) {
+                        return d.color;
+                    })
+                    .attr('d', function (d) {
+                        return arc(d);
+                    });
+            }
 
             paths.exit().remove();
         });
@@ -222,6 +253,11 @@ define([
             d.isEnabled = true;
             return d;
         });
+    };
+
+    timewheel.Ring.prototype.setShouldAnimate = function (someBool) {
+        this.shouldAnimate = someBool;
+        return this;
     };
 
     timewheel.Ring.prototype.setRadius = function (inner, outer) {

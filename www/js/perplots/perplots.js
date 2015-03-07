@@ -192,13 +192,7 @@ define([
     };
 
     perplots.PerPlots.prototype.setPerPlotPosition = function (plotId, positionObj) {
-        var plotContainer = this.container.find('#' + 'perse-perplot-' + plotId),
-            cssObj = plotContainer.prop('style');
-        if (positionObj.left === 'auto') {
-            cssObj.removeProperty('left');
-        } else {
-            cssObj.removeProperty('right');
-        }
+        var plotContainer = this.container.find('#' + 'perse-perplot-' + plotId);
         plotContainer.animate(positionObj, 1000);
         return this;
     };

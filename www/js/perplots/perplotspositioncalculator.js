@@ -74,7 +74,6 @@ define([
                 position: {
                     top: (height * i) + offset.between * ((i * 2) + 1),
                     left: offset.left,
-                    right: 'auto',
                     width: width,
                     height: height
                 }
@@ -87,8 +86,7 @@ define([
                 coord: [extent.x.max, (extent.y.max - (i * extent.y.dif / 2))],
                 position: {
                     top: (height * i) + offset.between * ((i * 2) + 1),
-                    left: 'auto',
-                    right: offset.right,
+                    left: containerWidth - (width + offset.right),
                     width: width,
                     height: height
                 }

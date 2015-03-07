@@ -50,13 +50,13 @@ define([
                 zoom: 5
             }),
             renderer: 'canvas',
-            /*
+
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 })
             ],
-            /* For Mapbox stuff*/
+            /* For Mapbox stuff
 
             layers: [
                 new ol.layer.Tile({
@@ -64,7 +64,7 @@ define([
                         url: 'http://api.tiles.mapbox.com/v4/bwswedberg.l5e51i3j/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYndzd2VkYmVyZyIsImEiOiJBTjZDRnBJIn0.xzlamtU5oK5yGfb1-w-bYg',
                     })
                 })
-            ],
+            ],*/
             target: $(parent).get(0)
         });
         return this;
@@ -160,18 +160,20 @@ define([
     map.Map.prototype.createToolbarListener = function () {
         return {
             context: this,
-            onZoomIn: function (event) {
+            onZoomIn: function () {
                 var zoom = this.theMap.getView().getZoom();
                 this.theMap.getView().setZoom(zoom + 1);
             },
-            onZoomOut: function (event) {
+            onZoomOut: function () {
                 var zoom = this.theMap.getView().getZoom();
                 this.theMap.getView().setZoom(zoom - 1);
             },
             onVoronoiPositioningChanged: function (event) {
+                var reCalcSeedCoords;
                 this.voronoiPositioning = event.positioning;
                 if (this.voronoiPositioning === 'auto') {
-                    this.updateVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+                    reCalcSeedCoords = this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent());
+                    this.updateVoronoiPoints(reCalcSeedCoords);
                     this.notifyListeners('onDataSetRequested', {'context': this});
                 }
                 this.validateToolbarButtons();
@@ -179,12 +181,13 @@ define([
             onInteractionModeChanged: function (event) {
                 this.updateInteractionMode(event.mode);
             },
-            onVoronoiPositioningReset: function (event) {
-                this.updateVoronoiPoints(this.calculateNewSeedCoords(this.maxPointsExtent));
+            onVoronoiPositioningReset: function () {
+                var newSeedCoords = this.calculateNewSeedCoords(this.maxPointsExtent);
+                this.updateVoronoiPoints(newSeedCoords);
                 this.validateToolbarButtons();
                 this.notifyListeners('onDataSetRequested', {'context': this});
             },
-            onRemoveFilterPolygon: function (event) {
+            onRemoveFilterPolygon: function () {
                 this.removeFilterPolygon();
             }
         };
@@ -240,12 +243,11 @@ define([
     };
 
     map.Map.prototype.createSelectInteraction = function (layer) {
-        var select = new ol.interaction.Select({
+        return new ol.interaction.Select({
             layers: function (vLayer) {
                 return vLayer === layer;
             }
         });
-        return select;
     };
 
     map.Map.prototype.createRemoveInteraction = function (layer) {
@@ -595,7 +597,7 @@ define([
             };
 
         return pointFeatures.map(function (feature, i) {
-            var xValue, yValue, voronoiId, yStep = ((i + 1) % 2) + i;
+            var xValue, yValue, yStep = ((i + 1) % 2) + i;
             if (amount === 1) {
                 xValue = extent.x.min + (extent.x.dif * (1 / 2));
                 yValue = extent.y.min + (extent.y.dif * (1 / 2));
@@ -606,7 +608,7 @@ define([
                 if (i === amount - 1) {
                     xValue = extent.x.min + (extent.x.dif * (1 / 2));
                 } else {
-                    xValue = (i % 2) ? extent.x.min + (extent.x.dif * (1 / 4)) : extent.x.min + (extent.x.dif * (3 / 4));
+                    xValue = (i % 2) ? extent.x.min + (extent.x.dif * 0.25) : extent.x.min + (extent.x.dif * 0.75);
                 }
                 yValue = extent.y.min + extent.y.dif * ((ySteps - yStep) / ySteps);
             }

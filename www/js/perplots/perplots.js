@@ -157,7 +157,7 @@ define([
     perplots.PerPlots.prototype.createPerPlotListener = function () {
         return {
             context: this,
-            onFilterChanged: function (event) {
+            onFilterChanged: function () {
                 console.log('filter changed');
             },
             onHoverEvent: function (event) {
@@ -229,7 +229,7 @@ define([
         };
     };
 
-    perplots.PerPlots.prototype.onIndicationChanged = function (event) {
+    perplots.PerPlots.prototype.onIndicationChanged = function () {
     };
 
     perplots.PerPlots.prototype.setCalendar = function (calendarName) {

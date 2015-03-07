@@ -102,6 +102,7 @@ define([
         // perwheel section
         var perWheel = new perwheel.PerWheel()
             .render(largeRight, true)
+            .setShouldAnimate(true)
             .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perWheel);
 

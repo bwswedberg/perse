@@ -158,27 +158,18 @@ define([
         case ('dayOfMonth'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                if (date.day() - 1 === event.value) {
-                    return true;
-                }
-                return false;
+                return date.day() - 1 === event.value;
             };
 
         case ('dayOfWeek'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                if (date.dayOfWeek() === event.value) {
-                    return true;
-                }
-                return false;
+                return date.dayOfWeek() === event.value;
             };
         case ('monthOfYear'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                if (date.month() - 1 === event.value) {
-                    return true;
-                }
-                return false;
+                return date.month() - 1 === event.value;
             };
         default:
             console.warn('Case not supported');
@@ -219,7 +210,7 @@ define([
     perwheel.PerWheel.prototype.destroy = function () {
         var buttons = [this.filterButton, this.calendarButtons.islamic, this.calendarButtons.gregorian];
         buttons.forEach(function (b) {b.off(); });
-        this.container.parent().remove();
+        this.container.remove();
     };
 
     perwheel.PerWheel.prototype.getFilter = function () {
@@ -227,16 +218,9 @@ define([
             cal = $.calendars.instance(data.calendarName);
         this.filter.filterOn = function (julianDate) {
             var date = cal.fromJD(julianDate);
-            if (!data.periodicity.dayOfWeek.data[date.dayOfWeek()].isEnabled) {
-                return false;
-            }
-            if (!data.periodicity.dayOfMonth.data[date.day() - 1].isEnabled) {
-                return false;
-            }
-            if (!data.periodicity.monthOfYear.data[date.month() - 1].isEnabled) {
-                return false;
-            }
-            return true;
+            return data.periodicity.dayOfWeek.data[date.dayOfWeek()].isEnabled &&
+                data.periodicity.dayOfMonth.data[date.day() - 1].isEnabled &&
+                data.periodicity.monthOfYear.data[date.month() - 1].isEnabled;
         };
         return this.filter;
     };
@@ -272,7 +256,6 @@ define([
 
     perwheel.PerWheel.prototype.onReset = function () {
         this.filterButton.toggleClass('disabled', true);
-        // this.filter.filterOn = function () {return true; };
         this.timeWheel.setAllEnabled();
     };
 

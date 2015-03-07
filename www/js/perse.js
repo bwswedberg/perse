@@ -53,14 +53,22 @@ define([
     };
 
     perse.PerSE.prototype.build = function () {
-        var largeLeft = $('<div>').attr({'class': 'col-md-10', 'id': 'perse-large-left'}),
-            largeRight = $('<div>').attr({'class': 'col-md-2', 'id': 'perse-large-right'}),
-            topRow = $('<div>').attr({'class': 'row', 'id': 'perse-top-row'}).append(largeLeft, largeRight),
-            top = $('<div>').attr({'class': 'col-md-12'})
+        var largeLeft = $('<div>')
+                .attr({'class': 'col-md-10', 'id': 'perse-large-left'}),
+            largeRight = $('<div>')
+                .attr({'class': 'col-md-2', 'id': 'perse-large-right'}),
+            topRow = $('<div>')
+                .attr({'class': 'row', 'id': 'perse-top-row'})
+                .append(largeLeft, largeRight),
+            top = $('<div>')
+                .attr({'class': 'col-md-12'})
                 .append(topRow),
-            middle = $('<div>').attr({'class': 'col-md-12'}),
-            bottom = $('<div>').attr({'class': 'col-md-12'}),
-            main = $('<div>').attr({'class': 'row'})
+            middle = $('<div>')
+                .attr({'class': 'col-md-12'}),
+            bottom = $('<div>')
+                .attr({'class': 'col-md-12'}),
+            main = $('<div>')
+                .attr({'class': 'row'})
                 .append(top, middle, bottom);
 
         this.container.append(main);
@@ -72,7 +80,7 @@ define([
         this.coordinator.registerObserver(perMap);
 
         // pertoolbar section
-        var perToolbar = new pertoolbar.PerToolbar()
+        new pertoolbar.PerToolbar()
             .render(largeRight)
             .registerListener({
                 'context': this,
@@ -141,12 +149,10 @@ define([
             // ----- Wrap it all up -----
             cont = $('<div>')
                 .attr({'class': 'container'})
-                .append(divHeader, navbar),
-            header = $('<div>')
+                .append(divHeader, navbar);
+        return $('<div>')
                 .attr({'class': 'navbar navbar-default navbar-fixed-top'})
                 .append(cont);
-
-        return header;
     };
 
     perse.PerSE.prototype.onLoadEnd = function (callback) {
@@ -173,12 +179,13 @@ define([
         dataLoader.registerListener({
             context: this,
             onLoad: function (event) {
-                var dataSetAdapter = new datasetadapter.DataSetAdapter(new crossfilterdataset.CrossfilterDataSet(event.data, event.metadata));
+                var cfDataSetAdapter = new crossfilterdataset.CrossfilterDataSet(event.data, event.metadata),
+                    dataSetAdapter = new datasetadapter.DataSetAdapter(cfDataSetAdapter);
                 this.coordinator.registerDataSetAdapter(dataSetAdapter);
                 this.coordinator.dataSetChanged();
 
                 // Make sure all animations are finished globally
-                $(":animated").promise().done($.proxy(function () {
+                $(':animated').promise().done($.proxy(function () {
                     this.coordinator.setCalendar('gregorian');
                     this.coordinator.setContentAttribute('attribute_0');
                     this.coordinator.onRefresh();

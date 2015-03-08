@@ -51,22 +51,11 @@ define([
                 this.viewBox.height + this.margin.top + this.margin.bottom
             ].join(' '))
             .attr('preserveAspectRatio', 'xMidYMid meet')
-            .on('mouseleave', function () {
-                // A more sophisticated function to reliably check if mouse outside of or inside
-                // of the wheel/annulus
-                var xy = d3.mouse(this),
-                    centerX = that.viewBox.width / 2.0,
-                    centerY = that.viewBox.height / 2.0,
-                    distance = Math.sqrt(Math.pow(centerX - xy[0], 2) + Math.pow(centerY - xy[1], 2));
-                if (distance > that.radius.max || distance < that.radius.min) {
-                    //that.onHover();
-                    that.notifyListeners('onHoverEvent', {'context': that, 'data': undefined});
-                    //that.changeRingSize(null);
-                    //that.updateLabel(null, null);
-                }
-            })
             .append('g')
-            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+            .on('mouseleave', function () {
+                that.notifyListeners('onHoverEvent', {'context': that, 'data': undefined});
+            });
 
         ringRadius = (this.radius.max - this.radius.min) / dataObj.data.length;
         dataObj.data.forEach(function (item, index) {

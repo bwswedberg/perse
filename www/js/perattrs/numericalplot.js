@@ -211,8 +211,8 @@ define([
             .attr('class', 'brush')
             .call(this.brush);
 
-        brushG.selectAll("rect")
-            .attr("height", this.size.height);
+        brushG.selectAll('rect')
+            .attr('height', this.size.height);
 
         this.svg.append('text')
             .attr('id', 'numericalplot-label');

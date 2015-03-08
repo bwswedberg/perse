@@ -56,7 +56,7 @@ define([
             this.container = parent;
         }
 
-
+        this.addMouseEnterListener();
         this.container.append(this.createTimeWheel());
         return this;
     };
@@ -146,12 +146,28 @@ define([
                     if (hoverListeners.length === 0) {
                         this.timeWheel.onHover(event);
                     } else {
-                        this.notifyListeners('onHoverEvent', {context: this, firingPlot: this, data: event.data});
+                        this.notifyListeners('onHoverEvent', {
+                            context: this,
+                            firingPlot: this,
+                            indicationFilter: (event.data) ? this.createIndicationFilter(event.data) : undefined,
+                            data: event.data
+                        });
                     }
 
                 }
             });
         return timeWheelDiv;
+    };
+
+    perwheel.PerWheel.prototype.addMouseEnterListener = function () {
+        this.container.on('mouseenter', $.proxy(function () {
+            this.notifyListeners('onHoverEvent', {
+                context: this,
+                firingPlot: this,
+                indicationFilter: function () {return true; },
+                data: undefined
+            });
+        }, this));
     };
 
     perwheel.PerWheel.prototype.createIndicationFilter = function (event) {
@@ -271,7 +287,9 @@ define([
 
     perwheel.PerWheel.prototype.notifyListeners = function (callbackStr, event) {
         this.listeners.forEach(function (listenerObj) {
-            listenerObj[callbackStr].call(listenerObj.context, event);
+            if (listenerObj[callbackStr] !== undefined) {
+                listenerObj[callbackStr].call(listenerObj.context, event);
+            }
         }, this);
     };
 

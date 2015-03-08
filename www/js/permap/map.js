@@ -16,7 +16,7 @@ define([
 
     var map = {};
 
-    map.Map = function () {
+    map.Map = function (params) {
         this.listeners = [];
         this.metadata = undefined;
         this.theMap = undefined;
@@ -34,7 +34,7 @@ define([
             remove: undefined,
             draw: undefined
         };
-        this.voronoiPositioning = 'auto';
+        this.voronoiPositioning = params.positioning || 'auto';
         this.voronoiCount = 0;
         this.maxPointsExtent = undefined;
         this.shouldUpdate = true;
@@ -50,13 +50,13 @@ define([
                 zoom: 5
             }),
             renderer: 'canvas',
-
+            /*
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 })
             ],
-            /* For Mapbox stuff
+            /* For Mapbox stuff*/
 
             layers: [
                 new ol.layer.Tile({
@@ -64,7 +64,7 @@ define([
                         url: 'http://api.tiles.mapbox.com/v4/bwswedberg.l5e51i3j/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYndzd2VkYmVyZyIsImEiOiJBTjZDRnBJIn0.xzlamtU5oK5yGfb1-w-bYg',
                     })
                 })
-            ],*/
+            ],
             target: $(parent).get(0)
         });
         return this;
@@ -83,6 +83,7 @@ define([
         this.maxPointsExtent = this.layers.eventPoints.getSource().getExtent();
 
         this.layers.voronoi.polygons = this.getVoronoiPolygonLayer();
+        this.addPolygonIndicationListener();
 
         this.theMap.addLayer(this.layers.voronoi.polygons);
         this.theMap.addLayer(this.layers.voronoi.points);
@@ -108,7 +109,7 @@ define([
         this.layers.eventPoints = this.createEventPointsLayer(data);
 
         if (this.voronoiPositioning === 'auto') {
-            this.updateVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent()));
+            this.updateVoronoiPoints(this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent(), true));
         }
 
         this.theMap.removeLayer(this.layers.voronoi.polygons);
@@ -172,7 +173,10 @@ define([
                 var reCalcSeedCoords;
                 this.voronoiPositioning = event.positioning;
                 if (this.voronoiPositioning === 'auto') {
-                    reCalcSeedCoords = this.reCalculateSeedCoords(this.layers.eventPoints.getSource().getExtent());
+                    reCalcSeedCoords = this.reCalculateSeedCoords(
+                        this.layers.eventPoints.getSource().getExtent(),
+                        false
+                    );
                     this.updateVoronoiPoints(reCalcSeedCoords);
                     this.notifyListeners('onDataSetRequested', {'context': this});
                 }
@@ -287,6 +291,33 @@ define([
                 return someLayer === layer;
             }
         });
+    };
+
+    map.Map.prototype.addPolygonIndicationListener = function () {
+        // change mouse cursor when over marker
+        this.theMap.on('pointermove', function(e) {
+            var pixel = this.theMap.getEventPixel(e.originalEvent);
+            var feature = this.theMap.forEachFeatureAtPixel(
+                pixel,
+                function (feat, lyr) {
+                    return (lyr === null) ? undefined : feat;
+                },
+                this, // callback context
+                function (lyr) {
+                   return this.layers.voronoi.polygons === lyr;
+                },
+                this // layerFilter context
+            );
+            if (feature && feature.get('highlightLevel') === 'max') {
+                return;
+            }
+            this.notifyListeners('onIndicationChanged', {
+                'context': this,
+                'voronoiId': (feature === undefined) ? undefined : feature.get('data').voronoiId,
+                'indicationFilter': undefined
+            });
+        }, this);
+
     };
 
     map.Map.prototype.updateInteractionMode = function (mode) {
@@ -586,7 +617,7 @@ define([
         });
     };
 
-    map.Map.prototype.reCalculateSeedCoords = function (olExtentObj) {
+    map.Map.prototype.reCalculateSeedCoords = function (olExtentObj, shouldChangeId) {
         var pointFeatures = this.layers.voronoi.points.getSource().getFeatures(),
             amount = pointFeatures.length,
             steps = pointFeatures.length + (pointFeatures.length % 2),
@@ -612,9 +643,10 @@ define([
                 }
                 yValue = extent.y.min + extent.y.dif * ((ySteps - yStep) / ySteps);
             }
-
+            if (shouldChangeId) {
+                return {'coord': [xValue, yValue], 'voronoiId': this.getUniqueVoronoiId()};
+            }
             return {'coord': [xValue, yValue], 'voronoiId': feature.getProperties().data.voronoiId};
-            //return {'coord': [xValue, yValue], 'voronoiId': this.getUniqueVoronoiId()};
         }, this);
     };
 
@@ -649,15 +681,38 @@ define([
             this.layers.eventPoints.getSource().forEachFeature(function (feature) {
                 feature.set('highlightLevel', 'max');
             });
-
+            this.layers.voronoi.polygons.getSource().forEachFeature(function (feature) {
+                feature.set('highlightLevel', 'med');
+            });
         } else {
-            this.layers.eventPoints.getSource().forEachFeature(function (feature) {
-                if (event.indicationFilter(feature.get('data'))) {
+            if (event.indicationFilter === undefined || event.indicationFilter === null) {
+                this.layers.eventPoints.getSource().forEachFeature(function (feature) {
+                    feature.set('highlightLevel', 'max');
+                });
+            } else {
+                this.layers.eventPoints.getSource().forEachFeature(function (feature) {
+                    if (event.indicationFilter(feature.get('data'))) {
+                        /* // highlights only the ones within the voronoi poly
+                        var fs = this.layers.voronoi.polygons.getSource().getFeaturesAtCoordinate(feature.getGeometry().getCoordinates());
+                        if (fs[0].get('data').voronoiId === event.voronoiId) {
+                            feature.set('highlightLevel', 'max');
+                        } else {
+                            feature.set('highlightLevel', 'med');
+                        }
+                        */
+                        feature.set('highlightLevel', 'max');
+                    } else {
+                        feature.set('highlightLevel', 'min');
+                    }
+                }, this);
+            }
+
+            this.layers.voronoi.polygons.getSource().forEachFeature(function (feature) {
+                if (feature.get('data').voronoiId === event.voronoiId) {
                     feature.set('highlightLevel', 'max');
                 } else {
                     feature.set('highlightLevel', 'min');
                 }
-
             });
         }
     };

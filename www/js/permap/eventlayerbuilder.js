@@ -41,7 +41,7 @@ define([
         var uniqueValues = this.metadata.attribute.attributes[this.attributeName].uniqueValues,
             styles = {},
             colors = Object.keys(uniqueValues).map(function (key) {return uniqueValues[key].color; }),
-            opacities = {'max': 0.8, 'med': 0.5, 'min': 0.01};
+            opacities = {'max': 0.8, 'med': 0.3, 'min': 0.00};
 
         Object.keys(opacities).forEach(function (highlightLevel) {
             colors.forEach(function (color) {

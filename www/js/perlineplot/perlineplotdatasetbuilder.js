@@ -328,16 +328,16 @@ define([
         var newData;
 
         switch (this.cycleName) {
-        case ('MonthOfYear'):
+        case ('monthOfYear'):
             newData = this.createMonthOfYearData();
             break;
-        case ('DayOfMonth'):
+        case ('dayOfMonth'):
             newData = this.createDayOfMonthData();
             break;
-        case ('DayOfWeek'):
+        case ('dayOfWeek'):
             newData = this.createDayOfWeekData();
             break;
-        case ('WeekOfYear'):
+        case ('weekOfYear'):
             newData = this.createWeekOfYearData();
             break;
             /*

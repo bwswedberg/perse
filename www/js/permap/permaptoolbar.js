@@ -12,30 +12,51 @@ define([
 
     var permaptoolbar = {};
 
-    permaptoolbar.PerMapToolbar = function () {
+    permaptoolbar.PerMapToolbar = function (params) {
         this.listeners = [];
+        this.initValues = {
+            'calendar': params.calendar || 'gregorian',
+            'plotType': params.plotType || 'timeWheel',
+            'cycleName': params.cycleName || 'cycleName',
+            'positioning': params.positioning || 'auto'
+        };
         this.buttons = {
             'reset': undefined,
-            'calendars': {'islamic': undefined, 'gregorian': undefined},
+            'calendars': {
+                'islamic': undefined,
+                'gregorian': undefined
+            },
             'filterDraw': undefined,
             'filterMove': undefined,
             'filterModify': undefined,
             'filterRemove': undefined,
+            'positioning': {
+                'auto': undefined,
+                'fixed': undefined
+            },
             'voronoiAdd': undefined,
             'voronoiMove': undefined,
-            'voronoiRemove': undefined
+            'voronoiRemove': undefined,
+            'plotType': {
+                'timeWheel': undefined,
+                'linePlot': undefined,
+                'monthOfYear': undefined,
+                'weekOfYear': undefined,
+                'dayOfMonth': undefined,
+                'dayOfWeek': undefined
+            }
         };
     };
 
     permaptoolbar.PerMapToolbar.prototype.createControls = function () {
         var zoom = this.createZoomControlButtonGroup(),
-            cycle = this.createCycleButtonGroup(),
+            plotType = this.createPlotSettingsButtonGroup(),
             cal = this.createCalendarButtonGroup(),
             seed = this.createSeedControlButtonGroup(),
             filterC = this.createFilterControlButtonGroup();
         return $('<div>')
             .attr({'class': 'btn-toolbar perse-header-toolbar', 'role': 'toolbar'})
-            .append(zoom, cycle, cal, seed, filterC);
+            .append(zoom, plotType, cal, seed, filterC);
     };
 
     permaptoolbar.PerMapToolbar.prototype.createFilterControlButtonGroup = function () {
@@ -204,8 +225,6 @@ define([
                 })
                 .append(calendarIcon, ' ',  $('<span>').attr({'class': 'caret'}));
 
-        this.addGlyphIcon(islamic);
-
         // add events here
         gregorian.on('mouseup', $.proxy(function () {
             this.removeGlyphIcon(islamic);
@@ -222,10 +241,117 @@ define([
         this.buttons.calendars.islamic = islamic;
         this.buttons.calendars.gregorian = gregorian;
 
+        this.addGlyphIcon(this.buttons.calendars[this.initValues.calendar]);
+
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(calendarButton, menu);
     };
 
-    permaptoolbar.PerMapToolbar.prototype.createCycleButtonGroup = function () {
+    permaptoolbar.PerMapToolbar.prototype.createPlotSettingsButtonGroup = function () {
+        var // menu
+            plotHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Plot Type'),
+            timeWheel = $('<a>').attr({'role': 'menuitem'}).text('Time-Wheel '),
+            linePlot = $('<a>').attr({'role': 'menuitem'}).text('Line Plot '),
+            divider = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
+            calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Cycle'),
+            monthOfYear = $('<a>').attr({'role': 'menuitem'}).text('Month of Year '),
+            weekOfYear = $('<a>').attr({'role': 'menuitem'}).text('Week of Year '),
+            dayOfMonth = $('<a>').attr({'role': 'menuitem'}).text('Day of Month '),
+            dayOfWeek = $('<a>').attr({'role': 'menuitem'}).text('Day of Week '),
+            menu = $('<ul>')
+                .attr({'class': 'dropdown-menu', 'role': 'menu'})
+                .append([
+                    plotHeader,
+                    $('<li>').attr({'role': 'presentation'}).append(timeWheel),
+                    $('<li>').attr({'role': 'presentation'}).append(linePlot),
+                    divider,
+                    calendarHeader,
+                    $('<li>').attr({'role': 'presentation'}).append(monthOfYear),
+                    $('<li>').attr({'role': 'presentation'}).append(weekOfYear),
+                    $('<li>').attr({'role': 'presentation'}).append(dayOfMonth),
+                    $('<li>').attr({'role': 'presentation'}).append(dayOfWeek)
+                ]),
+        // button
+            cycleIcon = $('<span>').attr({'class': 'glyphicon glyphicon-stats', 'aria-hidden': 'true'}),
+            cycleButton = $('<button>')
+                .attr({
+                    'class': 'btn btn-default btn-xs dropdown-toggle',
+                    'type': 'button',
+                    'data-toggle': 'dropdown',
+                    'title': 'Change Temporal Cycle'
+                })
+                .append(cycleIcon, ' ', $('<span>').attr({'class': 'caret'}));
+
+        timeWheel.on('mouseup', $.proxy(function () {
+            this.removeGlyphIcon(linePlot);
+            this.addGlyphIcon(timeWheel);
+            this.notifyListeners('onPlotTypeChanged', {'context': this, 'plotType': 'timeWheel'});
+        }, this));
+
+        linePlot.on('mouseup', $.proxy(function () {
+            this.removeGlyphIcon(timeWheel);
+            this.addGlyphIcon(linePlot);
+            this.notifyListeners('onPlotTypeChanged', {'context': this, 'plotType': 'linePlot'});
+        }, this));
+
+        // add events here
+        monthOfYear.on('mouseup', $.proxy(function () {
+            if (monthOfYear.parent().hasClass('disabled')) {
+                return;
+            }
+            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
+            this.addGlyphIcon(monthOfYear);
+            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'monthOfYear'});
+        }, this));
+
+        weekOfYear.on('mouseup', $.proxy(function () {
+            if (weekOfYear.parent().hasClass('disabled')) {
+                return;
+            }
+            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
+            this.addGlyphIcon(weekOfYear);
+            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'weekOfYear'});
+        }, this));
+
+        dayOfMonth.on('mouseup', $.proxy(function () {
+            if (dayOfMonth.parent().hasClass('disabled')) {
+                return;
+            }
+            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
+            this.addGlyphIcon(dayOfMonth);
+            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'dayOfMonth'});
+        }, this));
+
+        dayOfWeek.on('mouseup', $.proxy(function () {
+            if (dayOfWeek.parent().hasClass('disabled')) {
+                return;
+            }
+            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
+            this.addGlyphIcon(dayOfWeek);
+            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'dayOfWeek'});
+        }, this));
+
+        this.buttons.plotType.timeWheel = timeWheel;
+        this.buttons.plotType.linePlot = linePlot;
+        this.buttons.plotType.monthOfYear = monthOfYear;
+        this.buttons.plotType.weekOfYear = weekOfYear;
+        this.buttons.plotType.dayOfMonth = dayOfMonth;
+        this.buttons.plotType.dayOfWeek = dayOfWeek;
+
+        // init setup
+        this.addGlyphIcon(this.buttons.plotType[this.initValues.plotType]);
+        if (this.initValues.plotType === 'timeWheel') {
+            ['monthOfYear', 'weekOfYear', 'dayOfMonth', 'dayOfWeek'].forEach(function (p) {
+                this.buttons.plotType[p].parent().toggleClass('disabled', true);
+            }, this);
+        } else {
+            this.addGlyphIcon(this.buttons.plotType[this.initValues.cycleName]);
+        }
+
+        return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(cycleButton, menu);
+    };
+
+
+    permaptoolbar.PerMapToolbar.prototype.createCycleButtonGroup_dep = function () {
         var // menu
             calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Cycle'),
             monthOfYear = $('<a>').attr({'role': 'menuitem'}).text('Month of Year '),
@@ -316,8 +442,6 @@ define([
                 .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown'})
                 .append(seedIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
-        this.addGlyphIcon(auto);
-
         // add events here
         fixed.on('mouseup', $.proxy(function () {
             // make seeds stay at the same location regardless of extent of what is selected
@@ -385,9 +509,17 @@ define([
             this.notifyListeners('onVoronoiPositioningReset', {'context': this});
         }, this));
 
+        this.buttons.positioning.auto = auto;
+        this.buttons.positioning.fixed = fixed;
+
         this.buttons.voronoiAdd = add;
         this.buttons.voronoiMove = move;
         this.buttons.voronoiRemove = remove;
+
+        this.addGlyphIcon(this.buttons.positioning[this.initValues.positioning]);
+        if (this.initValues.positioning === 'auto') {
+            this.buttons.voronoiMove.parent().toggleClass('disabled', true);
+        }
 
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(seedButton, menu);
     };
@@ -405,6 +537,23 @@ define([
     permaptoolbar.PerMapToolbar.prototype.createListener = function () {
         return {
             'context': this,
+            'onPlotTypeChanged': function (event) {
+                if (event.plotType === 'timeWheel') {
+                    ['monthOfYear', 'weekOfYear', 'dayOfMonth', 'dayOfWeek'].forEach(function (p) {
+                        this.buttons.plotType[p].parent().toggleClass('disabled', true);
+                        this.removeGlyphIcon(this.buttons.plotType[p]);
+                    }, this);
+                } else {
+                    ['monthOfYear', 'weekOfYear', 'dayOfMonth', 'dayOfWeek'].forEach(function (p) {
+                        this.buttons.plotType[p].parent().toggleClass('disabled', false);
+                        if (p === event.cycleName) {
+                            this.addGlyphIcon(this.buttons.plotType[p]);
+                        } else {
+                            this.removeGlyphIcon(this.buttons.plotType[p]);
+                        }
+                    }, this);
+                }
+            },
             'onResetButtonChanged': function (event) {
                 this.buttons.reset.toggleClass('disabled', !event.isEnabled);
                 this.buttons.filterDraw.parent().toggleClass('disabled', event.isEnabled);

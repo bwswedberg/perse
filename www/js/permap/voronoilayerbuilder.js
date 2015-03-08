@@ -96,38 +96,46 @@ define([
 
     };
 
+    voronoilayerbuilder.VoronoiLayerBuilder.prototype.createPolygonStyleFunction = function () {
+        var styles = {'max': undefined, 'med': undefined, 'min': undefined},
+            styleAttrs = {
+                'max': {opacity: 0.7, 'width': 5},
+                'med': {opacity: 0.5, 'width': 4},
+                'min': {opacity: 0.3, 'width': 3}
+            };
+
+        Object.keys(styleAttrs).forEach(function (key) {
+            styles[key] = new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255,255,255,0.0)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255,255,255,' + styleAttrs[key].opacity  + ')',
+                    width: styleAttrs[key].width
+                })
+            });
+        });
+
+        return function (feature) {
+            return [styles[feature.get('highlightLevel')]];
+        };
+    };
+
     voronoilayerbuilder.VoronoiLayerBuilder.prototype.buildPolygonVectorLayer = function () {
         var voronoi = this.createVoronoi(),
             features = [],
-            vectorSource,
-            fill,
-            stroke,
-            styles;
+            vectorSource;
         voronoi.forEach(function (polyPoints, i) {
             var feature = new ol.Feature({
                     geometry: new ol.geom.Polygon([polyPoints]),
-                    data: polyPoints.point
+                    data: polyPoints.point,
+                    highlightLevel: 'med'
                 });
             features.push(feature);
         });
-
-        fill = new ol.style.Fill({
-            color: 'rgba(255,255,255,0.0)'
-        });
-        stroke = new ol.style.Stroke({
-            color: 'rgba(255,255,255,0.3)',
-            width: 4
-        });
-        styles = [
-            new ol.style.Style({
-                fill: fill,
-                stroke: stroke
-            })
-        ];
-
         vectorSource = new ol.source.Vector({features: features});
 
-        return new ol.layer.Vector({source: vectorSource, style: styles});
+        return new ol.layer.Vector({source: vectorSource, style: this.createPolygonStyleFunction()});
 
     };
 

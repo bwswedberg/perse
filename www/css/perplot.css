@@ -1,7 +1,16 @@
 .perse-perplot {
     position: absolute;
     pointer-events: all;
-    background-color: rgba(240, 240, 240, 0.85);
+    background-color: rgba(235, 235, 235, 0.85);
     border: 1px solid #ddd;
     border-radius: 4px;
+
+}
+
+.perse-perplot.active {
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+.perse-perplot * {
+    cursor: default !important;
 }

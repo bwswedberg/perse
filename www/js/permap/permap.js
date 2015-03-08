@@ -22,6 +22,12 @@ define([
         this.map = undefined;
         this.toolbar = undefined;
         this.toolbarListener = undefined;
+        this.viewParams = {
+            'calendar': 'gregorian',
+            'plotType': 'timeWheel',
+            'cycleName': 'monthOfYear',
+            'positioning': 'auto'
+        };
         this.filter = new filter.Filter({
             uniqueId: 'perse-permap',
             property: 'coord',
@@ -35,7 +41,7 @@ define([
             panelHeader,
             panel;
 
-        this.toolbar = new permaptoolbar.PerMapToolbar();
+        this.toolbar = new permaptoolbar.PerMapToolbar(this.viewParams);
 
         title = $('<p>')
             .attr({'class': 'perse-header-title'})
@@ -58,12 +64,12 @@ define([
         this.toolbar.registerListener(this.createListener());
         this.toolbarListener = this.toolbar.createListener();
 
-        this.map = new map.Map()
+        this.map = new map.Map(this.viewParams)
             .render(this.container)
             .registerListener(this.createListener());
         this.toolbar.registerListener(this.map.createToolbarListener());
 
-        this.perPlots = new perplots.PerPlots()
+        this.perPlots = new perplots.PerPlots(this.viewParams)
             .render(this.container)
             .registerListener(this.createListener());
         this.toolbar.registerListener(this.perPlots.createToolbarListener());
@@ -71,6 +77,9 @@ define([
         this.map.onDataSetChanged(data, this.metadata);
         this.perPlots.setVoronoiPolygons(this.map.getVoronoiPolygonLayer());
         this.perPlots.onDataSetChanged(data, this.metadata);
+
+        this.addMouseLeaveListener();
+
     };
 
     permap.PerMap.prototype.update = function (data) {
@@ -106,6 +115,18 @@ define([
                 this.toolbarListener[event.type].call(this.toolbarListener.context, event);
             }
         };
+    };
+
+    permap.PerMap.prototype.addMouseLeaveListener = function () {
+        this.container.on('mouseleave', $.proxy(function () {
+            var event = {
+                'context': this,
+                'voronoiId': undefined,
+                'indicationFilter': undefined
+            };
+            this.map.onIndicationChanged(event);
+            this.perPlots.onIndicationChanged(event);
+        }, this));
     };
 
     permap.PerMap.prototype.getFilter = function () {

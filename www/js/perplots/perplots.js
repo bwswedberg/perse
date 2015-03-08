@@ -23,15 +23,15 @@ define([
 
     var perplots = {};
 
-    perplots.PerPlots = function () {
+    perplots.PerPlots = function (params) {
         this.container = $('<div>').attr({'class': 'perse-perplots'});
         this.listeners = [];
         this.metadata = undefined;
         this.contentAttribute = undefined;
-        this.calendarName = 'islamic';
-        this.cycleName = 'MonthOfYear';
+        this.calendarName = params.calendar || 'gregorian';
+        this.cycleName = params.cycleName || 'monthOfYear';
         this.voronoiPolygons = undefined;
-        this.perPlotType = 'timewheel';//'lineplot';
+        this.plotType = params.plotType || 'timeWheel';//'linePlot';
         this.plots = {};
     };
 
@@ -42,9 +42,9 @@ define([
 
     perplots.PerPlots.prototype.getNewPerPlot = function (plotType) {
         switch (plotType) {
-        case ('timewheel'):
+        case ('timeWheel'):
             return $.extend(new perwheel.PerWheel(), perplot.PerPlot.prototype);
-        case ('lineplot'):
+        case ('linePlot'):
             return $.extend(new perlineplot.PerLinePlot(), perplot.PerPlot.prototype);
         default:
             console.warn('Case not supported');
@@ -53,9 +53,9 @@ define([
 
     perplots.PerPlots.prototype.getPerPlotPrototype = function (plotType) {
         switch (plotType) {
-        case ('timewheel'):
+        case ('timeWheel'):
             return perwheel.PerWheel.prototype;
-        case ('lineplot'):
+        case ('linePlot'):
             return perlineplot.PerLinePlot.prototype;
         default:
             console.warn('Case not supported');
@@ -66,7 +66,7 @@ define([
         var perPlotDiv = $('<div>')
             .attr({'class': 'perse-perplot', 'id': 'perse-perplot-' + updateObj.id})
             .css(updateObj.position);
-        this.plots[updateObj.id] = this.getNewPerPlot(this.perPlotType)
+        this.plots[updateObj.id] = this.getNewPerPlot(this.plotType)
             .setPerPlotId(updateObj.id)
             .render(perPlotDiv)
             .registerListener(this.createPerPlotListener())
@@ -138,7 +138,7 @@ define([
     };
 
     perplots.PerPlots.prototype.getBuiltData = function (parsedData) {
-        var proto = this.getPerPlotPrototype(this.perPlotType);
+        var proto = this.getPerPlotPrototype(this.plotType);
         return parsedData.map(function (d) {
             return proto.processData({
                 data: d.data,
@@ -167,27 +167,36 @@ define([
                     this.plots[k].onHover(event);
                 }, this);
 
-                if (event.data === undefined || event.data === null) {
-                    indicationEvent = {
-                        'context': this,
-                        'voronoiId': undefined,
-                        'indicationFilter': undefined
-                    };
-                } else {
-                    indicationEvent = {
-                        'context': this,
-                        'voronoiId': event.firingPlot.getPerPlotId(),
-                        'indicationFilter': event.firingPlot.createIndicationFilter(event.data)
-                    };
-                }
-
-                this.notifyListeners('onIndicationChanged', indicationEvent);
+                this.notifyListeners('onIndicationChanged', {
+                    'context': this,
+                    'voronoiId': event.firingPlot.getPerPlotId(),
+                    'indicationFilter': event.indicationFilter
+                });
             }
         };
     };
 
+    perplots.PerPlots.prototype.getCycleName = function () {
+        return this.cycleName;
+    };
+
+    perplots.PerPlots.prototype.getPlotType = function () {
+        return this.plotType;
+    };
+
+    perplots.PerPlots.prototype.setCycleName = function (cycleName) {
+        this.cycleName = cycleName;
+        Object.keys(this.plots).forEach(function (key) {
+            this.plots[key].setCycleName(this.cycleName);
+        }, this);
+    };
+
+    perplots.PerPlots.prototype.setPlotType = function (plotType) {
+        this.plotType = plotType;
+    };
+
     perplots.PerPlots.prototype.getExtent = function (builtData) {
-        var proto = this.getPerPlotPrototype(this.perPlotType);
+        var proto = this.getPerPlotPrototype(this.plotType);
         return proto.reduceExtents(builtData.map(proto.getExtent));
     };
 
@@ -214,16 +223,36 @@ define([
                 this.notifyListeners('onDataSetRequested', {context: this});
             },
             onCycleChanged: function (event) {
-                this.cycleName = event.cycleName;
-                Object.keys(this.plots).forEach(function (key) {
-                    this.plots[key].setCycleName(event.cycleName);
-                }, this);
+                this.setCycleName(event.cycleName);
                 this.notifyListeners('onDataSetRequested', {context: this});
+            },
+            onPlotTypeChanged: function (event) {
+                if (event.plotType !== this.plotType) {
+                    this.removeAllPlots();
+                    this.plotType = event.plotType;
+                    this.notifyListeners('onToolbarEvent', {
+                        'context': this,
+                        'type': 'onPlotTypeChanged',
+                        'plotType': this.plotType,
+                        'cycleName': this.cycleName
+                    });
+                    this.notifyListeners('onDataSetRequested', {context: this});
+                }
             }
         };
     };
 
-    perplots.PerPlots.prototype.onIndicationChanged = function () {
+    perplots.PerPlots.prototype.removeAllPlots = function () {
+        Object.keys(this.plots).forEach(function (key) {
+            this.removePlot(this.plots[key].getPerPlotId());
+        }, this);
+    };
+
+    perplots.PerPlots.prototype.onIndicationChanged = function (event) {
+        Object.keys(this.plots).forEach(function (key) {
+            var plotId = this.plots[key].getPerPlotId();
+            this.container.find('#' + 'perse-perplot-' + plotId).toggleClass('active', plotId === event.voronoiId);
+        }, this);
     };
 
     perplots.PerPlots.prototype.setCalendar = function (calendarName) {

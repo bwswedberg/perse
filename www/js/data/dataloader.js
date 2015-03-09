@@ -188,7 +188,7 @@ define([
         };
 
         config = {
-            delimiter: '',
+            delimiter: '\t',
             header: true,
             dynamicTyping: true,
             preview: 0,
@@ -199,8 +199,9 @@ define([
             complete: callBackOnLoad,
             error: callBackOnError,
             download: true,
-            keepEmptyRows: false,
-            chunk: undefined
+            skipEmptyLines: false,
+            chunk: undefined,
+            fastMode: undefined
         };
 
         Papa.parse(dataSet.fileName, config);

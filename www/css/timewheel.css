@@ -49,6 +49,8 @@
     fill-opacity: .5;
 }
 
-#timewheel-label {
+#timewheel-arc-label,
+#timewheel-stats-label{
+    alignment-baseline: hanging;
     font-size: .43em;
 }

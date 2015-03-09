@@ -74,11 +74,11 @@ define([
                         short: d.data.short,
                         ringId: that.ringId,
                         label: that.label,
-                        value: d.data.value
+                        value: d.data.value,
+                        frequency: d.data.events[d.data.events.length - 1].count.end // count of all events
                     };
                     that.notifyListeners('onMouseOver', {
                         context: that,
-                        //ring: that,
                         data: data
                     });
                 })

@@ -76,7 +76,9 @@ define([
 
         // this is for the mouse hover labels
         this.svg.append('text')
-            .attr('id', 'timewheel-label');
+            .attr('id', 'timewheel-arc-label');
+        this.svg.append('text')
+            .attr('id', 'timewheel-stats-label');
     };
 
     timewheel.TimeWheel.prototype.update = function (dataObj) {
@@ -89,11 +91,14 @@ define([
 
     timewheel.TimeWheel.prototype.onHover = function (event) {
         if (event === undefined || event.data === undefined || event.data.ringId === undefined) {
-            this.changeRingSize(null);
-            this.updateLabel(null, null);
+            this.changeRingSize();
+            this.updateLabel();
         } else {
             this.changeRingSize(event.data.ringId);
-            this.updateLabel(event.data.label, event.data.long);
+            this.updateLabel({
+                arc: event.data.label + ': ' + event.data.long,
+                frequency: 'Count: ' + event.data.frequency
+            });
         }
     };
 
@@ -137,12 +142,9 @@ define([
         return {
             context: this,
             onMouseOver: function (event) {
-                //this.onHover(event);
                 var data = event.data;
                 data.calendarName = this.calendarName;
                 this.notifyListeners('onHoverEvent', {'context': this, 'data': data});
-                //this.changeRingSize(event.ring);
-                //this.updateLabel(event.ring.label, event.data.long);
             },
             onMouseClick: function () {
                 this.notifyListeners('onTimeWheelSelectionChanged', {context: this});
@@ -150,15 +152,34 @@ define([
         };
     };
 
-    timewheel.TimeWheel.prototype.updateLabel = function (ringLabel, arcLabel) {
-        var label = (ringLabel && arcLabel) ? ringLabel + ': ' + arcLabel : '',
-            text = this.svg.select('#timewheel-label')
-                .text(label),
-            bbox = text.node().getBBox();
+    timewheel.TimeWheel.prototype.updateLabel = function (labels) {
+        var arcText, arcBBox, statsText, statsBBox;
 
-        text
-            .attr('x', this.viewBox.width - bbox.width)
-            .attr('y', -3);
+        if (labels === undefined ||
+            labels === null ||
+            !labels.hasOwnProperty('arc') ||
+            !labels.hasOwnProperty('frequency')) {
+            this.svg.select('#timewheel-arc-label')
+                .text('');
+            this.svg.select('#timewheel-stats-label')
+                .text('');
+        } else {
+            arcText = this.svg.select('#timewheel-arc-label')
+                .text(labels.arc);
+            arcBBox = arcText.node().getBBox();
+            statsText = this.svg.select('#timewheel-stats-label')
+                .text(labels.frequency);
+            statsBBox = statsText.node().getBBox();
+
+            arcText
+                .attr('x', (this.viewBox.width + this.margin.right) - arcBBox.width)
+                .attr('y', -(this.margin.top - 1));
+
+            statsText
+                .attr('x', (this.viewBox.width + this.margin.right) - statsBBox.width)
+                .attr('y', -(this.margin.top - 1) + arcBBox.height);
+        }
+
     };
 
     timewheel.TimeWheel.prototype.setShouldAnimate = function (someBool) {

@@ -184,7 +184,7 @@ define([
             .on('mousemove', function () {
                 var x = d3.mouse(that.svg.node())[0];
                 if (x >= 0) {
-                    that.updateLabel('Frequency: ' + Math.round(that.xScale.invert(d3.mouse(that.svg.node())[0])));
+                    that.updateLabel('Bin: ' + Math.round(that.xScale.invert(d3.mouse(that.svg.node())[0])));
                 } else {
                     that.updateLabel('');
                 }
@@ -195,7 +195,7 @@ define([
 
         brushMove = function () {
             var bExtent = that.brush.extent();
-            that.updateLabel('Frequency: ' + Math.round(bExtent[0]) + ' to ' + Math.round(bExtent[1]));
+            that.updateLabel('Range: ' + Math.round(bExtent[0]) + ' to ' + Math.round(bExtent[1]));
         };
 
         brushEnd = function () {
@@ -207,7 +207,7 @@ define([
             .on('brush', brushMove)
             .on('brushend', brushEnd);
 
-        brushG = this.svg.insert('g', '.numericalplot-bin')
+        brushG = this.svg.append('g')
             .attr('class', 'brush')
             .call(this.brush);
 

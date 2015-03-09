@@ -226,7 +226,7 @@ define([
             .on('mouseenter', function () {
                 var d = d3.select(this).datum(),
                     total = d.events[d.events.length - 1].count.end;
-                that.updateLabel('Frequency: ' + total);
+                that.updateLabel('Count: ' + total);
             })
             .on('mouseleave', function () {
                 that.updateLabel('');

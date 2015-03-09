@@ -255,7 +255,7 @@ define([
                 (this.margin.left * 0.95) + ',' + (this.size.height / 2) + ') rotate(-90)')
             .attr('dy', '.71em')
             .style('text-anchor', 'middle')
-            .text('Frequency');
+            .text('Count');
     };
 
     timeline.Timeline.prototype.updateXAxis = function () {

@@ -226,7 +226,7 @@ define([
     };
 
     perlineplot.PerLinePlot.prototype.updateLabel = function (d) {
-        var label = d.xLabel + ' ' + d.lineLabel + ', Freq ' + d.yLabel,
+        var label = d.xLabel + ' ' + d.lineLabel + ', Count: ' + d.yLabel,
             labelNode = this.svg.select('.perlineplot-label')
                 .text(label),
             bbox = labelNode.node().getBBox();

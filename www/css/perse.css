@@ -1,5 +1,27 @@
+/* Load Vendor Css */
+@import url("vedor/bootstrap.css");
+@import url("vedor/bootstrap-theme.css");
+@import url("vedor/ol.css");
+@import url("vedor/ol.css");
+
+/* Load Views Css */
+@import url("perwheel.css");
+@import url("timewheel.css");
+@import url("perattrs.css");
+@import url("categoricalplot.css");
+@import url("numericalplot.css");
+@import url("perplots.css");
+@import url("perlineplot.css");
+@import url("perplot.css");
+@import url("pertimeline.css");
+@import url("timeline.css");
+@import url("permap.css");
+@import url("pertable.css");
+@import url("page.css");
+
 #perse {
-    padding-top: 70px;
+    /*padding-top: 70px;*/
+    width: 1170px !important;
 }
 
 .perse-btn {

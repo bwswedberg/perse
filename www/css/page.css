@@ -1,0 +1,76 @@
+body {
+    margin-top: 70px;
+}
+
+.footer {
+    margin-top: 70px;
+    width: 100%;
+}
+
+.footer > p {
+    color: #777;
+    text-align: center;
+}
+
+#main-content-spy {
+    padding-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* all links */
+#main-content-spy .nav>li>a {
+    color: #999;
+    padding: 4px 20px;
+    font-size: 13px;
+    font-weight: 400;
+    border-left: 2px solid transparent;
+}
+
+/* nested links */
+#main-content-spy .nav .nav>li>a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 30px;
+    font-size: 12px;
+}
+
+/* active & hover links */
+#main-content-spy .nav>.active>a,
+#main-content-spy .nav>li>a:hover,
+#main-content-spy .nav>li>a:focus {
+    font-weight: 700;
+    color: #563d7c;
+    text-decoration: none;
+    background-color: transparent;
+    border-left: 2px solid #563d7c;
+}
+
+/* nested active links */
+#main-content-spy .nav .nav>.active>a,
+#main-content-spy .nav .nav>.active:hover>a,
+#main-content-spy .nav .nav>.active:focus>a {
+    font-weight: 500;
+}
+
+#main-content-spy .nav ul.nav {
+    display: none;
+}
+/* show active nested list */
+#main-content-spy .nav>.active>ul.nav {
+    display: block;
+}
+
+.group,
+.subgroup {
+    padding-top: 60px;
+    margin-top: -60px;
+}
+
+#main-content-spy > .affix {
+    top: 60px;
+}
+
+.group > blockquote > p {
+    font-size: .8em;
+}

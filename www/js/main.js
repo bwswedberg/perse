@@ -34,13 +34,14 @@ require.config({
 require([
     'jquery',
     'general/waitmodal',
-    'perse'
-], function ($, waitmodal, perse) {
-    var app,
-        load,
-        modal = waitmodal.createWaitModal();
+    'perse',
+    'page/page'
+], function ($, waitmodal, perse, page) {
+    var app, loadEnd, modal;
 
-    load = function () {
+    modal = waitmodal.createWaitModal();
+
+    loadEnd = function () {
         app.show();
         modal.modal('hide');
     };
@@ -48,10 +49,15 @@ require([
     modal.on('shown.bs.modal', function () {
         app = new perse.PerSE()
             .render($('#perse'))
-            .onLoadEnd(load)
+            .onLoadEnd(loadEnd)
             .hide()
             .init();
-        $('body').prepend(app.createNavBar());
+        $('body').prepend(page.createNavBar({
+            brand: './index.html',
+            about: './about.html',
+            help: './help.html'
+        }));
+        $('body').append(page.createFooter());
     });
 
     modal.on('hidden.bs.modal', function () {
@@ -63,9 +69,5 @@ require([
         keyboard: false,
         background: 'static'
     });
-
-
-
-
 
 });

@@ -54,19 +54,19 @@ define([
 
     perse.PerSE.prototype.build = function () {
         var largeLeft = $('<div>')
-                .attr({'class': 'col-md-10', 'id': 'perse-large-left'}),
+                .attr({'class': 'col-xs-10', 'id': 'perse-large-left'}),
             largeRight = $('<div>')
-                .attr({'class': 'col-md-2', 'id': 'perse-large-right'}),
+                .attr({'class': 'col-xs-2', 'id': 'perse-large-right'}),
             topRow = $('<div>')
                 .attr({'class': 'row', 'id': 'perse-top-row'})
                 .append(largeLeft, largeRight),
             top = $('<div>')
-                .attr({'class': 'col-md-12'})
+                .attr({'class': 'col-xs-12'})
                 .append(topRow),
             middle = $('<div>')
-                .attr({'class': 'col-md-12'}),
+                .attr({'class': 'col-xs-12'}),
             bottom = $('<div>')
-                .attr({'class': 'col-md-12'}),
+                .attr({'class': 'col-xs-12'}),
             main = $('<div>')
                 .attr({'class': 'row'})
                 .append(top, middle, bottom);
@@ -120,7 +120,7 @@ define([
 
     };
 
-    perse.PerSE.prototype.createNavBar = function () {
+    perse.PerSE.prototype.createNavBar_dep = function () {
         var // ------ title/sub ----
             b = $('<a>')
                 .attr({'class': 'navbar-brand', 'href': './index.html'})
@@ -171,7 +171,7 @@ define([
         return this;
     };
 
-    perse.PerSE.prototype.createFooter = function () {
+    perse.PerSE.prototype.createFooter_dep = function () {
 
     };
 

@@ -11,7 +11,7 @@
     <link href="css/vendor/bootstrap-theme.css" rel="stylesheet">
 
     <!-- PerSE CSS -->
-    <link href="css/main.css" rel="stylesheet">
+    <link href="css/page.css" rel="stylesheet">
 
     <!-- require js -->
     <script data-main="js/about" src="js/lib/require.js"></script>
@@ -32,242 +32,435 @@
 
 <div class="col-xs-10" id="main-content">
 
-<section class="group" id="group-about">
+<section class="group row" id="group-about" data-title="About">
 
-    <div class="page-header"><h2>About</h2></div>
+    <div class="content col-xs-12">
 
-    <p class="lead">PerSE is a visual analytics web application to assist in periodicity detection and
-        analysis.</p>
+        <div class="page-header"><h2>About</h2></div>
 
-    <p>Who, What, Where, When, Why</p>
+        <p class="lead">PerSE is a visual analytics web application to assist in periodicity detection and
+            analysis.</p>
 
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p>PerSE (Periodicity in Spatiotemporal Events) is a web application to assist users in the detect and analysis
+            of periodicity within event data sets. PerSE attempts to tackle detection and analysis through sophisticated
+            aggregation and methods commonly used in the field of Visual Analytics.</p>
+
+        <blockquote>
+            <p>Visual Analytics is the science of analytical reasoning facilitated by interactive interfaces.</p>
+            <footer>Thomas, J., & Cook, K. (2005). Illuminating the path: the R&D agenda for visual analytics. National
+            Visualization and Analytics Center, Institute of Electrical and Electronics Engineers. (p.4)</footer>
+        </blockquote>
+
+        <div class="subgroup row" id="subgroup-what-is-periodicity" data-title="What is periodicity?">
+
+            <div class="content col-xs-12">
+
+                <h3>What is periodicity?</h3>
+
+                <p>Periodicity is a tendency of something to repeat in regular intervals. If we examine out own lives we see
+                    that much of our behavior is periodic. Broadly speaking, we wake up in the morning, we don't work on
+                    Saturday and Sunday, we are more active outdoors during the warm months, and less active in cold
+                    months. Other examples of periodicity include,</p>
+
+                <ul>
+                    <li>Traffic becomes congested during the weekday at 5:00pm.</li>
+                    <li>Internally Displaced Persons (IDPs) camp XYZ may receive food aid on Fridays.</li>
+                    <li>Muslims fast during the Islamic month of Ramadan.</li>
+                </ul>
+
+                <p>However, periodicity is very tricky because it is bounded by:</p>
+
+                <ul>
+                    <li><strong>Space:</strong> Periodicity may only exists within the geographic boundary. (e.g. Traffic is
+                        congested within in highly urban regions)</li>
+                    <li><strong>Time:</strong> Periodicity may be a temporary. (e.g. IDP camp XYZ exists for N amount of days,
+                        therefore food aid ceases to be distributed on Fridays.)</li>
+                    <li><strong>Attribute:</strong> Periodicity may only exists given a conditional attribute. (e.g. Only
+                        Muslims fast during the Islamic month of Ramadan.)</li>
+                </ul>
+
+                <p>This can get even more complicated when these factors combine to form complex human climate. Periodicity
+                    may still exist within a climate, but it could be hidden.</p>
+
+            </div>
+
+        </div>
+
+        <div class="subgroup row" id="subgroup-why-does-the-calendar-matter" data-title="Why does the calendar matter?">
+
+            <div class="content col-xs-12">
+
+                <h3>Why does the calendar matter?</h3>
+
+                <p>A calendar is a manmade tool used to gauge time. There are many calendars; just to name a few calendars:
+                    the Gregorian, Islamic (Hijra), Persian, Hebrew, Coptic, Chinese, Thai, and Ethiopian. As of 2015 almost
+                    all countries in the world use the Gregorian calendar. However, the Gregorian calendar's dominance does
+                    not mean that the other calendars have become extinct. In fact, many calendars are still used to mark
+                    important cultural and religious happenings.</p>
+
+                <ul>
+                    <li>Traffic becomes congested during the weekday at 5:00pm.</li>
+                    <li>Internally Displaced Persons (IDPs) camp XYZ may receive food aid on Fridays.</li>
+                    <li>Muslims fast during the Islamic month of Ramadan.</li>
+                </ul>
+
+                <p>So what--can't we just line them up? No, many of these calendars have their own quirks or are disparate to
+                    the Gregorian calendar. For instance, solar calendars, such as the Gregorian calendar, do not align with
+                    the Lunar calendars, such as the Islamic calendar. Furthermore, this could distort analysis in two
+                    ways:</p>
+
+                <ol>
+                    <li>It could destroy any contextual information derived from the original calendar.</li>
+                    <li>It could add deceptive contextual information derived from the Gregorian calendar.</li>
+                </ol>
+
+                <p>Ultimately, we must analyze human climate through the lens of a calendar native to the region.</p>
+
+            </div>
+
+        </div>
+
+        <div class="subgroup row" id="subgroup-why-perse" data-title="Why PerSE?">
+
+            <div class="content col-xs-12">
+
+                <h3>Why PerSE?</h3>
+
+                <p>PerSE's main strength is that it uses the calendar and other aggregation methods, such as Voronoi
+                    diagrams, to allow the user to visually detect and analyze periodicity. </p>
+
+                <p>PerSE also presents event data in a transparent interface, meaning there is no <em>black-box</em> or
+                    <em>magic</em>. Events are simply aggregated based on a wide variety rules and settings.</p>
+
+                <p>This project contends that human reasoning assisted by an interactive interface and sophisticated
+                    aggregation methods can unveil truths about periodicity within event data sets.</p>
+
+            </div>
+
+        </div>
+
+        <div class="subgroup row" id="subgroup-how-do-i-use-perse" data-title="How do I use PerSE?">
+
+            <div class="content col-xs-12">
+
+                <h3>How do I use PerSE?</h3>
+
+                <p>You can check out <a href="index.html">PerSE</a> right now! Each view, except the table, has the ability
+                    to filter the data set through user interaction. After a filter is added, changed, or removed, all views
+                    will display data points that suffice every filter.</p>
+
+                <p>For more information on PerSE or each individual view, please check out the <a href="help.html">Help</a>
+                    page.</p>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
 
-<section class="group" id="group-data">
+<section class="group row" id="group-data" data-title="Data">
 
-    <div class="page-header"><h2>Data</h2></div>
+    <div class="content col-xs-12">
 
-    <p class="lead">PerSE is driven by event data. It's currently set up to visualize a subset of the
-        <a href="http://www.acleddata.com/">ACLED</a>.</p>
+        <div class="page-header"><h2>Data</h2></div>
 
-    <div class="subgroup" id="subgroup-representation">
-        <h3>Representation</h3>
-        <p>As mentioned above, PerSE was built and developed to visualize
-            <em>event</em>
-            periodicity from the lens of local calendar systems. As accounting for all
-            events would be a highly complicated, this project currently represents them as:
-        </p>
+        <p class="lead">PerSE is driven by event data. It's currently set up to visualize a subset of the
+            <a href="http://www.acleddata.com/">ACLED</a>.</p>
 
-        <ol>
-            <li>having a duration of less than 24 hours.</li>
-            <li>points.</li>
-        </ol>
-    </div>
+        <div class="subgroup row" id="subgroup-representation" data-title="Representation">
 
-    <p>PerSE does not anticipate any other data, however the system allows for the user to add additional
-        data attributes. These additional attributes are determined by PerSE to be either numerical or
-        categorical. If numerical the attribute is visualized as a histogram; if categorical the
-        attribute is visualized as a bar plot.</p>
+            <div class="content col-xs-12">
 
-    <p>There are two special types of additional attributes that a user may specify:</p>
+                <h3>Representation</h3>
 
-    <div class="subgroup" id="subgroup-datarequirements">
+                <p>An <em>event</em> is a very loosely defiend word that is highly dependent on scale. For instance, an event
+                    could be anything from a high-five to World War II. Accounting for all events would be a highly complicated.
+                    Therefore, in order to make coehesive PerSE makes two assumptions about all data points.</p>
 
-        <h3>Data Requirements</h3>
+                <ol>
+                    <li>Events have a duration of less than 24 hours.</li>
+                    <li>Events can be represented/symbolized as points.</li>
+                </ol>
 
-        <p>PerSE has two data requirements, and two optional:</p>
+                <p>This representation certainly has it's flaws, but many exciting events can justifiably be represented with
+                    the above simplification. Extending the application to fit a broader spectrum of events is not the focus of
+                    this project.</p>
 
-        <dl class="dl-horizontal">
-            <dt>Location</dt>
-            <dd>Latitude and Longitude in decimal degree format.</dd>
-            <dt>Date</dt>
-            <dd>A date/time stamp in the Gregorian format.</dd>
-            <dt>Context Attribute</dt>
-            <dd>(Optional) Used to symbolize all views. If not stated all views display data as solid
-                gray. Note, it is not recommend to have more than 9, and as of now can only accept
-                categorical attributes. (e.g. event type, actor type)
-            </dd>
-            <dt>Description</dt>
-            <dd>(Optional) Used to add detail and other meaningful information to the event. The Description
-                is visualized within the table. (e.g. title of article used to code the event, notes of the
-                event)
-            </dd>
-        </dl>
-    </div>
+            </div>
 
-    <div class="subgroup" id="subgroup-acled">
-        <h3>ACLED</h3>
+        </div>
 
-        <p>This project utilizes the <a href="http://www.acleddata.com/">ACLED (Armed Conflict
-            Location and Event Data Project)</a>. The ACLED contains data points which detail reported
-            political violence in developing states. Data point attributes include, event type, actors,
-            associate actors, interaction, fatalities, source, location, location precision, and notes. As
-            event coding can be a complicated and controversial thing, please feel free to check out their
-            <a href="http://www.acleddata.com/">website</a> for more details.</p>
+        <div class="subgroup row" id="subgroup-data-requirements" data-title="Data Requirements">
 
-        <p>As the <a href="http://www.acleddata.com/">ACLED</a> contains >90,000 data points spanning the
-            Africa and the Middle East, PerSE uses a subset of this data set
-            to illustrate the potential utility of the tool. The subset currently displayed in PerSE spans
-            from 01 JAN 2008 to 2013 DEC 2013 in Nigeria, which contains 3,296 data points. This data set
-            was chosen because it highlights the complexity in culturally derived periodicity. In the
-            case of Nigeria, the North is distinctly Islamic, and therefore the Islamic (Hijri) calendar
-            is important; the South is distinctly Christian, and therefore the Gregorian calendar is
-            important.</p>
+            <div class="content col-xs-12">
 
-        <p>Although PerSE utilizes the <a href="http://www.acleddata.com/">ACLED</a>, PerSE does not
-            attempt to be a comprehensive solution for <a href="http://www.acleddata.com/">ACLED</a>
-            analysis. Important aspects within the data set like actor-to-actor correlations are not
-            explicitly addressed at its current state. Perhaps this would be a useful follow-up project.</p>
+                <h3>Data Requirements</h3>
+
+                <p>You do not need to worry about data requirements in PerSE's current state because the system
+                    automatically loads a built in data set and the data loading API is not exposed. However, if you are
+                    interested, PerSE has two data requirements:</p>
+
+                <ul>
+                    <li><strong>Location:</strong> Latitude and Longitude in decimal degree format.</li>
+                    <li><strong>Date:</strong> A date/time stamp in the Gregorian format.</li>
+                </ul>
+
+                <p>PerSE does not anticipate any other data, however the system allows for the user to add additional
+                    data attributes. These additional attributes are determined by PerSE to be either numerical or
+                    categorical. If numerical the attribute is visualized as a histogram; if categorical the
+                    attribute is visualized as a bar plot. Additional attributes can be specified as two optional data
+                    requirements:</p>
+
+                <ul>
+                    <li><strong>Content Attribute:</strong> If provided, it is used to symbolize all views. If not
+                        provided data representations (i.e. bars, points, etc.) will be displayed with solid gray. Note, it i
+                        s not recommend to have more than 9 unique context attribute values. (e.g. event type, actor type)</li>
+                    <li><strong>Description:</strong> If provided, it is used to add detail and other meaningful
+                        information to the event. The Description is visualized within the table. (e.g. title of article used
+                        to code the event, notes of the event)</li>
+                </ul>
+
+            </div>
+
+        </div>
+
+        <div class="subgroup row" id="subgroup-acled" data-title="ACLED">
+
+            <div class="content col-xs-12">
+
+                <h3>ACLED</h3>
+
+                <p>PerSE currently utilizes the <a href="http://www.acleddata.com/">ACLED (Armed Conflict
+                    Location and Event Data Project)</a>. The ACLED contains data points which detail reported
+                    political violence in developing states. Data point attributes include, event type, actors,
+                    associate actors, interaction, fatalities, source, location, location precision, and notes. As
+                    event coding can be a complicated and controversial thing, please feel free to check out their
+                    <a href="http://www.acleddata.com/">website</a> for more details.</p>
+
+                <p>As the <a href="http://www.acleddata.com/">ACLED</a> contains >90,000 data points spanning the
+                    Africa and the Middle East, PerSE uses a subset of this data set
+                    to illustrate the potential utility of the tool. The subset currently displayed in PerSE spans
+                    from 01 JAN 2008 to 2013 DEC 2013 in Nigeria, which contains 3,296 data points. This data set
+                    was chosen because it highlights the complexity in culturally derived periodicity. In the
+                    case of Nigeria, the North is distinctly Islamic, and therefore the Islamic (Hijri) calendar
+                    is important; the South is distinctly Christian, and therefore the Gregorian calendar is
+                    important.</p>
+
+                <p>Although PerSE utilizes the <a href="http://www.acleddata.com/">ACLED</a>, PerSE does not
+                    attempt to be a comprehensive solution for <a href="http://www.acleddata.com/">ACLED</a>
+                    analysis. Important aspects within the data set like actor-to-actor correlations are not
+                    explicitly addressed at its current state. Perhaps this would be a useful follow-up project.</p>
+
+            </div>
+
+        </div>
+
     </div>
 </section>
 
-<section class="group" id="group-technology">
+<section class="group row" id="group-technology" data-title="Techonology">
 
-    <div class="page-header"><h2>Technology</h2></div>
+    <div class="content col-xs-12">
 
-    <p class="lead"><a href="index.html">PerSE</a> is 99.9% on the client, and was built with several web
-        development libraries and toolkits.</p>
+        <div class="page-header"><h2>Technology</h2></div>
 
-    <p>PerSE is 99.9% client side programming. In fact, after all dependencies load, the only server
-        request is for map tiles. In the age of <em>Big-Data</em> this may
-        sound unusual, however keep in mind PerSE is a prototype designed and built to advance current
-        research on visual analytics methods for spatio-temporal periodicity. Therefore, the emphasis is
-        placed on he visual components.</p>
+        <p class="lead"><a href="index.html">PerSE</a> is 99.9% on the client, and was built with several web
+            development libraries and toolkits.</p>
 
-    <div class="subgroup" id="subgroup-modularity">
+        <p>PerSE is 99.9% client side programming. In fact, after all dependencies load, the only server
+            request is for map tiles. In the age of <em>Big-Data</em> this may
+            sound unusual, however keep in mind PerSE is a prototype designed and built to advance current
+            research on visual analytics methods for spatio-temporal periodicity. Therefore, the emphasis is
+            placed on he visual components.</p>
 
-        <h3>Modularity</h3>
+        <div class="subgroup row" id="subgroup-modularity" data-title="Modularity">
 
-        <p>The project was also written carefully to insure as much modularity as possible. To help
-            with this process development focused on the
-            <a ref="https://github.com/amdjs/amdjs-api/wiki/AMD">Asynchronous Module Definition (AMD)</a>
-            paradigm. That way views could be refactored into other projects.</p>
+            <div class="content col-xs-12">
 
-        <p>For instance, each view... <p>
+                <h3>Modularity</h3>
 
-        <dl class="dl-horizontal">
-            <dd>... loads it's required dependencies.</dd>
-            <dd>... is given an identical array of data points every time the selection changes.</dd>
-            <dd>... provides a filter function to the data set adapter to filter data points.</dd>
-        </dl>
+                <p>The project was also written carefully to insure as much modularity as possible. To help
+                    with this process development focused on the
+                    <a ref="https://github.com/amdjs/amdjs-api/wiki/AMD">Asynchronous Module Definition (AMD)</a>
+                    paradigm. At its current state, each view... <p>
 
-        <p>As a result, PerSE can endured <strong>change</strong> with relatively low impact. This
-            will be particularly important if the data set operations and processing are offloaded to a
-            server.<p>
+                <ul>
+                    <li>loads it's required dependencies.</li>
+                    <li>is given an identical array of data points every time the selection changes.</li>
+                    <li>provides a filter function to the data set adapter to filter data points.</li>
+                </ul>
+
+                <p>Views can be refactored without major dependency issues or moved into other
+                    projects. As a result, PerSE can endured <strong>change</strong> with relatively low impact. This
+                    will be particularly important if operations and processing are offloaded to a server.</p>
+
+            </div>
+
+        </div>
+
+        <div class="subgroup row" id="subgroup-dependencies" data-title="Dependencies">
+
+            <div class="content col-xs-12">
+
+                <h3>Dependencies</h3>
+
+                <p>Below is a list of the libraries and toolkits used:</p>
+
+                <ul>
+                    <li><a href="http://d3js.org/">d3</a> for visualization and svg support</li>
+                    <li><a href="http://jquery.com/">jquery</a> for js and dom utilities</li>
+                    <li><a href="http://keith-wood.name/calendars.html">jquery calendars</a> (the Keith Wood plugin) for
+                        calendar support</li>
+                    <li><a href="http://getbootstrap.com/">bootstrap</a> for layout and styling support</li>
+                    <li><a href="http://papaparse.com/">papaparse</a> for file parsing</li>
+                    <li><a href="http://square.github.io/crossfilter/">crossfilter</a> for data management</li>
+                    <li><a href="http://openlayers.org/">openlayers 3</a> for a mapping framework</li>
+                    <li><a href="http://openstreetmap.org/">openstreetmap</a> and
+                        <a href="http://mapbox.com/">mapbox</a> for map tiles</li>
+                    <li><a href="http://requirejs.org/">require</a> for
+                        <a ref="https://github.com/amdjs/amdjs-api/wiki/AMD">AWD</a> support, dependency
+                        management, and build/bundling</li>
+                </ul>
+
+                <p>Other notable assistance came from Cindy Brewer's <a href="http://colorbrewer2.org/">ColorBrewer
+                </a> palette and <a href="https://github.com/mbostock/d3/blob/master/lib/colorbrewer/colorbrewer.js">
+                    a helpful js port </a> via <a href="http://d3js.org/">d3</a>.</p>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <div class="subgroup" id="subgroup-dependencies">
+</section>
 
-        <h3>Dependencies</h3>
+<section class="group row" id="group-userstudy" data-title="User Study">
 
-        <p>Below is a list of the libraries and toolkits used:</p>
+    <div class="content col-xs-12">
+
+        <div class="page-header"><h2>User Study</h2></div>
+
+        <p class="lead">User Study in Progress.</p>
+
+        <p>Findings from the user study will go here. The user study will formally end May 1st, 2015, stay tuned!</p>
+
+    </div>
+
+</section>
+
+<section class="group row" id="group-future-work" data-title="Future Work">
+
+    <div class="content col-xs-12">
+
+        <div class="page-header"><h2>Future Work</h2></div>
+
+        <p class="lead">Some future work include, actor-to-actor correlations, scaling up to a server,
+            irregular interval periodicity.</p>
+
+        <p>There are many future work ideas that could be implemented in PerSE. To name a few:</p>
 
         <ul>
-            <li><a href="http://d3js.org/">d3</a> for visualization support</li>
-            <li><a href="http://jquery.com/">jquery</a> for being awesome</li>
-            <li><a href="http://keith-wood.name/calendars.html">jquery calendars</a> (the Keith Wood plugin) for
-                calendar support</li>
-            <li><a href="http://getbootstrap.com/">bootstrap</a> for layout support</li>
-            <li><a href="http://papaparse.com/">papaparse</a> for file parsing</li>
-            <li><a href="http://square.github.io/crossfilter/">crossfilter</a> for data mngmt</li>
-            <li><a href="http://openlayers.org/">openlayers 3</a> for mapping framework</li>
-            <li><a href="http://openstreetmap.org/">openstreetmap</a> and
-                <a href="http://mapbox.com/">mapbox</a> for map tiles</li>
-            <li><a href="http://requirejs.org/">require</a> for
-                <a ref="https://github.com/amdjs/amdjs-api/wiki/AMD">AWD</a> support and dependency
-                mngmt</li>
+            <li><strong>Actor-to-Actor</strong>: How can we visualize this? How can we see who is
+                battling/targeting who? When and Where?</li>
+            <li><strong>Verification</strong>: After we find a pattern, how can we verify it with
+                statistical tests?</li>
+            <li><strong>Scaling Up</strong>: As mentioned above, everything is done on the client. If we
+                move some or all of the preprocessing to a server we will be able to access larger data sets.
+                However, if we scale up in events, we will need to look into alternative mapping solutions.</li>
+            <li><strong>Irregular Patterns</strong>: PerSE was built to answer question about formal
+                calendar systems (i.e. Gregorian, Islamic, etc.). What about patterns that don't fit any
+                calendar system (i.e. 10-day patterns, 21-day patterns)?</li>
+            <li><strong>Holiday Support</strong>: Patterns related to a calendar system might be in
+                relation civic, religious, or cultural holidays. By identifying the root of these patterns
+                we can understand more complex issues.</li>
+            <li><strong>Export</strong>: Analysts will most likely want to export data for further
+                analysis. A <em>shoebox</em> extension to the table would facilitate this process.</li>
         </ul>
-
-        <p>Other notable assistance came from Cindy Brewer's <a href="http://colorbrewer2.org/">ColorBrewer
-        </a> palette and <a href="https://github.com/mbostock/d3/blob/master/lib/colorbrewer/colorbrewer.js">
-            a helpful js port </a> via <a href="http://d3js.org/">d3</a>.</p>
 
     </div>
 
 </section>
 
-<section class="group" id="group-futurework">
+<section class="group row" id="group-publications" data-title="Publications">
 
-    <div class="page-header"><h2>Future Work</h2></div>
+    <div class="content col-xs-12">
 
-    <p class="lead">Some future work include, actor-to-actor correlations, scaling up to a server,
-        irregular interval periodicity.</p>
+        <div class="page-header"><h2>Publications</h2></div>
 
-    <p>There are many future work ideas that could be implemented in PerSE. To name a few:</p>
+        <p>PerSE has not been published on, but hopefully in the near future. Meanwhile, there will be a presentation on
+            PerSE at <a href="http://www.aag.org/cs/events/event_detail?eventId=377">AAG 2015</a>:</p>
 
-    <ul>
-        <li><strong>Actor-to-Actor</strong>: How can we visualize this? How can we see who is
-            battling/targeting who? When and Where?</li>
-        <li><strong>Verification</strong>: After we find a pattern, how can we verify it with
-            statistical tests?</li>
-        <li><strong>Scaling Up</strong>: As mentioned above, everything is done on the client. If we
-            move some or all of the preprocessing to a server we will be able to access larger data sets.
-            However, if we scale up in events, we will need to look into alternative mapping solutions.</li>
-        <li><strong>Irregular Patterns</strong>: PerSE was built to answer question about formal
-            calendar systems (i.e. Gregorian, Islamic, etc.). What about patterns that don't fit any
-            calendar system (i.e. 10-day patterns, 21-day patterns)?</li>
-        <li><strong>Holiday Support</strong>: Patterns related to a calendar system might be in
-            relation civic, religious, or cultural holidays. By identifying the root of these patterns
-            we can understand more complex issues.</li>
-        <li><strong>Export</strong>: Analysts will most likely want to export data for further
-            analysis. A <em>shoebox</em> extension to the table would facilitate this process.</li>
-    </ul>
+        <div class="well">
+            <dl class="dl-horizontal">
+                <dt>Title</dt>
+                <dd>PerSE: A visual analytics tool for identifying periodicity in
+                    spatio-temporal event data</dd>
+                <dt>Presenter</dt>
+                <dd>Brian Swedberg</dd>
+                <dt>Session</dt>
+                <dd>1574 [Spatiotemporal Symposium] Time Geography: Integrating Space with Time in
+                    Geographic
+                    Research (III)</dd>
+                <dt>Location</dt>
+                <dd>Lucerne 2, Swissôtel, Lucerne Level</dd>
+                <dt>Time</dt>
+                <dd>April 21, 2015 at  2:40 - 4:20pm</dd>
+            </dl>
+        </div>
 
-</section>
-
-<section class="group" id="group-publications">
-
-    <div class="page-header"><h2>Publications</h2></div>
-
-    <p>At this point in time, PerSE has not been published on. However, there will be a presentation on
-        PerSE at <a href="http://www.aag.org/cs/events/event_detail?eventId=377">AAG 2015</a> by Brian
-        Swedberg titled <em>PerSE: A visual analytics tool for identifying periodicity in
-            spatio-temporal event data</em>.</p>
+    </div>
 
 </section>
 
-<section class="group" id="group-license">
+<section class="group row" id="group-license" data-title="License">
 
-    <div class="page-header"><h2>License</h2></div>
+    <div class="content col-xs-12">
 
-    <p class="lead">PerSE is under the <a href="http://opensource.org/licenses/MIT">MIT License</a>.</p>
+        <div class="page-header"><h2>License</h2></div>
 
-    <blockquote>
-        <p>The MIT License (MIT)</p>
+        <p class="lead">PerSE is under the <a href="http://opensource.org/licenses/MIT">MIT License</a>.</p>
 
-        <p>Copyright (c) 2015 Brian Swedberg</p>
+        <blockquote>
+            <p>The MIT License (MIT)</p>
 
-        <p>Permission is hereby granted, free of charge, to any person obtaining a copy
-            of this software and associated documentation files (the "Software"), to deal
-            in the Software without restriction, including without limitation the rights
-            to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-            copies of the Software, and to permit persons to whom the Software is
-            furnished to do so, subject to the following conditions:</p>
+            <p>Copyright (c) 2015 Brian Swedberg</p>
 
-        <p>The above copyright notice and this permission notice shall be included in
-            all copies or substantial portions of the Software.</p>
+            <p>Permission is hereby granted, free of charge, to any person obtaining a copy
+                of this software and associated documentation files (the "Software"), to deal
+                in the Software without restriction, including without limitation the rights
+                to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                copies of the Software, and to permit persons to whom the Software is
+                furnished to do so, subject to the following conditions:</p>
 
-        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-            IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-            FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-            AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-            LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-            OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-            THE SOFTWARE.</p>
+            <p>The above copyright notice and this permission notice shall be included in
+                all copies or substantial portions of the Software.</p>
 
-    </blockquote>
+            <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+                THE SOFTWARE.</p>
+
+        </blockquote>
+
+    </div>
 
 </section>
 
-<section class="group" id="group-contact">
+<section class="group row" id="group-contact" data-title="Contact">
 
-    <div class="page-header"><h2>Contact</h2></div>
+    <div class="content col-xs-12">
 
-    <p>If you have any questions or comments please contact <a href="mailto:bwswedberg@gmail.com">Brian
-        Swedberg</a> at bwswedberg at gmail dot com. </p>
+        <div class="page-header"><h2>Contact</h2></div>
+
+        <p>If you have any questions or comments please contact <a href="mailto:bwswedberg@gmail.com">Brian
+            Swedberg</a> at bwswedberg at gmail dot com. </p>
+
+    </div>
 
 </section>
 </div>

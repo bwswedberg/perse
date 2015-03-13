@@ -39,7 +39,8 @@
     fill: none;
 }
 
-.timewheel-arc-background > path:hover {
+.timewheel-arc-background > path:hover,
+.timewheel-arc-background > path.hovered {
     fill: #bdbdbd;
     fill-opacity: .25;
 }

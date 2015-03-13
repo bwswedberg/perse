@@ -69,24 +69,30 @@ define([
             arcGroup.enter().append('g')
                 .classed({'enabled': true, 'timewheel-arc': true, 'timewheel-arc-background': true})
                 .on('mouseenter', function (d) {
-                    data = {
+                    var someD = {
                         long: d.data.long,
                         short: d.data.short,
                         ringId: that.ringId,
                         label: that.label,
-                        value: d.data.value,
-                        frequency: d.data.events[d.data.events.length - 1].count.end // count of all events
+                        arcId: d.data.value
                     };
                     that.notifyListeners('onMouseOver', {
                         context: that,
-                        data: data
+                        data: someD
                     });
                 })
-                .on('click', function () {
-                    var value = d3.select(this).datum().data.value;
-                    that.disabledList[value].isEnabled = !that.disabledList[value].isEnabled;
+                .on('click', function (d) {
+                    var someD = {
+                            long: d.data.long,
+                            short: d.data.short,
+                            ringId: that.ringId,
+                            label: that.label,
+                            arcId: d.data.value
+                        };
+                    that.disabledList[d.data.value].isEnabled = !that.disabledList[d.data.value].isEnabled;
                     that.notifyListeners('onMouseClick', {
-                        context: that
+                        context: that,
+                        data: someD
                     });
                 })
                 .call(function (selection) {
@@ -231,6 +237,10 @@ define([
         };
     };
 
+    timewheel.Ring.prototype.getArcData = function (arcValue) {
+        return this.ring.selectAll('g.timewheel-arc-fill').data()[arcValue].data;
+    };
+
     timewheel.Ring.prototype.getExtent = function (data) {
         var extent = {
                 x: {min: 0, max: data.length},
@@ -241,6 +251,17 @@ define([
             extent.y.max = Math.max(d.events[d.events.length - 1].count.end, extent.y.max);
         });
         return extent;
+    };
+
+    timewheel.Ring.prototype.setArcActive = function (arcId) {
+        if (arcId === undefined || arcId === null) {
+            this.ring.selectAll('g.timewheel-arc-background > path').classed('hovered', false);
+        } else {
+            this.ring.selectAll('g.timewheel-arc-background > path').classed('hovered', function (d) {
+                return d.data.value === arcId;
+            });
+        }
+        return this;
     };
 
     timewheel.Ring.prototype.setIsFocusRing = function (isFocusRing) {

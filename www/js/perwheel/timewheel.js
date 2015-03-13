@@ -90,16 +90,32 @@ define([
     };
 
     timewheel.TimeWheel.prototype.onHover = function (event) {
+        var ringData, count;
         if (event === undefined || event.data === undefined || event.data.ringId === undefined) {
             this.changeRingSize();
             this.updateLabel();
+
+            this.rings.forEach(function (r) {
+                r.setArcActive();
+            });
+
         } else {
+            ringData = this.getArcValue(event.data.ringId, event.data.arcId);
+            count = ringData.events[ringData.events.length - 1].count.end;
             this.changeRingSize(event.data.ringId);
             this.updateLabel({
                 arc: event.data.label + ': ' + event.data.long,
-                frequency: 'Count: ' + event.data.frequency
+                frequency: 'Count: ' + count
             });
+
+            this.rings.forEach(function (r) {
+                if (r.getRingId() === event.data.ringId) {
+                    r.setArcActive(event.data.arcId);
+                }
+            });
+
         }
+
     };
 
     timewheel.TimeWheel.prototype.changeRingSize = function (focusRingId) {
@@ -146,8 +162,11 @@ define([
                 data.calendarName = this.calendarName;
                 this.notifyListeners('onHoverEvent', {'context': this, 'data': data});
             },
-            onMouseClick: function () {
+            onMouseClick: function (event) {
+                var data = event.data;
+                data.calendarName = this.calendarName;
                 this.notifyListeners('onTimeWheelSelectionChanged', {context: this});
+                this.notifyListeners('onHoverEvent', {'context': this, 'data': data});
             }
         };
     };
@@ -180,6 +199,18 @@ define([
                 .attr('y', -(this.margin.top - 1) + arcBBox.height);
         }
 
+    };
+
+    timewheel.TimeWheel.prototype.getArcValue = function (ringId, arcValue) {
+        var arcData;
+
+        this.rings.forEach(function (r) {
+            if (ringId === r.getRingId()) {
+                arcData = r.getArcData(arcValue);
+            }
+        });
+
+        return arcData;
     };
 
     timewheel.TimeWheel.prototype.setShouldAnimate = function (someBool) {

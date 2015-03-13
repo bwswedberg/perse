@@ -44,17 +44,18 @@ require([
     headings = $('#main-content > .group').get().map(function (gElem) {
         var group = $(gElem);
         return makeSpyDataStruct({
-            label: group.children().first().text(),
+            label: group.attr('data-title'),
             id: group.attr('id'),
-            subgroups: group.children('.subgroup').get().map(function (subElem) {
+            subgroups: group.find('.content > .subgroup').get().map(function (subElem) {
                 var sub = $(subElem);
                 return makeSpyDataStruct({
-                    label: sub.children().first().text(),
+                    label: sub.attr('data-title'),
                     id: sub.attr('id')
                 });
             })
         });
     });
+
 
     $('#main-content-spy').append(page.createScrollSpy({
         target: $('#main-content-spy'),

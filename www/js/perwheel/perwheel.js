@@ -171,23 +171,24 @@ define([
     };
 
     perwheel.PerWheel.prototype.createIndicationFilter = function (event) {
+        console.log(event);
         var cal = $.calendars.instance(event.calendarName);
         switch (event.ringId) {
         case ('dayOfMonth'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                return date.day() - 1 === event.value;
+                return date.day() - 1 === event.arcId;
             };
 
         case ('dayOfWeek'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                return date.dayOfWeek() === event.value;
+                return date.dayOfWeek() === event.arcId;
             };
         case ('monthOfYear'):
             return function (d) {
                 var date = cal.fromJD(d.julianDate);
-                return date.month() - 1 === event.value;
+                return date.month() - 1 === event.arcId;
             };
         default:
             console.warn('Case not supported');

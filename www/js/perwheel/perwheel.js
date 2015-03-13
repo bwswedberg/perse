@@ -171,7 +171,6 @@ define([
     };
 
     perwheel.PerWheel.prototype.createIndicationFilter = function (event) {
-        console.log(event);
         var cal = $.calendars.instance(event.calendarName);
         switch (event.ringId) {
         case ('dayOfMonth'):

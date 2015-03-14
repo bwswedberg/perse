@@ -414,7 +414,7 @@ define([
                 .attr({'class': 'dropdown-header', 'role': 'presentation'})
                 .text('Positioning'),
             auto = $('<a>').attr({'role': 'menuitem'}).text('Auto '),
-            fixed = $('<a>').attr({'role': 'menuitem'}).text('Fixed '),
+            fixed = $('<a>').attr({'role': 'menuitem'}).text('Manual '),
             divider1 = $('<li>').attr({'class': 'divider', 'role': 'presentation'}),
             editHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Edit'),
             add = $('<a>').attr({'role': 'menuitem'}).text('Add '),

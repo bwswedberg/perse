@@ -158,11 +158,8 @@ define([
         return {
             context: this,
             onFilterChanged: function () {
-                console.log('filter changed');
             },
             onHoverEvent: function (event) {
-                var indicationEvent;
-
                 Object.keys(this.plots).forEach(function (k) {
                     this.plots[k].onHover(event);
                 }, this);

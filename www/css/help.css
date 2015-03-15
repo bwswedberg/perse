@@ -3,3 +3,6 @@ label.caption {
     margin: 0 auto;
     text-align: center;
 }
+.panel-heading.summary {
+    background: white;
+}

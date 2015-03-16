@@ -27,6 +27,7 @@ define([
             highlightedEventPoints: undefined,
             voronoi: {polygons: undefined, points: undefined}
         };
+        this.overlays = {popup: undefined};
         this.interactions = {
             select: undefined,
             modify: undefined,
@@ -38,6 +39,7 @@ define([
         this.voronoiCount = 0;
         this.maxPointsExtent = undefined;
         this.shouldUpdate = true;
+        this.interactionMode = 'none';
     };
 
     map.Map.prototype.render = function (parent) {
@@ -50,21 +52,21 @@ define([
                 zoom: 5
             }),
             renderer: 'canvas',
-            /*
+
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 })
             ],
             /* For Mapbox stuff*/
-
+            /*
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.XYZ({
                         url: 'http://api.tiles.mapbox.com/v4/bwswedberg.l5e51i3j/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYndzd2VkYmVyZyIsImEiOiJBTjZDRnBJIn0.xzlamtU5oK5yGfb1-w-bYg',
                     })
                 })
-            ],
+            ],*/
             target: $(parent).get(0)
         });
         return this;
@@ -83,11 +85,16 @@ define([
         this.maxPointsExtent = this.layers.eventPoints.getSource().getExtent();
 
         this.layers.voronoi.polygons = this.getVoronoiPolygonLayer();
-        this.addPolygonIndicationListener();
+        //this.addPolygonIndicationListener();
+
+        this.addPointerListener();
 
         this.theMap.addLayer(this.layers.voronoi.polygons);
         this.theMap.addLayer(this.layers.voronoi.points);
         this.theMap.addLayer(this.layers.eventPoints);
+
+        this.overlays.popup = this.createPopupOverlay();
+        this.theMap.addOverlay(this.overlays.popup);
 
         if (this.voronoiPositioning === 'auto') {
             this.updateVoronoiPoints(this.calculateNewSeedCoords(this.layers.eventPoints.getSource().getExtent()));
@@ -123,6 +130,24 @@ define([
         this.shouldUpdate = false;
 
         this.validateToolbarButtons();
+    };
+
+    map.Map.prototype.createPopupOverlay = function () {
+        var popupContainer = $('<div>');
+
+        $(popupContainer).popover({
+            'placement': 'top',
+            'html': true,
+            'title': 'Description'
+        });
+
+        $(this.theMap.getTarget()).append(popupContainer);
+
+        return new ol.Overlay({
+            element: popupContainer,
+            positioning: 'bottom-center',
+            stopEvent: false
+        });
     };
 
     map.Map.prototype.updateEventPoints = function (data) {
@@ -268,7 +293,7 @@ define([
         remove.getFeatures().on('add', function (event) {
             var feature = event.element;
             layer.getSource().removeFeature(feature);
-            remove.getFeatures().clear();
+            remove.getFeatures().clear(feature);
             this.notifyListeners('onDataSetRequested', {context: this});
             this.updateInteractionMode('removeVoronoi');
         }, this);
@@ -291,6 +316,113 @@ define([
                 return someLayer === layer;
             }
         });
+    };
+
+    map.Map.prototype.createPopupContent = function (data) {
+        // TODO: fix the hard coding here.
+        var fatalities = $('<p>').css({'text-align': 'right'}).html('<em>Fatalities:</em> ' + data.attribute_2),
+            description = $('<p>').text(data.description);
+        return $('<div>')
+            .attr({'class': 'permap-popup-content'})
+            .append(description, fatalities)
+            .prop('outerHTML');
+    };
+
+    map.Map.prototype.addPointerListener = function () {
+        var eventPointsLayerFilter,
+            voronoiPolygonsLayerFilter,
+            onPointClicked,
+            onVoronoiPolygonIdentified;
+
+        onVoronoiPolygonIdentified = function (feat, context) {
+            var voronoiPolygonId;
+
+            if (!feat) {
+                context.notifyListeners('onIndicationChanged', {
+                    'context': context,
+                    'voronoiId': undefined,
+                    'indicationFilter': undefined
+                });
+                return;
+            }
+
+            if (feat.get('highlightLevel') !== 'max') {
+                voronoiPolygonId = feat.get('data').voronoiId;
+
+                context.notifyListeners('onIndicationChanged', {
+                    'context': context,
+                    'voronoiId': voronoiPolygonId,
+                    'indicationFilter': undefined
+                });
+
+            }
+        };
+
+        onPointClicked = function (feat, context) {
+            var popup = context.overlays.popup.getElement();
+
+            if (feat !== undefined) {
+                context.overlays.popup.setPosition(feat.getGeometry().getCoordinates());
+                $(popup).attr({
+                    'data-content': context.createPopupContent.call(context, feat.get('data'))
+                });
+                $(popup).popover('show');
+            } else {
+                $(popup).popover('hide');
+                // hide popup
+                /*$(popup).popover('destroy');*/
+            }
+        };
+
+        eventPointsLayerFilter = function (lyr) {
+            return lyr === this.layers.eventPoints;
+        };
+
+        voronoiPolygonsLayerFilter = function (lyr) {
+            return lyr === this.layers.voronoi.polygons;
+        };
+
+        eventPointsLayerFilter = function (lyr) {
+            return lyr === this.layers.eventPoints;
+        };
+
+        this.theMap.on('pointermove', function(e) {
+            var pixel = this.theMap.getEventPixel(e.originalEvent),
+                voronoiFeat,
+                isOnPoint;
+
+            isOnPoint = this.theMap.hasFeatureAtPixel(pixel, eventPointsLayerFilter, this);
+
+            if (isOnPoint) {
+                $(this.theMap.getTarget()).css('cursor', 'pointer');
+            } else {
+                $(this.theMap.getTarget()).css('cursor', '');
+            }
+
+            voronoiFeat = this.theMap.forEachFeatureAtPixel(
+                pixel,
+                function (feat, lyr) {if (lyr) {return feat; } },
+                this, // callback context
+                voronoiPolygonsLayerFilter,
+                this // layerFilter context
+            );
+
+            onVoronoiPolygonIdentified(voronoiFeat, this);
+        }, this);
+
+        this.theMap.on('click', function(e) {
+            var pixel = this.theMap.getEventPixel(e.originalEvent),
+                firstFeature = this.theMap.forEachFeatureAtPixel(
+                    pixel,
+                    function (feat, lyr) {if (lyr) {return feat; } },
+                    this, // callback context
+                    eventPointsLayerFilter,
+                    this // layerFilter context
+                );
+            onPointClicked(firstFeature, this);
+
+        }, this);
+
     };
 
     map.Map.prototype.addPolygonIndicationListener = function () {
@@ -321,6 +453,8 @@ define([
     };
 
     map.Map.prototype.updateInteractionMode = function (mode) {
+        this.interactionMode = mode;
+
         this.removeInteractionListener();
         this.removeInteractions();
 

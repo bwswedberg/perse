@@ -5,3 +5,8 @@
     position: relative;
     height: 450px;
 }
+
+.perse-permap > .perse-panel-body .popover {
+	font-size: .7em;
+	width: 200px;
+}

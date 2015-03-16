@@ -54,30 +54,27 @@ define([
             newData = [],
             extent = this.getExtent(),
             minDate = cal.fromJD(extent.min),
-            myDate = cal.fromJD(extent.min),
-            agg = this.createAggregate(myDate.year().toString(), myDate.year());
+            nextYear = cal.newDate(minDate.year() + 1, 1, 1),
+            agg = this.createAggregate(minDate.year().toString(), minDate.year());
 
-        // add data in
+        agg.dateRange.begin = minDate.toJD();
+        newData.push(agg);
+
         this.data.forEach(function (d) {
             var currentDate = cal.fromJD(d.julianDate);
-            while (myDate.compareTo(currentDate) < 1) {
-                if (myDate.year() - minDate.year() > newData.length - 1) {
-                    agg = this.createAggregate(myDate.year().toString(), myDate.year());
-                    agg.dateRange.begin = myDate.toJD();
-                    newData.push(agg);
-                }
-                if (myDate.month() - minDate.month() > newData[myDate.year() - minDate.year()].composite.length - 1) {
-                    agg.composite.push(this.createAggregate(cal.local.monthNamesShort[myDate.monthOfYear() - 1], myDate.monthOfYear() - 1));
-                    agg.composite[agg.composite.length - 1].dateRange.begin = myDate.toJD();
-                }
-                agg.dateRange.end = myDate.toJD();
-                agg.composite[agg.composite.length - 1].dateRange.end = myDate.toJD();
 
-                myDate.add(1, 'd');
+            if (currentDate.compareTo(nextYear) < 0) {
+                agg.dateRange.end = currentDate.toJD();
+            } else {
+                agg.dateRange.end = nextYear.toJD();
+                nextYear.add(1, 'y');
+                agg = this.createAggregate(currentDate.year().toString(), currentDate.year());
+                newData.push(agg);
+                agg.dateRange.begin = cal.newDate(currentDate.year(), 1, 1)
+                    .toJD();
             }
-            newData[currentDate.year() - minDate.year()]
-                .composite[currentDate.month() - 1]
-                .composite.push(d);
+            agg.composite.push(d);
+
         }, this);
 
         return newData;

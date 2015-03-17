@@ -5,12 +5,3 @@
 /* PerSE CSS */
 @import url("page.css");
 
-
-label.caption {
-    display: block;
-    margin: 0 auto;
-    text-align: center;
-}
-.panel-heading.summary {
-    background: white;
-}

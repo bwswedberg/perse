@@ -8,7 +8,7 @@ body {
 }
 
 .footer > p {
-    color: #777;
+    color: #3f3f3f;
     text-align: center;
 }
 
@@ -40,10 +40,10 @@ body {
 #main-content-spy .nav>li>a:hover,
 #main-content-spy .nav>li>a:focus {
     font-weight: 700;
-    color: #563d7c;
+    color: #3f3f3f;
     text-decoration: none;
     background-color: transparent;
-    border-left: 2px solid #563d7c;
+    border-left: 2px solid #3f3f3f;
 }
 
 /* nested active links */

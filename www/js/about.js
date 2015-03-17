@@ -21,6 +21,7 @@ require.config({
     }
 });
 
+
 require([
     'jquery',
     'page/page'

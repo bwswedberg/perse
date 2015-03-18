@@ -1,6 +1,6 @@
 /* Vendor CSS */
-@import url("vendor/bootstrap_lumen.css");
-/*@import url("vendor/bootstrap-theme.css");*/
+@import url("vendor/bootstrap.css");
+@import url("vendor/bootstrap-theme.css");
 
 /* PerSE CSS */
 @import url("page.css");

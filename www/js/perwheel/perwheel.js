@@ -12,7 +12,7 @@ define([
     '$.calendars',
     'bootstrap'
 ], function ($, filter, timewheel) {
-    
+
     var perwheel = {};
 
     perwheel.PerWheel = function () {
@@ -171,7 +171,7 @@ define([
     };
 
     perwheel.PerWheel.prototype.createIndicationFilter = function (event) {
-        var cal = $.calendars.instance(event.calendarName);
+        var cal = $.calendars.instance(this.calendarName);
         switch (event.ringId) {
         case ('dayOfMonth'):
             return function (d) {
@@ -257,6 +257,10 @@ define([
 
     perwheel.PerWheel.prototype.setContentAttribute = function (contentAttribute) {
         this.timeWheel.setContentAttribute(contentAttribute);
+        return this;
+    };
+
+    perwheel.PerWheel.prototype.setCycleName = function (calendarName) {
         return this;
     };
 

@@ -25,16 +25,6 @@ define([
         return this;
     };
 
-    perplot.PerPlot.prototype.setCalendar = function () {
-        // in case sub class doesn't have it
-        return this;
-    };
-
-    perplot.PerPlot.prototype.setCycleName = function () {
-        // in case sub class doesn't have it
-        return this;
-    };
-
     return perplot;
 
 });

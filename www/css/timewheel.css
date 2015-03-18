@@ -41,13 +41,13 @@
 
 .timewheel-arc-background > path:hover,
 .timewheel-arc-background > path.hovered {
-    fill: #bdbdbd;
-    fill-opacity: .25;
+    fill: #ffffff;
+    fill-opacity: .5;
 }
 
 .timewheel-arc-background > path:active {
-    fill: #bdbdbd;
-    fill-opacity: .5;
+    fill: #ffffff;
+    fill-opacity: .75;
 }
 
 #timewheel-arc-label,

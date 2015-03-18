@@ -115,7 +115,7 @@ define([
                     'class': 'btn btn-default btn-xs dropdown-toggle',
                     'type': 'button',
                     'data-toggle': 'dropdown',
-                    'title': 'Draw Geospatial Filter'
+                    'title': 'Draw/Edit Spatial Filter'
                 })
                 .append(pencilIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
@@ -221,7 +221,7 @@ define([
                     'class': 'btn btn-default btn-xs dropdown-toggle',
                     'type': 'button',
                     'data-toggle': 'dropdown',
-                    'title': 'Change Calendar System'
+                    'title': 'Change Calendar'
                 })
                 .append(calendarIcon, ' ',  $('<span>').attr({'class': 'caret'}));
 
@@ -277,7 +277,7 @@ define([
                     'class': 'btn btn-default btn-xs dropdown-toggle',
                     'type': 'button',
                     'data-toggle': 'dropdown',
-                    'title': 'Change Temporal Cycle'
+                    'title': 'Subplot Settings'
                 })
                 .append(cycleIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
@@ -350,64 +350,6 @@ define([
         return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(cycleButton, menu);
     };
 
-
-    permaptoolbar.PerMapToolbar.prototype.createCycleButtonGroup_dep = function () {
-        var // menu
-            calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Cycle'),
-            monthOfYear = $('<a>').attr({'role': 'menuitem'}).text('Month of Year '),
-            weekOfYear = $('<a>').attr({'role': 'menuitem'}).text('Week of Year '),
-            dayOfMonth = $('<a>').attr({'role': 'menuitem'}).text('Day of Month '),
-            dayOfWeek = $('<a>').attr({'role': 'menuitem'}).text('Day of Week '),
-            menu = $('<ul>')
-                .attr({'class': 'dropdown-menu', 'role': 'menu'})
-                .append([
-                    calendarHeader,
-                    $('<li>').attr({'role': 'presentation'}).append(monthOfYear),
-                    $('<li>').attr({'role': 'presentation'}).append(weekOfYear),
-                    $('<li>').attr({'role': 'presentation'}).append(dayOfMonth),
-                    $('<li>').attr({'role': 'presentation'}).append(dayOfWeek)
-                ]),
-        // button
-            cycleIcon = $('<span>').attr({'class': 'glyphicon glyphicon-stats', 'aria-hidden': 'true'}),
-            cycleButton = $('<button>')
-                .attr({
-                    'class': 'btn btn-default btn-xs dropdown-toggle',
-                    'type': 'button',
-                    'data-toggle': 'dropdown',
-                    'title': 'Change Temporal Cycle'
-                })
-                .append(cycleIcon, ' ', $('<span>').attr({'class': 'caret'}));
-
-        this.addGlyphIcon(monthOfYear);
-
-        // add events here
-        monthOfYear.on('mouseup', $.proxy(function () {
-            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
-            this.addGlyphIcon(monthOfYear);
-            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'MonthOfYear'});
-        }, this));
-
-        weekOfYear.on('mouseup', $.proxy(function () {
-            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
-            this.addGlyphIcon(weekOfYear);
-            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'WeekOfYear'});
-        }, this));
-
-        dayOfMonth.on('mouseup', $.proxy(function () {
-            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
-            this.addGlyphIcon(dayOfMonth);
-            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'DayOfMonth'});
-        }, this));
-
-        dayOfWeek.on('mouseup', $.proxy(function () {
-            [monthOfYear, weekOfYear, dayOfMonth, dayOfWeek].forEach(this.removeGlyphIcon);
-            this.addGlyphIcon(dayOfWeek);
-            this.notifyListeners('onCycleChanged', {'context': this, 'cycleName': 'DayOfWeek'});
-        }, this));
-
-        return $('<div>').attr({'class': 'btn-group', 'role': 'group'}).append(cycleButton, menu);
-    };
-
     permaptoolbar.PerMapToolbar.prototype.createSeedControlButtonGroup = function () {
         var // menu
             positioningHeader = $('<li>')
@@ -439,7 +381,12 @@ define([
         // button
             seedIcon = $('<span>').attr({'class': 'glyphicon glyphicon-record', 'aria-hidden': 'true'}),
             seedButton = $('<button>')
-                .attr({'class': 'btn btn-default btn-xs dropdown-toggle', 'type': 'button', 'data-toggle': 'dropdown'})
+                .attr({
+                    'class': 'btn btn-default btn-xs dropdown-toggle',
+                    'type': 'button',
+                    'data-toggle': 'dropdown',
+                    'title': 'Edit Voronoi Seeds'
+                })
                 .append(seedIcon, ' ', $('<span>').attr({'class': 'caret'}));
 
         // add events here

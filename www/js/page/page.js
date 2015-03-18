@@ -24,7 +24,7 @@ define([
                 .text('PerSE'),
             p = $('<p>')
                 .attr({'class': 'navbar-text'})
-                .text('Visual Analytics for Event Periodicity Detection and Analysis'),
+                .text('Visual Analytics for Periodicity Detection and Analysis'),
             divHeader = $('<div>')
                 .attr({'class': 'navbar-header'})
                 .append(b, p),

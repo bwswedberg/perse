@@ -52,21 +52,21 @@ define([
                 zoom: 5
             }),
             renderer: 'canvas',
-
+            /*
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.OSM()
                 })
             ],
             /* For Mapbox stuff*/
-            /*
+
             layers: [
                 new ol.layer.Tile({
                     source: new ol.source.XYZ({
                         url: 'http://api.tiles.mapbox.com/v4/bwswedberg.l5e51i3j/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYndzd2VkYmVyZyIsImEiOiJBTjZDRnBJIn0.xzlamtU5oK5yGfb1-w-bYg',
                     })
                 })
-            ],*/
+            ],
             target: $(parent).get(0)
         });
         return this;

@@ -33,12 +33,13 @@ require([
     'perse',
     'page/page'
 ], function ($, waitmodal, perse, page) {
-    var app, loadEnd, modal;
+    var app, nav, footer, loadEnd, modal;
 
     modal = waitmodal.createWaitModal();
 
     loadEnd = function () {
         app.show();
+        footer.show();
         modal.modal('hide');
     };
 
@@ -48,12 +49,15 @@ require([
             .onLoadEnd(loadEnd)
             .hide()
             .init();
-        $('body').prepend(page.createNavBar({
+        nav = page.createNavBar({
             brand: './index.html',
             about: './about.html',
             help: './help.html'
-        }));
-        $('body').append(page.createFooter());
+        });
+        $('body').prepend(nav);
+
+        footer = page.createFooter().hide();
+        $('body').append(footer);
     });
 
     modal.on('hidden.bs.modal', function () {

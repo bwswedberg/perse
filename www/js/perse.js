@@ -32,7 +32,6 @@ define([
     pertoolbar
 ) {
 
-    //localhost:8080/WebStormProjects/perse-two/www/index.html
     var perse = {};
 
     perse.PerSE = function () {
@@ -120,42 +119,6 @@ define([
 
     };
 
-    perse.PerSE.prototype.createNavBar_dep = function () {
-        var // ------ title/sub ----
-            b = $('<a>')
-                .attr({'class': 'navbar-brand', 'href': './index.html'})
-                .text('PerSE'),
-            p = $('<p>')
-                .attr({'class': 'navbar-text'})
-                .text('Visual Analytics for Event Periodicity Detection and Analysis'),
-            divHeader = $('<div>')
-                .attr({'class': 'navbar-header'})
-                .append(b, p),
-            // ----- Navbar stuff ------
-            aAbout = $('<a>')
-                .attr({'href': './about.html'})
-                .text('About'),
-            aHelp = $('<a>')
-                .attr({'href': './help.html'})
-                .text('Help'),
-            nav = $('<ul>')
-                .attr({'class': 'nav navbar-nav navbar-right'})
-                .append(
-                    $('<li>').append(aAbout),
-                    $('<li>').append(aHelp)
-                ),
-            navbar = $('<div>')
-                .attr({'class': 'navbar-collapse collapse'})
-                .append(nav),
-            // ----- Wrap it all up -----
-            cont = $('<div>')
-                .attr({'class': 'container'})
-                .append(divHeader, navbar);
-        return $('<div>')
-                .attr({'class': 'navbar navbar-default navbar-fixed-top'})
-                .append(cont);
-    };
-
     perse.PerSE.prototype.onLoadEnd = function (callback) {
         this.onLoadEndCallback = callback;
         return this;
@@ -169,10 +132,6 @@ define([
     perse.PerSE.prototype.hide = function () {
         this.container.css({'visibility': 'hidden'});
         return this;
-    };
-
-    perse.PerSE.prototype.createFooter_dep = function () {
-
     };
 
     perse.PerSE.prototype.loadData = function () {

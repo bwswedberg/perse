@@ -27,7 +27,7 @@ define([
     pertable.PerTable.prototype.render = function (parent) {
         var title = $('<p>')
                 .attr({'class': 'perse-header-title'})
-                .text('Selection Data'),
+                .text('Table'),
             panelHeader = $('<div>')
                 .attr({'class': 'panel-heading perse-panel-heading'})
                 .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),

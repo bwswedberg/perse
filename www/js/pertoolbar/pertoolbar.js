@@ -23,7 +23,7 @@ define([
         // dark background
         var title = $('<p>')
                 .attr({'class': 'perse-header-title'})
-                .text('All Views'),
+                .text('Main'),
             panelHeader = $('<div>')
                 .attr({'class': 'panel-heading perse-panel-heading'})
                 .append($('<div>').attr({'class': 'panel-title'}).append(title, this.createControls())),

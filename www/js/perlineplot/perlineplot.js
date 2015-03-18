@@ -32,7 +32,7 @@ define([
         this.filter = new filter.Filter({
             uniqueId: this.getUniqueId(),
             property: 'coord',
-            filterOn: function (d) {
+            filterOn: function () {
                 return true;
             }
         });
@@ -82,7 +82,12 @@ define([
         this.svg.append('g')
             .attr('id', 'perlineplot-voronoi')
             .on('mouseout', function () {
-                that.notifyListeners('onHoverEvent', {'context': that, 'firingPlot': that, 'data': undefined});
+                that.notifyListeners('onHoverEvent', {
+                    'context': that,
+                    'firingPlot': that,
+                    indicationFilter: undefined,
+                    'data': undefined
+                });
             });
 
         this.svg.append('text')
@@ -100,7 +105,10 @@ define([
             }),
             line,
             pathsG,
-            tickStep = Math.round(xLabels.length / 6);
+            tickStep = Math.round(xLabels.length / 6),
+            verticies,
+            voronoiPolys,
+            voronoiG;
 
         this.xScale = d3.scale.ordinal()
             .domain(d3.range(this.plotExtent.x.max + 1))
@@ -136,9 +144,9 @@ define([
         pathsG.exit().remove();
 
         // voronoi
-        var verticies = this.getVerticies(data);
+        verticies = this.getVerticies(data);
 
-        var voronoiPolys = d3.geom.voronoi()
+        voronoiPolys = d3.geom.voronoi()
             .clipExtent([
                 [0, 0],
                 [this.size.width, this.size.height]
@@ -151,14 +159,19 @@ define([
             })
         (verticies);
 
-        var voronoiG = this.svg.select('#perlineplot-voronoi')
+        voronoiG = this.svg.select('#perlineplot-voronoi')
             .selectAll('path')
             .data(verticies);
 
         voronoiG.enter().append('path')
             .on('mouseover', function () {
                 var d = d3.select(this).datum();
-                that.notifyListeners('onHoverEvent', {'context': that, 'firingPlot': that, 'data': d});
+                that.notifyListeners('onHoverEvent', {
+                    'context': that,
+                    'firingPlot': that,
+                    'indicationFilter': that.createIndicationFilter(d),
+                    'data': d
+                });
             });
 
         voronoiG
@@ -188,7 +201,7 @@ define([
             .outerTickSize(2)
             .orient('bottom');
 
-        this.svg.append("g")
+        this.svg.append('g')
             .attr('class', 'perlineplot-axis')
             .attr('transform', 'translate(0,' + (this.size.height - 1) + ')')
             .call(xAxisBuilder);
@@ -199,7 +212,7 @@ define([
             .outerTickSize(2)
             .orient('left');
 
-        this.svg.append("g")
+        this.svg.append('g')
             .attr('class', 'perlineplot-axis')
             .attr('transform', 'translate(-1, 0)')
             .call(yAxisBuilder);
@@ -249,6 +262,7 @@ define([
     };
 
     perlineplot.PerLinePlot.prototype.onHover = function (hoverObj) {
+        var lineClass, xClass, d;
         if (hoverObj.data === undefined || hoverObj.data === null) {
             this.svg.selectAll('.perlineplot-path.active')
                 .classed('active', false);
@@ -258,19 +272,19 @@ define([
                 .text('');
             this.showAxes(false);
         } else {
-            var lineClass = this.getLineClass(hoverObj.data.lineValue),
-                xClass = this.getXClass(hoverObj.data.xValue);
+            lineClass = this.getLineClass(hoverObj.data.lineValue);
+            xClass = this.getXClass(hoverObj.data.xValue);
             this.svg.selectAll('.perlineplot-path.active')
                 .classed('active', false);
             this.svg.selectAll('.perlineplot-path' + lineClass)
                 .classed('active', true);
-            var d = this.svg.select('#perlineplot-voronoi ' + lineClass + xClass)
+            d = this.svg.select('#perlineplot-voronoi ' + lineClass + xClass)
                 .datum();
             this.svg.selectAll('circle')
                 .remove();
             this.svg.append('circle')
-                .attr("transform", 'translate(' + this.xScale(d.xValue) + ',' + this.yScale(d.yValue) + ')')
-                .attr("r", 1.5);
+                .attr('transform', 'translate(' + this.xScale(d.xValue) + ',' + this.yScale(d.yValue) + ')')
+                .attr('r', 1.5);
             this.updateLabel(d);
             this.showAxes(hoverObj.firingPlot === this);
         }

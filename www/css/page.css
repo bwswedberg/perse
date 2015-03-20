@@ -67,6 +67,10 @@ body {
     margin-top: -60px;
 }
 
+.group {
+    margin-bottom: 60px;
+}
+
 #main-content-spy > .affix {
     top: 60px;
 }

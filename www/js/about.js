@@ -31,7 +31,8 @@ require([
     $('body').prepend(page.createNavBar({
         brand: './index.html',
         about: './about.html',
-        help: './help.html'
+        help: './help.html',
+        isAlwaysShowing: false
     }));
 
     function makeSpyDataStruct (opts) {
@@ -61,6 +62,82 @@ require([
         target: $('#main-content-spy'),
         headings: headings
     }));
+
+    page.decorateCarousel({
+        'target': '#jumbotron-carousel',
+        'data': [
+            {
+                'caption': {
+                    'h': 'PerSE',
+                    'p': ''
+                },
+                'src': ''
+            },
+            {
+                'caption': {
+                    'h': 'Voronoi Subplots Map',
+                    'p': ''
+                },
+                'src': 'img/screenshots/voronoi-subplots-map/voronoi-subplots-map.png'
+            },
+            {
+                'caption': {
+                    'h': 'Voronoi Subplots Map',
+                    'p': ''
+                },
+                'src': 'img/screenshots/voronoi-subplots-map/seeds-five-moved-islamic-wmouse.png'
+            },
+            {
+                'caption': {
+                    'h': 'Voronoi Subplots Map',
+                    'p': ''
+                },
+                'src': 'img/screenshots/timeline/timeline.png'
+            },
+            {
+                'caption': {
+                    'h': 'Timeline',
+                    'p': ''
+                },
+                'src': 'img/screenshots/timeline/filter-1-wmouse.png'
+            },
+            {
+                'caption': {
+                    'h': 'Time-Wheel',
+                    'p': ''
+                },
+                'src': 'img/screenshots/time-wheel/time-wheel.png'
+            },
+            {
+                'caption': {
+                    'h': 'Time-Wheel',
+                    'p': ''
+                },
+                'src': 'img/screenshots/time-wheel/brush-month-of-year-wmouse.png'
+            },
+            {
+                'caption': {
+                    'h': 'Attribute-View',
+                    'p': ''
+                },
+                'src': 'img/screenshots/attribute-view/event-type.png'
+            },
+            {
+                'caption': {
+                    'h': 'Attribute-View',
+                    'p': ''
+                },
+                'src': 'img/screenshots/attribute-view/actor.png'
+            },
+            {
+                'caption': {
+                    'h': 'Attribute-View',
+                    'p': ''
+                },
+                'src': 'img/screenshots/attribute-view/filter-numerical-2-wmouse.png'
+            }
+        ]
+    });
 
     $('body').append(page.createFooter());
 

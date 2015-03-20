@@ -30,7 +30,8 @@ require([
     $('body').prepend(page.createNavBar({
         brand: './index.html',
         about: './about.html',
-        help: './help.html'
+        help: './help.html',
+        isAlwaysShowing: false
     }));
 
     function makeSpyDataStruct (opts) {

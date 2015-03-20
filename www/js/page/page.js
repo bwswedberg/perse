@@ -16,7 +16,8 @@ define([
         var params = {
             brand: opts.brand || '#',
             about: opts.about || '#',
-            help: opts.help || '#'
+            help: opts.help || '#',
+            isAlwaysShowing: opts.hasOwnProperty('isAlwaysShowing') ? opts.isAlwaysShowing : true
             },
             // ------ title/sub ----
             b = $('<a>')
@@ -47,15 +48,38 @@ define([
         // ----- Wrap it all up -----
             cont = $('<div>')
                 .attr({'class': 'container'})
-                .append(divHeader, navbar);
+                .append(divHeader, navbar),
+            out = $('<div>')
+                .attr({'class': 'navbar navbar-default navbar-fixed-top'})
+                .append(cont);
 
         b.toggleClass('disabled', params.brand === '#');
         aAbout.toggleClass('disabled', params.about === '#');
         aHelp.toggleClass('disabled', params.help === '#');
 
-        return $('<div>')
-            .attr({'class': 'navbar navbar-default navbar-fixed-top'})
-            .append(cont);
+
+
+        if (!params.isAlwaysShowing) {
+            out.hide();
+            // set distance user needs to scroll before we start fadeIn
+            if ($(this).scrollTop() > 100) {
+                $('.navbar').fadeIn();
+            } else {
+                $('.navbar').fadeOut();
+            }
+            $(window).scroll(function () {
+
+                 // set distance user needs to scroll before we start fadeIn
+                if ($(this).scrollTop() > 100) {
+                    $('.navbar').fadeIn();
+                } else {
+                    $('.navbar').fadeOut();
+                }
+            });
+        }
+
+        return out;
+
     };
 
     page.createScrollSpy = function (opts) {
@@ -104,6 +128,100 @@ define([
         });
 
         return opts.target;
+    };
+
+    page.decorateCarousel = function (params) {
+        var data = params.data,
+            carousel = $(params.target),
+            indicators,
+            inner,
+            leftControl,
+            rightControl;
+
+
+        // build indicators
+        indicators = $('<ol>').attr({'class': 'carousel-indicators'});
+
+        data.forEach(function (d, i) {
+            var li = $('<li>').attr({
+                'data-target': '#' + carousel.attr('id'),
+                'data-slide-to': i.toString()
+            });
+            if (i === 0) {
+                li.toggleClass('active', true);
+            }
+            indicators.append(li);
+        });
+
+
+        // build inner
+        inner = $('<div>').attr({'class': 'carousel-inner', 'role': 'listbox'});
+        data.forEach(function (d, i) {
+            var img = $('<img>')
+                    .attr({
+                        'class': 'img-responsive',
+                        'src': d.src
+                }),
+                captionHeader = $('<h3>')
+                    .text(d.caption.h),
+                captionP = $('<p>')
+                    .text(d.caption.p),
+                captionDiv = $('<div>')
+                    .attr({'class': 'carousel-caption'})
+                    .append(captionHeader, captionP),
+                item = $('<div>')
+                    .attr({'class': 'item'})
+                    .append(img);//, captionDiv);
+            if (i === 0) {
+                item.toggleClass('active', true);
+            }
+            inner.append(item);
+        });
+
+        // build controls
+        leftControl = $('<a>')
+            .attr({
+                'class': 'left carousel-control',
+                'href': '#' + carousel.attr('id'),
+                'role': 'button',
+                'data-slide': 'prev'
+            })
+            .append(
+                $('<span>').attr({
+                    'class': 'glyphicon glyphicon-chevron-left',
+                    'aria-hidden': 'true'
+                }),
+                $('<span>')
+                    .attr({'class': 'sr-only'})
+                    .append('Previous')
+            );
+
+        rightControl = $('<a>')
+            .attr({
+                'class': 'right carousel-control',
+                'href': '#' + carousel.attr('id'),
+                'role': 'button',
+                'data-slide': 'next'
+            })
+            .append(
+                $('<span>').attr({
+                    'class': 'glyphicon glyphicon-chevron-right',
+                    'aria-hidden': 'true'
+                }),
+                $('<span>')
+                    .attr({'class': 'sr-only'})
+                    .append('Next')
+            );
+
+        carousel
+            .toggleClass('carousel', true)
+            .toggleClass('slide', true)
+            .attr({'data-ride': 'carousel'})
+            .append(indicators, inner, leftControl, rightControl);
+
+        $(carousel).carousel();
+
+        return carousel;
     };
 
     page.createFooter = function () {

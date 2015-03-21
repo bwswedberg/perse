@@ -10,8 +10,12 @@
 	margin-bottom: 100px;
 }
 
-#title-heading > div > h1 {
+#title-heading > .page-header > h1 {
 	margin-top:50%;
+	text-align: center;
+}
+
+#title-heading > h1 {
 	text-align: center;
 }
 
@@ -31,4 +35,33 @@ label.caption {
 }
 .panel-heading.summary {
     background: white;
+}
+
+.focus-image > img {
+	display: block;
+	margin: 0 auto;
+}
+
+.focus-image {
+	text-align: center;
+	margin-bottom: 2em;
+	margin-top: 2em;
+}
+
+.inset-image {
+	margin:2em;
+}
+
+.image-row {
+	margin-top: 2em;
+	margin-bottom: 2em;
+}
+
+.image-table {
+	display: table;
+}
+
+.image-table-cell {
+	display: table-cell;
+	float: none;
 }

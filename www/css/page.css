@@ -71,6 +71,10 @@ body {
     margin-bottom: 60px;
 }
 
+.subgroup {
+    margin-bottom: 30px;
+}
+
 #main-content-spy > .affix {
     top: 60px;
 }

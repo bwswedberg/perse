@@ -53,7 +53,7 @@
                     car-crash reports, crimes, terrorist acts, etc. Since human-related events are often interrelated
                     with culture, PerSE makes extensive use of the calendar to analyze event data.</p>
 
-                <p>For more information on periodicity, calendars, and PerSE, please check out the
+                <p>For more information on periodicity, calendars, and why the two are important, please check out the
                     <a href="about.html">About</a> page.</p>
 
             </div>
@@ -61,24 +61,23 @@
         </div>
 
 
-        <div class="subgroup row" id="subgroup-howdoiusethispage" data-title="How do I use this guide?">
+        <div class="subgroup row" id="subgroup-howdoiusethispage" data-title="How do I use this page?">
 
             <div class="content col-xs-12">
 
-                <h3>How do I use this guide?</h3>
+                <h3>How do I use this page?</h3>
 
-                <p>This guide is meant to be reference for PerSE users. If this is your first time using PerSE then it might
+                <p>This page is meant to be reference for PerSE users. If this is your first time using PerSE then it might
                     be a good idea to read through the Quick Start and consult the Views section for any remaining
                     questions. However if you like living on the edge, then go right ahead and start using PerSE, but
                     be sure to use a modern browser like Chrome (recommended), FireFox, Safari,
                     or Opera and desktop or laptop.</p>
 
-                <label>Major sections of this guide:</label>
+                <h4>Major Sections:</h4>
 
                 <ul>
-                    <li><strong><a href="#group-quick-start">Quick Start:</a></strong> become familiar with PerSE.</li>
+                    <li><strong><a href="#group-quickstart">Quickstart:</a></strong> become familiar with PerSE.</li>
                     <li><strong><a href="#group-views">Views:</a></strong> an in depth description of PerSE's views.</li>
-                    <li><strong><a href="#group-buttons">Buttons:</a></strong> a visual index of PerSE's buttons.</li>
                 </ul>
 
             </div>
@@ -90,21 +89,20 @@
 </section>
 
 
-<section class="group row" id="group-quick-start" data-title="Quickstart Guide">
+<section class="group row" id="group-quickstart" data-title="Quickstart">
 
     <div class="content col-xs-12">
 
-        <div class="page-header"><h2>Quick Start</h2></div>
+        <div class="page-header"><h2>Quickstart</h2></div>
 
         <p class="lead">Become familiar with PerSE.</p>
 
-        <p>In this Quick Start guide I will walk you through the interface of the PerSE. I'll try to provide as
-            many images as possible to illustrate what I am doing, but it may be helpful to experiment with it as
-            you read this section.</p>
+        <p>In this Quickstart guide I will walk you through the interface of the PerSE. I'll try to provide as
+            many images as possible to illustrate what I'm talking about, but it may be helpful to experiment with PerSE as
+            you follow along.</p>
 
         <p>Keep in mind, I will only point out the major features of PerSE. For more information check out
-            the Views section on this page. In that section each view will have a sub-section where it will be
-            discussed in detail.</p>
+            the <a href="#group-views">Views</a> section on this page.</p>
 
         <p>Lets begin!</p>
 
@@ -113,35 +111,23 @@
             <div class="content col-xs-12">
 
                 <h3>Getting Started</h3>
-
                 <p>Before we attempt to access PerSE, you will need to have an updated version of a
-                    modern browser like Chrome (recommended), Firefox, Safari, or Opera. Chrome is
-                    the recommended browser because its the one that was used to develop PerSE. Do NOT use IE,
-                    this is because IE doesn't jive well with a few of the core libraries used PerSE,
-                    namely <a href="http://d3js.org/">d3</a>.</p>
+                    modern browser like <strong>Chrome</strong> (recommended), Firefox, Safari, or Opera. PerSE's core libraries don't jive well with Internet Explorer, so don't use that for PerSE testing or analysis.</p>
 
-                <p>Also, PerSE was developed to be used on a desktop or laptop. In case you are
-                    using any other device be aware that operations will not be supported.</p>
+                <div class="inset-image" style="float:right;width:40%;">
+                    <img src="img/screenshots/overview/loading.png" class="img-responsive img-thumbnail" />
+                    <label class="caption">Loading 2-3 Seconds</label>
+                </div>
+
+                <p>Also, PerSE was developed to be used on a <strong>desktop or laptop</strong>.
+                    So, operations are not be supported on iPads, iPhones, tablets, etc.</p>
 
                 <p>PerSE comes with a built-in data set, meaning the data automatically loads into the browser
                     before you can even see the interface. So technically you can do analysis right now by following
                     the link to <a href="index.html">PerSE</a></p>
 
-                <p>After clicking the link, you will see a modal dialog with the words, "Loading...", and all the
-                    data and code will be loaded into your browser within 2-3 seconds.</p>
-                <div class="col-xs-8 col-xs-offset-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading summary"><h4 class="panel-title">Summary:</h4></div>
-                        <div class="panel-body">
-                            <ul>
-                                <li>Use a modern browser like Chrome (recommended), Firefox, Safari,
-                                    or Opera.</li>
-                                <li>Use a desktop or a laptop.</li>
-                                <li><a href="index.html">PerSE</a> takes 2-3 seconds to load into the browser.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                <p>On loading PerSE, you will see a modal dialog with the words, "Loading...",
+                    and should last for about 2-3 seconds.</p>
 
             </div>
 
@@ -154,15 +140,26 @@
 
                 <h3>Voronoi Subplots Map</h3>
 
+                <div class="focus-image">
+                    <img
+                        src="img/screenshots/voronoi-subplots-map/voronoi-subplots-map.png"
+                        class="img-responsive img-thumbnail" />
+                </div>
+
                 <p>The Voronoi Subplots Map is the largest <em>view</em> in PerSE. A view
                     is simply a visible top level component of the app. Some people call them widgets, charts, plots,
-                    visualizations, etc, but I will refer to them as a view. This view gets it's name from being the
+                    visualizations, etc, but I will refer to them as views. This view gets it's name from being the
                     mix of two different methods: Small Multiples and Voronoi Diagram.</p>
+
+                <div class="inset-image" style="float:right;width:40%;">
+                    <img src="img/screenshots/voronoi-subplots-map/popup.png" class="img-responsive img-thumbnail" />
+                    <label class="caption">Popup</label>
+                </div>
 
                 <p>The Voronoi Subplots Map can be used to detect and analyze periodicity at multiple scales
                     through user interaction. The map displays selected events based on their
                     latitude and longitude. You will also notice that events have different colors. These colors
-                    are currently based on the event's <strong>Event Type</strong> attribute. These colors are also r
+                    are currently based on the event's <strong>Event Type</strong> attribute. These colors are also
                     reflected in all the other views. You can click events on the map to get a popup with the
                     event's description.</p>
 
@@ -175,40 +172,65 @@
                     data points located within the boundary of the voronoi cell. These subplots are positioned to be
                     close to their respective seed coordinate.</p>
 
-                <p>Subplots always plotted with the same scale to prevent misleading values. If you hover the mouse
+                <p>Subplots always plotted with the same scale to prevent misleading analysis. If you hover the mouse
                     over an arc within one of the subplots two things happen. First, the data on the map will be
                     filtered by that attribute. Second, all subplots are dynamically link so that a
                     hover in one is identical to a hover in all other subplots. This means that you can see the
                     actual data point value in all other subplots. Keep in mind the subplots do not perform any
                     filter beyond the Voronoi Subplots Map.</p>
 
-                <p>You can change the subplots settings with
-                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-stats" aria-hidden="true"><span class="caret"></span></span></button> and their calendar with
-                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-calendar"
-                              aria-hidden="true"><span class="caret"></span></span></button>.</p>
+                <div class="row image-row">
+                    <div class="col-xs-12">
+                        <div style="float:right;width:70%;margin-left:1em;">
+                            <img src="img/screenshots/voronoi-subplots-map/seeds-five-moved-islamic-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            <label class="caption">Islamic + Moved + Removed + Brushed Subplot</label>
+                        </div>
 
-                <p>Voronoi cells can be altered with <strong>Add</strong>,
-                    <strong>Move</strong>, and <strong>Remove</strong> in
-                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>.
-                    You can also filter events by their location with a spatial polygon with
-                    <strong>Draw</strong>, <strong>Modify</strong>, and <strong>Move</strong> in
-                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"><span class="caret"></span></span></button>.</p>
+                        <p>You can change the subplots settings with
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-stats" aria-hidden="true"><span class="caret"></span></span></button> and their calendar with
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-calendar"
+                                      aria-hidden="true"><span class="caret"></span></span></button>.</p>
 
-                <p>You will be able to tell if a view is filtering the data set by the filter button.
-                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                    means it is filter;
-                    <button class="btn btn-default btn-xs disabled" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                    means it is NOT filtering.</p>
+                        <p>Voronoi cells can be altered with <strong>Add</strong>,
+                            <strong>Move</strong>, and <strong>Remove</strong> in
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span>
+                                </span></button>.</p>
+                    </div>
+                </div>
 
-                <p>To remove a filter on <strong>any</strong> view, simply click
-                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>.</p>
+                <div class="row image-row">
+                    <div class="col-xs-12">
+                        <div style="float:left;width:70%;margin-right:1em;">
+                            <img src="img/screenshots/voronoi-subplots-map/filter-auto.png"
+                                class="img-responsive img-thumbnail" />
+                            <label class="caption">Filter w/ <em>Positioning</em> on <strong>Auto</strong></label>
+                        </div>
+
+                        <p style="clear:right;">You can also filter events by their location with a spatial polygon with
+                            <strong>Draw</strong>, <strong>Modify</strong>, and <strong>Move</strong> in
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"><span class="caret"></span>
+                            </span></button>.</p>
+
+                        <p>You will be able to tell if a view is filtering the data set by the filter button.
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+                            means it is filter;
+                            <button class="btn btn-default btn-xs disabled" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+                            means it is NOT filtering.</p>
+
+                        <p>To remove a filter on <strong>any</strong> view, simply click
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>.</p>
+
+                        </div>
+
+                </div>
 
             </div>
 
@@ -220,6 +242,12 @@
             <div class="content col-xs-12">
 
                 <h3>Main Toolbar</h3>
+
+                <div class="focus-image">
+                    <img
+                        src="img/screenshots/main-toolbar/main.png"
+                        class="img-responsive img-thumbnail" />
+                </div>
 
                 <p>The Main Toolbar is a convenience toolbar used for syncing all views. This special toolbar is
                     located near top left of PerSE. This toolbar also displays some common features within PerSE.</p>
@@ -249,9 +277,30 @@
 
                 <h3>Attribute View</h3>
 
+                <div class="focus-image">
+                    <span>
+                        <img
+                            src="img/screenshots/attribute-view/event-type.png"
+                            class="img-responsive img-thumbnail" />
+                        <img
+                            src="img/screenshots/attribute-view/actor.png"
+                            class="img-responsive img-thumbnail" />
+
+                        <img
+                            src="img/screenshots/attribute-view/fatalities.png"
+                            class="img-responsive img-thumbnail" />
+                    </span>
+                </div>
+
                 <p>The Attribute View is a space-saving view because you can change which attribute you want to
                     visualize by clicking the <span class="caret"></span> on the Toolbar title. Currently, you can
                     view three different attributes in the Attribute View:</p>
+
+                <div class="inset-image" style="width:20%;float:right;margin-top:0;">
+                    <img src="img/screenshots/attribute-view/attributes-wmouse.png"
+                        class="img-responsive img-thumbnail" />
+                    <label class="caption">Change Attribute</label>
+                </div>
 
                 <ul>
                     <li><strong>Event Type:</strong> The type of event. Also used to symbolize all other views.</li>
@@ -262,16 +311,76 @@
                 <p>The Attribute View handles an attribute in one of two ways: <em>numerical</em> and
                     <em>non-numerical</em>.</p>
 
+                <h4 style="clear:right;">Numerical</h4>
+
                 <p><em>Numerical</em> attributes like <strong>Fatalities</strong> are visualized with a histogram. You
                     can create a filter on the histogram by clicking by pushing the left mouse
                     button down and holding it, dragging the mouse across the histogram,
                     and then releasing the mouse button.</p>
+
+                <div class="row focus-image">
+                    <div class="col-xs-12">
+                        <div class="row image-table">
+                            <div class="col-xs-3 image-table-cell">
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <img src="img/screenshots/attribute-view/filter-numerical-1-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <big><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></big>
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <img src="img/screenshots/attribute-view/filter-numerical-2-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            </div>
+                            <div class="col-xs-3 image-table-cell"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12"><label class="caption">Mouse Click + Drag + Release</label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Non-numerical</h4>
 
                 <p><em>Non-numerical</em> attribute like <strong>Event-Type</strong> and <strong>Actor</strong> are
                     displayed as a Bar Plots. Events are binned by unique values and symbolized
                     as bars based on count (i.e. frequency) of events. You can create a filter on the bar plot by
                     clicking individual bars on the bar plot. Sometimes there can be a lot of unique
                     values, like with the <strong>Actor</strong> attribute, so this plot is scrollable.</p>
+
+                <div class="row focus-image">
+                    <div class="col-xs-12">
+                        <div class="row image-table">
+                            <div class="col-xs-2 image-table-cell">
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <img src="img/screenshots/attribute-view/filter-categorical-1-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            </div>
+                            <div class="col-xs-1 image-table-cell">
+                                <big><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></big>
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <img src="img/screenshots/attribute-view/filter-categorical-2-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            </div>
+                            <div class="col-xs-1 image-table-cell">
+                                <big><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></big>
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <img src="img/screenshots/attribute-view/filter-categorical-3-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12"><label class="caption">Mouse Click + Drag + Release</label></div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
@@ -284,6 +393,12 @@
 
                 <h3>Time-Wheel</h3>
 
+                <div class="focus-image">
+                    <img
+                        src="img/screenshots/time-wheel/time-wheel.png"
+                        class="img-responsive img-thumbnail" />
+                </div>
+
                 <p>The Time-Wheel is a compact visualization for displaying cyclical units of the calendar. There
                     are three rings on the Time-Wheel:</p>
 
@@ -292,6 +407,30 @@
                     <li><strong>Middle:</strong> Aggregates all selected events month of year.</li>
                     <li><strong>Inner:</strong> Aggregates all selected events by day of week.</li>
                 </ul>
+
+                <div class="row focus-image">
+                    <div class="col-xs-12">
+                        <div class="row image-table">
+                            <div class="col-xs-3 image-table-cell">
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <img src="img/screenshots/time-wheel/brush-month-of-year-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <big><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></big>
+                            </div>
+                            <div class="col-xs-2 image-table-cell">
+                                <img src="img/screenshots/time-wheel/filter-month-of-year-wmouse.png"
+                                    class="img-responsive img-thumbnail" />
+                            </div>
+                            <div class="col-xs-3 image-table-cell"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12"><label class="caption">Clear + Select Non-numerical</label></div>
+                        </div>
+                    </div>
+                </div>
 
                 <p>When an arc is hovered, labels are displayed in the top right corner of the view to provide
                     information on the calendar unit and the frequency (i.e. count) of events.</p>
@@ -317,6 +456,12 @@
 
                 <h3>Timeline</h3>
 
+                <div class="focus-image">
+                    <img
+                        src="img/screenshots/timeline/timeline.png"
+                        class="img-responsive img-thumbnail" />
+                </div>
+
                 <p>The Timeline displays the linear aspects of time within the data set by displaying events in
                     chronological order. The Timeline's x-axis is fixed, and spans from the floor date to ceiling date
                     (i.e. oldest to youngest).</p>
@@ -327,12 +472,36 @@
                               aria-hidden="true"><span class="caret"></span></span></button>.
                     Those parameters are:</p>
 
+                <div class="inset-image" style="margin-top:0;width:50%;float:right;">
+                        <img src="img/screenshots/timeline/month-gregorian.png"
+                                    class="img-responsive img-thumbnail" />
+                    </div>
+
                 <ul>
                     <li><strong>Year:</strong> Aggreagte events by the calendar year.</li>
                     <li><strong>Month:</strong> Aggregate events by the calendar month.</li>
                     <li><strong>Week:</strong> Aggregate events by the calendar week. (Default)</li>
                     <li><strong>Day:</strong> Aggregate events by the calendar day.</li>
                 </ul>
+
+                <div class="row image-row">
+                    <div class="col-xs-10 col-xs-offset-1">
+                        <div style="margin-bottom:1em;">
+                            <img src="img/screenshots/timeline/filter-1-wmouse.png"
+                                        class="img-responsive img-thumbnail" />
+                        </div>
+
+                        <big style="text-align:center;display:block;">
+                            <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+                        </big>
+
+                        <div style="margin-top:1em;">
+                            <img src="img/screenshots/timeline/filter-2-wmouse.png"
+                                class="img-responsive img-thumbnail" />
+                            <label class="caption">Create Filter: Click + Drag + Release</label>
+                        </div>
+                    </div>
+                </div>
 
                 <p>You can create a range filter with this view by pressing the left mouse
                     button down and holding it, dragging the mouse across the histogram,
@@ -359,6 +528,12 @@
             <div class="content col-xs-12">
 
                 <h3>Table</h3>
+
+                <div class="focus-image">
+                    <img
+                        src="img/screenshots/table/table-gregorian.png"
+                        class="img-responsive img-thumbnail" />
+                </div>
 
                 <p>Below the <a href="#subgroup-qs-timeline">Timeline</a> you will see a table filled with events.
                     This table displays selected events much like all the other views, however it doesn't do

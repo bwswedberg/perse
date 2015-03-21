@@ -50,6 +50,7 @@ label.caption {
 
 .inset-image {
 	margin:2em;
+	text-align:center;
 }
 
 .image-row {
@@ -64,4 +65,8 @@ label.caption {
 .image-table-cell {
 	display: table-cell;
 	float: none;
+}
+
+label.caption {
+	margin-top: 1em;
 }

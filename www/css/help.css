@@ -36,37 +36,3 @@ label.caption {
 .panel-heading.summary {
     background: white;
 }
-
-.focus-image > img {
-	display: block;
-	margin: 0 auto;
-}
-
-.focus-image {
-	text-align: center;
-	margin-bottom: 2em;
-	margin-top: 2em;
-}
-
-.inset-image {
-	margin:2em;
-	text-align:center;
-}
-
-.image-row {
-	margin-top: 2em;
-	margin-bottom: 2em;
-}
-
-.image-table {
-	display: table;
-}
-
-.image-table-cell {
-	display: table-cell;
-	float: none;
-}
-
-label.caption {
-	margin-top: 1em;
-}

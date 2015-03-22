@@ -116,7 +116,7 @@ define([
 
     pertimeline.PerTimeline.prototype.createResolutionButtonGroup = function () {
         var // menu
-            calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Cycle'),
+            calendarHeader = $('<li>').attr({'class': 'dropdown-header', 'role': 'presentation'}).text('Calendar Unit'),
             year = $('<a>').attr({'role': 'menuitem'}).text('Year '),
             month = $('<a>').attr({'role': 'menuitem'}).text('Month '),
             week = $('<a>')

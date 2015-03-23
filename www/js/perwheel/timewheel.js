@@ -132,17 +132,17 @@ define([
                 this.rings.forEach(function (r) {r.setIsFocusRing(r.getRingId() === focusRingId); });
             }
 
-            this.rings.forEach(function (ring) {
+            this.rings.forEach(function (r) {
 
                 if (ring.getRingId() === focusRingId) {
                     startRadius = endRadius - ((scaleFactor + 1) * ringRadius);
-                    ring
+                    r
                         .setRadius(startRadius, endRadius)
                         .update();
 
                 } else {
                     startRadius = endRadius - ringRadius;
-                    ring
+                    r
                         .setRadius(startRadius, endRadius)
                         .update();
 
@@ -192,11 +192,11 @@ define([
 
             arcText
                 .attr('x', (this.viewBox.width + this.margin.right) - arcBBox.width)
-                .attr('y', -(this.margin.top - 1));
+                .attr('y', -(this.margin.top));
 
             statsText
                 .attr('x', (this.viewBox.width + this.margin.right) - statsBBox.width)
-                .attr('y', -(this.margin.top - 1) + arcBBox.height);
+                .attr('y', -(this.margin.top) + arcBBox.height);
         }
 
     };

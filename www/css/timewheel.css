@@ -52,6 +52,7 @@
 
 #timewheel-arc-label,
 #timewheel-stats-label{
-    alignment-baseline: hanging;
+    dominant-baseline: hanging;
+    /*alignment-baseline: hanging;*/
     font-size: .43em;
 }

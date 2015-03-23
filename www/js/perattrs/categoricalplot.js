@@ -120,7 +120,7 @@ define([
         var labelNode = this.svgLabel.select('#categoricalplot-label-text')
                 .text(label),
             bbox;
-        if (label === undefined && label === null) {
+        if (label !== undefined && label !== null) {
             bbox = labelNode.node().getBBox();
                 labelNode
                     .attr('x', this.size.width - bbox.width)

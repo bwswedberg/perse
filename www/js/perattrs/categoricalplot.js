@@ -113,16 +113,19 @@ define([
         this.svgLabel.append('text')
             .attr('id', 'categoricalplot-label-text');
 
-        this.updateLabel('');
+        this.updateLabel();
     };
 
     categoricalplot.CategoricalPlot.prototype.updateLabel = function (label) {
         var labelNode = this.svgLabel.select('#categoricalplot-label-text')
                 .text(label),
+            bbox;
+        if (label === undefined && label === null) {
             bbox = labelNode.node().getBBox();
-        labelNode
-            .attr('x', this.size.width - bbox.width)
-            .attr('y', bbox.height);
+                labelNode
+                    .attr('x', this.size.width - bbox.width)
+                    .attr('y', bbox.height);
+        }
     };
 
     categoricalplot.CategoricalPlot.prototype.buildAxis = function (container) {

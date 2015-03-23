@@ -36,7 +36,7 @@
 
         <div class="page-header"><h2>Overview</h2></div>
 
-        <p class="lead">PerSE is a visual analytics web application to assist in periodicity detection and
+        <p class="lead">PerSE is a visual analytics web application for periodicity detection and
             analysis.</p>
 
 
@@ -46,40 +46,31 @@
 
                 <h3>What is PerSE?</h3>
 
-                <p>PerSE (Periodicity in Spatiotemporal Events) is a web application to assist users in the detect and analysis
-                    of periodicity within event data sets. PerSE attempts to tackle detection and analysis through sophisticated
-                    aggregation and methods commonly used in the field of Visual Analytics</p>
+                <p>PerSE is a web application designed and built to aid users in the detection and analysis of periodicity within event data sets. Hence, PerSE stands for "Periodicity in Spatio-temporal Events".</p>
 
-                <p>PerSE was designed and built for human-related event data sets. For instance,
-                    car-crash reports, crimes, terrorist acts, etc. Since human-related events are often interrelated
-                    with culture, PerSE makes extensive use of the calendar to analyze event data.</p>
+                <p>The main idea behind PerSE is that different groups of people use different calendars systems, for instance, Gregorian, Islamic (Hijri), Hebrew, and Persian. Therefore, we should analyze event data sets (e.g. car-crashs, crimes, terrorist acts, and etc.) through the lens of the calendar system relative to the communities and areas of interest.</p>
 
-                <p>For more information on periodicity, calendars, and why the two are important, please check out the
-                    <a href="about.html">About</a> page.</p>
+                <p>PerSE is composed of several crossfiltering views: the Voronoi Subplots Map, Main Toolbar, Attribute View, Time-Wheel, Timeline, and Table. To detect and analyze periodicity within event data sets, users must use the mouse to interactively set and release filters on one or more of the views.</p>
+
+                <p>For more information on periodicity, calendars, and why the two are important, please check out the <a href="about.html">About</a> page.</p>
 
             </div>
 
         </div>
 
 
-        <div class="subgroup row" id="subgroup-howdoiusethispage" data-title="How do I use this page?">
+        <div class="subgroup row" id="subgroup-how-do-i-use-this-page" data-title="How do I use this page?">
 
             <div class="content col-xs-12">
 
                 <h3>How do I use this page?</h3>
 
-                <p>This page is meant to be reference for PerSE users. If this is your first time using PerSE then it might
-                    be a good idea to read through the Quick Start and consult the Views section for any remaining
-                    questions. However if you like living on the edge, then go right ahead and start using PerSE, but
-                    be sure to use a modern browser like Chrome (recommended), FireFox, Safari,
-                    or Opera and desktop or laptop.</p>
+                <p>This page has two purposes:</p>
 
-                <h4>Major Sections:</h4>
-
-                <ul>
-                    <li><strong><a href="#group-quickstart">Quickstart:</a></strong> become familiar with PerSE.</li>
-                    <li><strong><a href="#group-views">Views:</a></strong> an in depth description of PerSE's views.</li>
-                </ul>
+                <ol>
+                    <li>Use the <a href="#group-quickstart">Quickstart</a> section to become familiar with PerSE through a fast paced tutorial.</li>
+                    <li>Use the <a href="#group-views">Views</a> section to get an in-depth description of the views that make up PerSE.</li>
+                </ol>
 
             </div>
 
@@ -98,12 +89,9 @@
 
         <p class="lead">Become familiar with PerSE.</p>
 
-        <p>In this Quickstart guide I will walk you through the interface of the PerSE. I'll try to provide as
-            many images as possible to illustrate what I'm talking about, but it may be helpful to experiment with PerSE as
-            you follow along.</p>
+        <p>In this quickstart guide I will walk you through the interface of the PerSE. I'll try to provide as many images as possible to illustrate what I'm talking about, but it may be helpful to experiment with PerSE as you follow along.</p>
 
-        <p>Keep in mind, I will only point out the major features of PerSE. For more information check out
-            the <a href="#group-views">Views</a> section on this page.</p>
+        <p>Keep in mind, I will only point out the major features of PerSE. For more information check out the <a href="#group-views">Views</a> section on this page.</p>
 
         <p>Lets begin!</p>
 
@@ -112,23 +100,21 @@
             <div class="content col-xs-12">
 
                 <h3>Getting Started</h3>
-                <p>Before we attempt to access PerSE, you will need to have an updated version of a
-                    modern browser like <strong>Chrome</strong> (recommended), Firefox, Safari, or Opera. PerSE's core libraries don't jive well with Internet Explorer, so don't use that for PerSE testing or analysis.</p>
 
-                <div class="inset-image" style="float:right;width:40%;">
+                <p>Before we attempt to access PerSE, you will need to have an updated version of a modern browser like <strong>Chrome</strong> (recommended), Firefox, Safari, or Opera. PerSE's core libraries don't jive well with Internet Explorer, so don't use that for PerSE testing or analysis.</p>
+
+                <div class="inset-image" style="float:right;width:40%;margin-right:0;margin-top:0;">
                     <img src="img/screenshots/overview/loading.png" class="img-responsive img-thumbnail" />
                     <label class="caption">Loading 2-3 Seconds</label>
                 </div>
 
-                <p>Also, PerSE was developed to be used on a <strong>desktop or laptop</strong>.
-                    So, operations are not be supported on iPads, iPhones, tablets, etc.</p>
+                <p>Also, PerSE was developed to be used on a <strong>desktop or laptop</strong>. Operations are not supported on iPads, iPhones, tablets, etc.</p>
 
-                <p>PerSE comes with a built-in data set, meaning the data automatically loads into the browser
-                    before you can even see the interface. So technically you can do analysis right now by following
-                    the link to <a href="index.html">PerSE</a></p>
+                <p>If you have the correct browser and a laptop/desktop computer, you can access PerSE right now by following this <a href="index.html">link</a>.</p>
 
-                <p>On loading PerSE, you will see a modal dialog with the words, "Loading...",
-                    and should last for about 2-3 seconds.</p>
+                <p>On navigating to PerSE, you will see a modal dialog with the words, "Loading...", which should last for about 2-3 seconds.</p>
+
+                <p>PerSE comes with a built-in data set, meaning the data automatically loads into the browser before you can even see the interface. So, if the "Loading..." modal dialog has disappeared, then you are ready to get started!</p>
 
             </div>
 
@@ -147,64 +133,49 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Voronoi Subplots Map is the largest <em>view</em> in PerSE. A view
-                    is simply a visible top level component of the app. Some people call them widgets, charts, plots,
-                    visualizations, etc, but I will refer to them as views. This view gets it's name from being the
-                    mix of two different methods: Small Multiples and Voronoi Diagram.</p>
+                <p>The Voronoi Subplots Map is the largest <em>view</em> in PerSE. A view is simply a visible top level component of the app. Some people call them widgets, charts, plots, visualizations, etc., but I will refer to them as views. This view gets it's name from being the mix of two different methods: Small Multiples and Voronoi Diagram.</p>
 
-                <div class="inset-image" style="float:right;width:40%;">
+                <div class="inset-image" style="float:right;width:40%;margin-right:0;">
                     <img src="img/screenshots/voronoi-subplots-map/popup.png" class="img-responsive img-thumbnail" />
-                    <label class="caption">Popup</label>
+                    <label class="caption">Pop-up</label>
                 </div>
 
-                <p>The Voronoi Subplots Map can be used to detect and analyze periodicity at multiple scales
-                    through user interaction. The map displays selected events based on their
-                    latitude and longitude. You will also notice that events have different colors. These colors
-                    are currently based on the event's <strong>Event Type</strong> attribute. These colors are also
-                    reflected in all the other views. You can click events on the map to get a popup with the
-                    event's description.</p>
+                <p>The Voronoi Subplots Map can be used to detect and analyze periodicity at multiple scales through user interaction. The map displays selected events based on their latitude and longitude. You will also notice that events have different colors. These colors are based on the event's <strong>Event Type</strong> attribute. These colors are also reflected in all the other views. If you click one of the events, you will see a pop-up with the event's description and recorded fatalities.</p>
 
-                <p>If you brush the mouse over the map you will notice semi-transparent white boundaries on the map
-                    will highlight. These are the voronoi diagram cells. Furthermore, you will also notice a light
-                    disk-shaped circle within each boundary. These are the voronoi diagram seeds.<p>
+                <p>When you brush the mouse over the map you will notice that semi-transparent white boundary will highlight. This boundary marks one of the a voronoi diagram cells on the map. Furthermore, you will also notice a light gray circle within each boundary. These circles are the voronoi diagram seeds that control the boundaries of the voronoi cells.<p>
 
                 <div class="inset-image" style="float:left;width:10%;">
                     <img src="img/screenshots/voronoi-subplots-map/seed.png" class="img-responsive img-thumbnail" />
                     <label class="caption">Voronoi Seed (Zoomed In)</label>
                 </div>
 
-                <p>In addition the voronoi cell boundaries highlighting on being brushed by the mouse, you will also
-                    see one of the subplots along the side of the map highlighting. The highlighted subplot displays
-                    data points located within the boundary of the voronoi cell. These subplots are positioned to be
-                    close to their respective seed coordinate.</p>
+                <p>When you brush the mouse over a voronoi cell you will also see one of the subplots along the side of the map highlight. The highlighted subplot displays data points located within the boundary of the voronoi cell. These subplots are positioned to be close to their respective seed coordinate.</p>
 
-                <p>Subplots always plotted with the same scale to prevent misleading analysis. If you hover the mouse
-                    over an arc within one of the subplots two things happen. First, the data on the map will be
-                    filtered by that attribute. Second, all subplots are dynamically link so that a
-                    hover in one is identical to a hover in all other subplots. This means that you can see the
-                    actual data point value in all other subplots. Keep in mind the subplots do not perform any
-                    filter beyond the Voronoi Subplots Map.</p>
+                <p>Subplots within the Voronoi Subplots Map are always plotted with the same scale to prevent misleading analysis, and are linked to other subplots and the map for dynamic interaction. To illustrate this linking, brush the mouse over the arc "January" within one of the subplots. Two things should happen: a) all other subplots will display their "January" value and b) only "January" events will be displayed on the map. Keep in mind the subplots do not perform any filtering beyond the Voronoi Subplots Map.</p>
 
                 <div class="row image-row">
                     <div class="col-xs-12">
                         <div style="float:right;width:70%;margin-left:1em;">
                             <img src="img/screenshots/voronoi-subplots-map/seeds-five-moved-islamic-wmouse.png"
                                     class="img-responsive img-thumbnail" />
-                            <label class="caption">Islamic + Moved + Removed + Brushed Subplot</label>
+                            <label class="caption">Brushed Subplot and Altered Voronoi Seeds</label>
                         </div>
 
                         <p>You can change the subplots settings with
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                                <span class="glyphicon glyphicon-stats" aria-hidden="true"><span class="caret"></span></span></button> and their calendar with
+                                <span class="glyphicon glyphicon-stats" aria-hidden="true"><span class="caret"></span></span></button> and subplot calendar with
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-calendar"
                                       aria-hidden="true"><span class="caret"></span></span></button>.</p>
 
-                        <p>Voronoi cells can be altered with <strong>Add</strong>,
-                            <strong>Move</strong>, and <strong>Remove</strong> in
-                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                                <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span>
-                                </span></button>.</p>
+                        <p>You can alter voronoi seeds with <strong>Add</strong>, <strong>Move</strong>, and <strong>Remove</strong> in
+                        <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                            <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span>
+                            </span></button>.
+                        Also in this drop-down, you can change how the seeds determine their <em>Positioning</em>: <strong>Auto</strong> or <strong>Manual</strong>.</p>
+
+                        <p>For more information see the <a href="#views-voronoi-subplots-map">Voronoi Subplots Map</a> Views section on this page.</p>
+
                     </div>
                 </div>
 
@@ -213,24 +184,23 @@
                         <div style="float:left;width:70%;margin-right:1em;">
                             <img src="img/screenshots/voronoi-subplots-map/filter-auto.png"
                                 class="img-responsive img-thumbnail" />
-                            <label class="caption">Filter w/ <em>Positioning</em> on <strong>Auto</strong></label>
+                            <label class="caption">Create Filter: Draw a Polygon + Set <em>Positioning</em> to <strong>Auto</strong></label>
                         </div>
 
-                        <p style="clear:right;">You can also filter events by their location with a spatial polygon with
-                            <strong>Draw</strong>, <strong>Modify</strong>, and <strong>Move</strong> in
+                        <p style="clear:right;">To filter events by location, <strong>Draw</strong> a spatial filter through
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                             <span class="glyphicon glyphicon-pencil" aria-hidden="true"><span class="caret"></span>
                             </span></button>.</p>
 
-                        <p>You will be able to tell if a view is filtering the data set by the filter button.
+                        <p>Sometimes it might be difficult to determine if a view within PerSE is filtering the data set. To check if a view is filtering look at the view's filter button.
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                            means it is filter;
+                            means it is filtering;
                             <button class="btn btn-default btn-xs disabled" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
                             means it is NOT filtering.</p>
 
-                        <p>To remove a filter on <strong>any</strong> view, simply click
+                        <p>To remove a filter on any view, simply click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>.</p>
 
@@ -255,22 +225,21 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Main Toolbar is a convenience toolbar used for syncing all views. This special toolbar is
-                    located near top left of PerSE. This toolbar also displays some common features within PerSE.</p>
+                <p>The Main Toolbar is a convenience toolbar used for syncing all views. Its purpose is to change the calendar system used within all views, and/or reset all the filters/views.</p>
 
-                <p>When PerSE starts-up all views are synced to one calendar. However, over the course of analysis,
-                    you may decide to display one view in Gregorian and another other in Islamic. To sysnc all the
-                    views back to one calendar click
+                <p>When PerSE starts-up all views are synced to one calendar. However, over the course of analysis, you may decide to display one view in Gregorian and another in Islamic. To sync all the views back to one calendar click
                     <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                         <span class="glyphicon glyphicon-calendar"
                               aria-hidden="true"><span class="caret"></span></span></button>
-                    on the Main Toolbar, and then click your desired calendar.</p>
+                on the Main Toolbar, and then click your desired calendar. This is essentially the same as changing the calendar in every view manually.</p>
 
-                <p>At some point during analysis you may wish to clear all filters within PerSE. This essentially
-                    resets the entire interface. To do so click
+                <p>At some point during analysis you may wish to reset all filters/views within PerSE. To reset all filters/views click
                     <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                         <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                    on the Main Toolbar. This will tell all views to stop filtering. </p>
+                on the Main Toolbar. This is essentially the same as clicking
+                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                        <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+                on every view.</p>
 
             </div>
 
@@ -302,9 +271,7 @@
                     </div>
                 </div>
 
-                <p>The Attribute View is a space-saving view because you can change which attribute you want to
-                    visualize by clicking the <span class="caret"></span> on the Toolbar title. Currently, you can
-                    view three different attributes in the Attribute View:</p>
+                <p>The Attribute View is a space-saving view that displays all non-required data set attributes (i.e. NOT date or location). The Attribute View initializes with the <strong>Event Type</strong> displaying, but you can display other non-required attributes by clicking the <span class="caret"></span> on the Attribute View toolbar title. There are currently three different non-required attributes that you can view in the Attribute View:</p>
 
                 <div class="inset-image" style="width:20%;float:right;margin-top:0;">
                     <img src="img/screenshots/attribute-view/attributes-wmouse.png"
@@ -318,15 +285,12 @@
                     <li><strong>Fatalities:</strong> Amount of deaths.</li>
                 </ul>
 
-                <p>The Attribute View handles an attribute in one of two ways: <em>numerical</em> and
+                <p>The Attribute View handles each non-required attribute in one of two ways: <em>numerical</em> and
                     <em>non-numerical</em>.</p>
 
                 <h4 style="clear:right;">Numerical</h4>
 
-                <p><em>Numerical</em> attributes like <strong>Fatalities</strong> are visualized with a histogram. You
-                    can create a filter on the histogram by clicking by pushing the left mouse
-                    button down and holding it, dragging the mouse across the histogram,
-                    and then releasing the mouse button.</p>
+                <p><em>Numerical</em> attributes like <strong>Fatalities</strong> are displayed as histograms. You can create a filter on a histogram by pressing and holding the mouse button down with the left mouse button, dragging the mouse across the histogram, and then releasing the mouse button.</p>
 
                 <div class="row focus-image">
                     <div class="col-xs-12">
@@ -347,18 +311,20 @@
                             <div class="col-xs-3 image-table-cell"></div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-12"><label class="caption">Mouse Click + Drag + Release</label></div>
+                            <div class="col-xs-12"><label class="caption">Create Filter: Mouse Press-Hold + Drag + Release</label></div>
                         </div>
                     </div>
                 </div>
 
                 <h4>Non-numerical</h4>
 
-                <p><em>Non-numerical</em> attribute like <strong>Event-Type</strong> and <strong>Actor</strong> are
-                    displayed as a Bar Plots. Events are binned by unique values and symbolized
-                    as bars based on count (i.e. frequency) of events. You can create a filter on the bar plot by
-                    clicking individual bars on the bar plot. Sometimes there can be a lot of unique
-                    values, like with the <strong>Actor</strong> attribute, so this plot is scrollable.</p>
+                <p><em>Non-numerical</em> attributes like <strong>Event-Type</strong> and <strong>Actor</strong> are displayed as a bar-lots. Events are binned by unique values and symbolized as bars based on count (i.e. frequency) of events. To create a filter on the bar plot click individual bars on the bar plot.</p>
+
+                <p>Sometimes there can be a lot of unique values (i.e. the <strong>Actor</strong> attribute has +100 unique values). Therefore, the bar plot has two enhancements: a) the plot is scrollable and b) you can clear all unique values by clicking
+                <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                        <span class="glyphicon glyphicon-ban-circle"
+                              aria-hidden="true"></span></button>
+                to improve filter work-flow (see below).</p>
 
                 <div class="row focus-image">
                     <div class="col-xs-12">
@@ -387,7 +353,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-12"><label class="caption">Mouse Click + Drag + Release</label></div>
+                            <div class="col-xs-12"><label class="caption">Create Filter: Click Clear Button + Select Unique Value</label></div>
                         </div>
                     </div>
                 </div>
@@ -409,8 +375,7 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Time-Wheel is a compact visualization for displaying cyclical units of the calendar. There
-                    are three rings on the Time-Wheel:</p>
+                <p>The Time-Wheel is a compact radial plot for displaying units of a calendar system. There are three rings on the Time-Wheel:</p>
 
                 <ul>
                     <li><strong>Outer:</strong> Aggregates all selected events by day of month.</li>
@@ -437,16 +402,14 @@
                             <div class="col-xs-3 image-table-cell"></div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-12"><label class="caption">Clear + Select Non-numerical</label></div>
+                            <div class="col-xs-12"><label class="caption">Create Filter: Mouse Click an Arc</label></div>
                         </div>
                     </div>
                 </div>
 
-                <p>When an arc is hovered, labels are displayed in the top right corner of the view to provide
-                    information on the calendar unit and the frequency (i.e. count) of events.</p>
+                <p>When an arc is hovered, labels are displayed in the top right corner of the view to provide information on the calendar unit and the frequency (i.e. count) of events.</p>
 
-                <p>You can create a filter with this view by left mouse clicking on any of the arcs within the ring.
-                    To remove the filter click
+                <p>You can create a filter with this view by clicking any of the arcs. To remove the filter click
                     <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                         <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>.</p>
 
@@ -473,20 +436,19 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Timeline displays the linear aspects of time within the data set by displaying events in
-                    chronological order. The Timeline's x-axis is fixed, and spans from the floor date to ceiling date
-                    (i.e. oldest to youngest).</p>
+                <p>The Timeline displays the count (i.e. frequency) of events per calendar unit in chronological order in the form of a bar chart. The Timeline's x-axis spans from the floor date to ceiling date of the data set (i.e. oldest to youngest).</p>
 
-                <p>Events within the timeline are aggregated based on a calendar unit set within
+                <p>Change the calendar unit used to aggregate events in
                     <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                         <span class="glyphicon glyphicon-stats"
                               aria-hidden="true"><span class="caret"></span></span></button>.
-                    Those parameters are:</p>
+                Potential calendar units include:</p>
 
                 <div class="inset-image" style="margin-top:0;width:50%;float:right;">
-                        <img src="img/screenshots/timeline/month-gregorian.png"
-                                    class="img-responsive img-thumbnail" />
-                    </div>
+                    <img src="img/screenshots/timeline/month-gregorian.png"
+                                class="img-responsive img-thumbnail" />
+                    <label class="caption">Months</label>
+                </div>
 
                 <ul>
                     <li><strong>Year:</strong> Aggreagte events by the calendar year.</li>
@@ -509,17 +471,14 @@
                         <div style="margin-top:1em;">
                             <img src="img/screenshots/timeline/filter-2-wmouse.png"
                                 class="img-responsive img-thumbnail" />
-                            <label class="caption">Create Filter: Click + Drag + Release</label>
+                            <label class="caption">Create Filter: Mouse Press-Hold + Drag + Release</label>
                         </div>
                     </div>
                 </div>
 
-                <p>You can create a range filter with this view by pressing the left mouse
-                    button down and holding it, dragging the mouse across the histogram,
-                    and then releasing the left mouse button.</p>
+                <p>You can create a range filter with this view by pressing the left mouse button down and holding it, dragging the mouse across the Timeline, and then releasing the left mouse button.</p>
 
-                <p>Much like all the other views, mouse hover labels are displayed in the top right corner,
-                    the calendar can be changed with
+                <p>Much like all the other views, the calendar can be changed with
                     <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                         <span class="glyphicon glyphicon-calendar"
                               aria-hidden="true"><span class="caret"></span></span></button>,
@@ -546,10 +505,7 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>Below the <a href="#subgroup-qs-timeline">Timeline</a> you will see a table filled with events.
-                    This table displays selected events much like all the other views, however it doesn't do
-                    anything special to visualize them and it does not provide any filtering capability. It's only
-                    duty is to display the raw data in chronological order.</p>
+                <p>Below the <a href="#subgroup-qs-timeline">Timeline</a> you will see a table filled with events. This table displays selected events much like all the other views, however it doesn't provide any filtering capability. It's only duty is to display the raw data in chronological order.</p>
 
                 <p>The table only shows 25 events at a time. To see the next 25 selected events click
                     <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
@@ -563,8 +519,7 @@
                         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></button> to change
                     the calendar in which the date is displayed.</p>
 
-                <p>Although the Table is primitive, can be fairly useful. Next time you find an interesting pattern
-                    or finding, drill down on it with all the views and then look at the table to connect the dots.</p>
+                <p>Although the Table is primitive, can be fairly useful. Next time you find an interesting pattern or finding, drill-down on it with all the views and then look at the table to connect the dots.</p>
 
             </div>
 
@@ -577,17 +532,9 @@
 
                 <h3>Wrap-Up</h3>
 
-                <p>Well, this is the end of the Quickstart Guide. If you have any questions about any questions about
-                    the views within PerSE check out the section on this page titled <a href="#group-views">Views</a>.
-                    In that section, I'll go over each top level view in much greater detail,
-                    including some background information, interactions, buttons, etc.</p>
+                <p>Well, this is the end of the Quickstart section. If you have any questions about the views within PerSE check out the section on this page titled <a href="#group-views">Views</a>. In that section, I'll go over each top level view in much greater detail, including some background information, interactions, buttons, etc.</p>
 
-                <p>Since PerSE uses buttons quite a bit, I also created a visual index for the buttons. This can be
-                    found in the section on this page titled <a href="#group-buttons">Buttons</a>.</p>
-
-                <p>If you have any questions about the PerSE as a whole, for instance, technology used to build it,
-                    license, why it was developed, etc., you should check out the <a href="about.html">About</a>
-                    page.</p>
+                <p>If you have any questions about the PerSE as a whole, for instance, technology used to build it, license, why it was developed, etc., you should check out the <a href="about.html">About</a> page.</p>
 
             </div>
 
@@ -612,9 +559,7 @@
             <label class="caption">PerSE</label>
         </div>
 
-        <p>Before we start, what is a <strong>view</strong>? A <strong>view</strong> is simply a visible component of the
-            app. Some people call them widgets, charts, plots, visualizations, etc, but we will refer to them as views.
-            PerSE has a total of six top level views:</p>
+        <p>Before we start, what is a <strong>view</strong>? A <strong>view</strong> is simply a visible component of the app. Some people call them widgets, charts, plots, visualizations, etc, but we will refer to them as views. PerSE has a total of six top level views:</p>
 
         <ol type="A">
             <li><a href="#subgroup-views-attribute-view">Attribute View</a></li>
@@ -625,8 +570,7 @@
             <li><a href="#subgroup-views-voronoi-subplots-map">Voronoi Subplots Map</a></li>
         </ol>
 
-        <p>In the following sections I'll go over these top level views in detail. If you are brand new to PerSE
-            or are looking for a brief introduction I recommend the <a href="group-quickstart">Quickstart</a> section on this page.</p>
+        <p>In the following sections I'll go over the above top level views in detail. If you are brand new to PerSE or are looking for a brief introduction I recommend the <a href="#group-quickstart">Quickstart</a> section on this page.</p>
 
         <section class="subgroup row" id="subgroup-views-attribute-view" data-title="Attribute View">
 
@@ -655,13 +599,11 @@
                     </div>
                 </div>
 
-                <p>The Attribute View was built to display data attributes that PerSE does not require or anticipate.
-                    Therefore, the attribute view could potential can consists of any amount of plots/charts for visualizing
-                    non-require data attributes. Each non-required data set attribute can filter the data set independent of any other view or attribute. The built in data set has three non-required data attributes.</p>
+                <p>The Attribute View was built to display data attributes that PerSE does not require or anticipate. Therefore, the attribute view could potential consist of any amount non-require data attributes. Each non-required data set attribute is displayed as a single plot or chart, and can filter the data set independent of any non-required or required attribute. The content of the plots are colored by the <strong>Event Type</strong> non-required attribute. The built in data set has three non-required data attributes.</p>
 
                 <div class="inset-image" style="float:right;width:40%;margin-top:0;">
                     <img src="img/screenshots/attribute-view/attributes-wmouse.png" class="img-responsive img-thumbnail" />
-                    <label class="caption">PerSE</label>
+                    <label class="caption">Non-Required Attributes</label>
                 </div>
 
                 <ul>
@@ -670,17 +612,11 @@
                     <li><strong>Fatalities:</strong> Amount of deaths.</li>
                 </ul>
 
-                <p>Since PerSE is crunched for screen space, you can only visualize one attribute in the Attribute View
-                    at a time. To change the attribute in the Attribute view click the <span class="caret"></span> on
-                    the Attribute View's toolbar title. You will then be able to select one of the three non-required
-                    data attributes:</p>
+                <p>Since PerSE is crunched for screen space, only one non-required attribute in the Attribute View is visible at a time. To change the non-required attribute in the Attribute View click the <span class="caret"></span> on the Attribute View's toolbar title. You will then be able to select one of the three non-required data attributes.</p>
 
-                <p>After selecting a new attribute the current Attribute View will change to reflect the
-                    newly selected attribute.</p>
+                <p>After selecting a new non-required attribute the Attribute View will change to reflect the newly selected non-required attribute.</p>
 
-                <p>Although there are many differnt types of data (i.e. nominal, ordinal, etc.), the Attribute
-                    currently handles an attribute in one of two ways: <em>numerical</em> and <em>non-numerical</em>.
-                    Both are explained in the following paragraphs.</p>
+                <p>Although there are many different types of data (i.e. nominal, ordinal, etc.), the Attribute View currently handles an attribute in one of two ways: <em>numerical</em> and <em>non-numerical</em>. Both are explained in the following paragraphs.</p>
 
 
                 <div class="row" id="subgroup-views-attribute-numerical">
@@ -689,13 +625,9 @@
 
                         <h4>Numerical</h4>
 
-                        <p>If all attribute values are numerical, then an attribute is determined to be a numerical
-                            attribute, and will be displayed as a histogram. To illustrate this click the
-                            <span class="caret"></span> on the Attribute Views toolbar title and select
-                            <strong>Fatalities</strong>. The view will display a histogram of the
-                            <strong>Fatalities</strong> attribute.</p>
+                        <p>If all attribute values are numerical, then an attribute is determined to be a numerical attribute, and will be displayed as a histogram. To illustrate a numerical non-required attribute click the <span class="caret"></span> on the Attribute View's toolbar title and select <strong>Fatalities</strong>. The view will display a histogram of the <strong>Fatalities</strong> attribute.</p>
 
-                        <p>Histogram binning is automatically determined by an internal algorithm.</p>
+                        <p>Numerical attribute histograms are binned automatically by an internal algorithm.</p>
 
                     </div>
 
@@ -707,14 +639,9 @@
 
                         <h4>Non-Numerical</h4>
 
-                        <p>If not all attribute values are numerical, then the attribute is determined to be a
-                            Non-numerical attribute, and will be displayed as a Bar Plot. Events are binned by all
-                            possible unique values and symbolized as horizontal rectangles based on count (frequency)
-                            of events.</p>
+                        <p>If not all attribute values are numerical, then the attribute is determined to be a Non-numerical attribute, and will be displayed as a bar chart. Events are binned by unique values and symbolized as horizontal rectangles based on count (i.e. frequency) of events.</p>
 
-                        <p>Since each unique value is assigned a rectangle and there could be a large amount of unique
-                            values (the <strong>Actor</strong> attribute has +100 unique values), this plot is
-                            scrollable. You can scroll the plot using the mouse wheel or the scroll bar.</p>
+                        <p>Since each unique value is assigned a rectangle and there could be a large amount of unique values (the <strong>Actor</strong> attribute has +100 unique values), this plot is scrollable. You can scroll the plot using the mouse wheel or the scroll bar.</p>
 
                     </div>
 
@@ -728,6 +655,15 @@
                         <h4>Filter</h4>
 
                         <h5>Numerical</h5>
+
+                        <p>Numerical attributes can perform range filtering on the data set through user interaction. For example, select all events with reported <strong>Fatalities</strong> of 10 to 50.</p>
+
+                        <p>To filter a numerical attribute hover the mouse over the histogram, press the left mouse button down and hold it, drag the mouse across the histogram, and then release the mouse. You should see a gray box during this procedure. After you release the mouse, the gray box will disappear and the plot will scale to the selected range.</p>
+
+                        <p>There are two ways to remove a filter on the histogram. Like all the other views you can remove the active filter by clicking
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+                        on the view's toolbar, or you can single click anywhere on the histogram.</p>
 
                         <div class="row focus-image">
                             <div class="col-xs-12">
@@ -748,33 +684,16 @@
                                     <div class="col-xs-3 image-table-cell"></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12"><label class="caption">Mouse Click + Drag + Release</label></div>
+                                    <div class="col-xs-12"><label class="caption">Create Filter: Mouse Press-Hold + Drag + Release</label></div>
                                 </div>
                             </div>
                         </div>
 
-                        <p>Numerical attributes can perform range filtering on the data set through user interaction.
-                            For example, select all events with reported <strong>Fatalities</strong> of 10 to 50.</p>
-
-                        <p>To filter a Numerical attribute hover the mouse over the histogram, press the left mouse
-                            button down and hold it, drag the mouse across the histogram, and then release the mouse. You should
-                            see a gray box during this procedure, but after you release the mouse the plot will scale
-                            to the selected range.</p>
-
-                        <p>There are two ways to remove a filter on the histogram. Like all the other views you can remove
-                            the active filter by clicking
-                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                                <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                            on the toolbar, or you can single click anywhere on the histogram.</p>
-
                         <h5>Non-Numerical</h5>
 
-                        <p>Non-numerical attributes can filter the data set by selecting or deselecting unique
-                            attribute values through user interaction. For example, select all events with reported
-                            <strong>Actor</strong> of "Boko Haram".</p>
+                        <p>Non-numerical attributes can perform selection filtering the data set through user interaction. For example, For example, select all events where <strong>Actor</strong> is "Boko Haram".</p>
 
-                        <p>The horizontal bar chart can perform attribute filtering on the data set by single clicking
-                            individual bars with the left mouse button.</p>
+                        <p>To filter a non-numerical attribute single click individual bars with the left mouse button.</p>
 
                         <div class="row focus-image">
                             <div class="col-xs-12">
@@ -803,22 +722,18 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-12"><label class="caption">Mouse Click + Drag + Release</label></div>
+                                    <div class="col-xs-12"><label class="caption">Create Filter: Click Clear Button + Select Unique Value</label></div>
                                 </div>
                             </div>
                         </div>
 
-                        <p>As mentioned above, sometimes there can be a large amount of unique values
-                            for an attribute. In these situations, it is difficult to drill down on an attribute value.
-                            For instance, to select only "Boko Haram" <strong>Actor</strong> events would require us to
-                            single click +100 rectangles. Therefore, you can click
+                        <p>As mentioned above, sometimes there can be a large amount of unique values for an attribute. In these situations, it is difficult to drill-down on a specific attribute value. For instance, to select only "Boko Haram" <strong>Actor</strong> events we would be required to manually deselect +100 rectangles. To bypass this, click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></button>
-                            to clear/deselect all unique values for the plot, and then select the few values you
-                            are interested in. For instance, now to select only "Boko Haram" <strong>Actor</strong>
-                            events you can click <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                                <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></button> to clear all
-                            events in the plot, and then click "Boko Haram" to view only "Boko Haram" events.</p>
+                        to clear/deselect all unique values in the bar plot, and then select the attribute values you are interested in. For instance, to select only "Boko Haram" <strong>Actor</strong> events click
+                        <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                            <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span></button>
+                        to clear all events in the plot, and then click "Boko Haram" to view only "Boko Haram" events.</p>
 
                     </div>
 
@@ -847,9 +762,9 @@
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button></td>
                             <td>Filter</td>
                             <td>Remove the current filter within the Numerical or Non-numerical Attribute. This
-                                only eliminates the filter for the represented/visible attribute, ant will not remove
-                                the filters from other attributes within the Attribute View. This button will be
-                                enabled if there the view is currently filtering.</td>
+                                only eliminates the filter for the represented/visible attribute, and will not remove
+                                the filters from other non-required attributes within the Attribute View. This button is
+                                enabled if the view is currently filtering.</td>
                             <td><em>n/a</em></td>
                         </tr>
                         </tbody></table>
@@ -884,14 +799,10 @@
 
                         <h4>Change Calendar</h4>
 
-                        <p>When PerSE starts-up all views are synced to one calendar. However, over the course of analysis,
-                            you may decide to display one view in Gregorian and another other in Islamic. To sync all the
-                            views back to one calendar click
+                        <p>When PerSE starts-up all views are synced to one calendar. However, over the course of analysis, you may decide to display one view in Gregorian and another in Islamic. To sync all the views to one calendar system click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-calendar"
-                              aria-hidden="true"><span class="caret"></span></span></button>
-                            on the Main Toolbar, and then click your desired calendar. This is equivalent to
-                            selecting the desired calendar in every top level view.</p>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"><span class="caret"></span></span></button>
+                        on the Main Toolbar, and then click the desired calendar. This is equivalent to selecting the desired calendar in every top level view.</p>
 
                     </div>
 
@@ -904,11 +815,10 @@
 
                         <h4>Filter</h4>
 
-                        <p>At some point during analysis you may wish to clear all filters within PerSE. This essentially
-                            resets the entire interface. To do so click
+                        <p>At some point during analysis you may wish to reset all filters/views within PerSE. To do so click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                            on the Main Toolbar. This will tell all views to remove any filter on the data set.</p>
+                        on the Main Toolbar. This is equivalent to clicking the filter button in every top level view.</p>
 
                     </div>
 
@@ -939,8 +849,8 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button></td>
                             <td>Filter</td>
-                            <td>Remove all filters within PerSE, esentially reseting the interface. This button will
-                                always be enabled.</td>
+                            <td>Reset all filters within PerSE, essentially reseting the interface. This button is
+                                always enabled.</td>
                             <td><em>n/a</em></td>
                         </tr>
                         </tbody></table>
@@ -968,18 +878,11 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Table is located below the Timeline and can be used to provide context regarding currently
-                    selected events (i.e. events that pass every filtering view). Events are displayed as rows,
-                    with 25 rows displayed at a time, and each row is given a background color to indicate their
-                    attribute value (i.e. in the current data set this attribute is <em>Event Type</em>). Furthermore,
-                    the table always sorts data in chronological order.</p>
+                <p>The Table is located below the Timeline and can be used to provide context regarding currently selected events (i.e. events that pass every filtering view). Events are displayed as rows, 25 rows displayed at a time, and each row is given a background color to indicate their attribute value (i.e. in the current data set this attribute is <em>Event Type</em>). Furthermore, the table always sorts data in chronological order.</p>
 
-                <p>The Table is most useful for used to verifying or examine findings. To verify an interesting
-                    pattern or finding, do your best to drill down on it with all the top level views and then look at
-                    the table to connect the dots.</p>
+                <p>The Table is most useful for verification or examination of findings. To verify an interesting pattern or finding, do your best to drill-down on it with all the top level views and then look at the table to connect the dots.</p>
 
-                <p>Future efforts will be made to make this table more like a <em>shoebox</em> so that users can store and
-                    export events/data points.</p>
+                <p>Future efforts will be made to make this table more like a <em>shoebox</em> so that users can store and export events/data points.</p>
 
                 <div class="row" id="subgroup-views-table-paging">
 
@@ -987,15 +890,13 @@
 
                         <h4>Paging</h4>
 
-                        <p>The Table limits row output to 25 rows at a time. Row output is limited because each
-                            adding and removing many rows becomes an expensive when the selection is large and
-                            changes a lot. To side step this issue, click
+                        <p>The Table limits row output to 25 rows at a time. Row output is limited because adding and removing many rows becomes an expensive DOM operation. Especially when the selection is large and changes a lot! To side step this issue the Table implements paging, click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
-                            in the toolbar to view the next 25 events, or click
+                        in the view's toolbar to see the next 25 events, or click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
-                            in the toolbar to view the previous 25 events.</p>
+                        in the view's toolbar to see the previous 25 events.</p>
 
                     </div>
 
@@ -1013,15 +914,14 @@
                                 <img
                                     src="img/screenshots/table/table-islamic.png"
                                     class="img-responsive img-thumbnail" />
-                                <label class="caption">Converted to Islamic Date</label>
+                                <label class="caption">Date Column Converted to Islamic Calendar</label>
                             </div>
                         </div>
 
-                        <p>Within the Table there is a column, titled Date, which displays the date of the event.
-                            To convert this date to another calendar system, click
+                        <p>Within the Table there is a column, titled Date, which displays the date of the event. To convert this date to another calendar system, click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></button>
-                            in the toolbar, and select a calendar.</p>
+                        in the view's toolbar, and select a calendar.</p>
 
                     </div>
 
@@ -1033,7 +933,7 @@
 
                         <h4>Filter</h4>
 
-                        <p>The table in PerSE is not able to filter the data set at this point in time.</p>
+                        <p>The table is not able to filter the data set at this point in time.</p>
 
                     </div>
 
@@ -1065,12 +965,11 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></td>
                             <td>Calendar</td>
-                            <td>Converts the date column to a specified calendar.</td>
+                            <td>Convert the date column to a specified calendar.</td>
                             <td>
                                 <ul class="list-unstyled">
-                                    <li><strong>Gregorian:</strong> Convert date column to the Gregorian
-                                        Calendar.</li>
-                                    <li><strong>Islamic:</strong> Convert date column to the Islamic Calendar.</li>
+                                    <li><strong>Gregorian:</strong> Convert the date column to the Gregorian Calendar.</li>
+                                    <li><strong>Islamic:</strong> Convert the date column to the Islamic Calendar.</li>
                                 </ul>
                             </td>
                         </tr>
@@ -1091,7 +990,7 @@
 
                 <h3>Timeline</h3>
 
-                <p class="lead"><small>The Timeline provides range filtering and linear calendar aggregation.</small></p>
+                <p class="lead"><small>A chronological display of calendar units and range filtering.</small></p>
 
                 <div class="focus-image">
                     <img
@@ -1099,12 +998,9 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Timeline displays the linear aspects of time within the data set by aggregating events
-                    to calendar units and displaying them in chronological order. Calendar units are sized based on t
-                    the event count/frequency and symbolized as vertical bars/rectangles</p>
+                <p>The Timeline displays the count (i.e. frequency) of events per calendar unit in chronological order in the form of a bar chart. Calendar units are symbolized as vertical bars/rectangles, and colored by the <strong>Event Type</strong> attribute.</p>
 
-                <p>The Timeline's x-axis is fixed, and spans from the floor date to ceiling date (i.e. oldest to
-                    youngest), while the y-axis scales to the maximum event count per calendar unit.</p>
+                <p>The Timeline's x-axis is fixed, and spans from the floor date to ceiling date (i.e. oldest to youngest), while the y-axis scales to the maximum event count per calendar unit.</p>
 
                 <div class="row" id="subgroup-views-timeline-chart">
 
@@ -1112,13 +1008,13 @@
 
                         <h4>Chart Settings</h4>
 
-                        <p>To change calendar unit used to aggregate the events within the Timeline click
+                        <p>To change the calendar unit used to aggregate the events within the Timeline click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                            <span class="glyphicon glyphicon-stats" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and select one of the following parameters:</p>
+                                <span class="glyphicon glyphicon-stats" aria-hidden="true"><span class="caret"></span></span></button>
+                        on the view's toolbar, and select one of the following parameters:</p>
 
                         <ul>
-                            <li><strong>Year:</strong> Aggreagte events by the calendar year.</li>
+                            <li><strong>Year:</strong> Aggregate events by the calendar year.</li>
                             <li><strong>Month:</strong> Aggregate events by the calendar month.</li>
                             <li><strong>Week:</strong> Aggregate events by the calendar week. (Default)</li>
                             <li><strong>Day:</strong> Aggregate events by the calendar day.</li>
@@ -1153,11 +1049,9 @@
                         <p>To change the calendar used to aggregate events within the Timeline click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and select a calendar. After you select a new calendar the timeline will
-                            update the rectangles on the timeline.</p>
+                        on the view's toolbar, and select a calendar. After you select a new calendar the timeline will update the calendar units within the Timeline.</p>
 
-                        <p>Note, some calendar units are will not appear to change, for instance, <strong>Day</strong>
-                            and <strong>Week</strong> are the same in the Gregorian and Islamic calendar.</p>
+                        <p>Note, some calendar units will not appear to change. For instance, <strong>Day</strong> and <strong>Week</strong> are identical calendar units in the Gregorian and Islamic calendar.</p>
 
                     </div>
 
@@ -1170,17 +1064,15 @@
 
                         <h4>Filter</h4>
 
-                        <p>The Timeline can filter the data set with a range filter (e.g. select all events between
-                            year 2008 and 2010) by pressing the left mouse button down and holding it, dragging the
-                            mouse across the histogram, and then releasing the left mouse button.</p>
+                        <p>The Timeline can filter the data set with a range filter. For example, select all events between year 2008 and 2010. To create a range filter hover the mouse over the Timeline, press the left mouse button down and hold it, drag the mouse across the Timeline, and then release the mouse.</p>
 
-                        <p>For precise range filters, look at the label in the top right corner of the view for the
-                            exact <em>To</em> and <em>From</em> dates.</p>
+                        <p>For precise range filters, look at the label in the top right corner of the view for the exact <em>To</em> and <em>From</em> dates.</p>
 
-                        <p>The filter can be removed by clicking
+                        <p>To remove a Timeline filter click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                             <span class="glyphicon glyphicon-filter"
-                                  aria-hidden="true"></span></button>.</p>
+                                  aria-hidden="true"></span></button>
+                        or single-click anywhere on the Timeline.</p>
 
                         <div class="row image-row">
                             <div class="col-xs-10 col-xs-offset-1">
@@ -1196,7 +1088,7 @@
                                 <div style="margin-top:1em;">
                                     <img src="img/screenshots/timeline/filter-2-wmouse.png"
                                         class="img-responsive img-thumbnail" />
-                                    <label class="caption">Create Filter: Click + Drag + Release</label>
+                                    <label class="caption">Create Filter: Mouse Press-Hold + Drag + Release</label>
                                 </div>
                             </div>
                         </div>
@@ -1217,7 +1109,7 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-stats" aria-hidden="true"></span></button></td>
                             <td>Chart</td>
-                            <td>Change the cycle used to aggregate events. Cycles are represented as rectangles.</td>
+                            <td>Change the calendar unit used to aggregate events. Calendar units are represented as bars/rectangles on the Timeline.</td>
                             <td>
                                 <ul class="list-unstyled">
                                     <li><strong>Year:</strong> Bin events by the calendar year.</li>
@@ -1244,8 +1136,7 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button></td>
                             <td>Filter</td>
-                            <td>Remove the current filter within the Timeline. This button will be enabled if there the
-                                view is currently filtering.</td>
+                            <td>Remove the current filter within the Timeline. This button is enabled if the view is filtering.</td>
                             <td><em>n/a</em></td>
                         </tr>
                         </tbody></table>
@@ -1265,7 +1156,7 @@
 
                 <h3>Time-Wheel</h3>
 
-                <p class="lead"><small>A compact cyclical representation of the events.</small></p>
+                <p class="lead"><small>A compact radial plot that displays calendar units.</small></p>
 
                 <div class="focus-image">
                     <img
@@ -1273,8 +1164,7 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Time-Wheel is a compact visualization for displaying cyclical units of the calendar. There are
-                    three rings on the Time-Wheel:</p>
+                <p>The Time-Wheel is a compact visualization for displaying calendar units. There are three rings on the Time-Wheel:</p>
 
                 <ul>
                     <li><strong>Outer:</strong> Aggregates all selected events by day of month.</li>
@@ -1282,12 +1172,9 @@
                     <li><strong>Inner:</strong> Aggregates all selected events by day of week.</li>
                 </ul>
 
-                <p>The arcs within the ring represent the calendar units (i.e. days within a month, months within a
-                    year). The arcs are filled based on the count/frequency of events whose date is contained by the
-                    calendar unit.</p>
+                <p>The arcs within each ring represent the calendar units (i.e. days within a month, months within a year). Arcs are filled based on the count (i.e. frequency) of events whose date is contained by the calendar unit, and are color based on the <strong>Event Type</strong> attribute.</p>
 
-                <p>When an arc is hovered, labels are displayed in the top right corner of the view to provide
-                    information on the calendar unit and the frequency (i.e. count) of events.</p>
+                <p>When an arc is hovered, labels are displayed in the top right corner of the view to provide information on the calendar unit and the frequency (i.e. count) of events.</p>
 
 
                 <div class="row" id="subgroup-views-time-wheel-calendar">
@@ -1296,12 +1183,11 @@
 
                         <h4>Change Calendar</h4>
 
-                        <p>To change the calendar represented click
+                        <p>To change the calendar used to aggregate the events click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-calendar"
-                              aria-hidden="true"><span class="caret"></span></span></button>
-                            in the view's toolbar, and select a calendar. After you select a new calendar the
-                            Time-Wheel will re-aggregate the selected data using the newly selected calendar.</p>
+                                <span class="glyphicon glyphicon-calendar"
+                                    aria-hidden="true"><span class="caret"></span></span></button>
+                        in the view's toolbar, and select a calendar. After you select a new calendar the Time-Wheel will re-aggregate the selected data using the new calendar.</p>
 
                         <div class="row focus-image">
                             <div class="col-xs-2 col-xs-offset-3">
@@ -1327,9 +1213,9 @@
 
                         <h4>Filter</h4>
 
-                        <p>The Time-Wheel can filter the data set by selecting and deselecting the arcs that
-                            represent calendar units. You can create a filter by left mouse clicking any of the arcs
-                            within the ring. To remove the filter click
+                        <p>The Timeline can filter the data set with a range filter. For example, select all events between year 2008 and 2010. To create a range filter hover the mouse over the Timeline, press the left mouse button down and hold it, drag the mouse across the Timeline, and then release the mouse.</p>
+
+                        <p>The Time-Wheel can filter the data set with a select filter. For example, select all events that occurred within the Gregorian Month of January. To create a select filter hover the mouse over the Time-Wheel, and single-click any of the arcs within the ring. To remove the filter click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>.</p>
 
@@ -1377,8 +1263,7 @@
                             <td>
                                 <ul class="list-unstyled">
                                     <li><strong>Gregorian:</strong> Change the calendar to the Gregorian calendar.</li>
-                                    <li><strong>Islamic:</strong> Change the calendar to the Islamic (Hijri)
-                                        calendar.</li>
+                                    <li><strong>Islamic:</strong> Change the calendar to the Islamic (Hijri) calendar.</li>
                                 </ul>
                             </td>
                         </tr>
@@ -1386,8 +1271,7 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button></td>
                             <td>Filter</td>
-                            <td>Remove the current filter within the Time-Wheel. This button will be enabled if there
-                                the view is currently filtering</td>
+                            <td>Remove the current filter within the Time-Wheel. This button is enabled if the view is filtering</td>
                             <td><em>n/a</em></td>
                         </tr>
                         </tbody></table>
@@ -1407,7 +1291,7 @@
 
                 <h3>Voronoi Subplots Map</h3>
 
-                <p class="lead"><small>A map + subplots backed by an adjustable voronoi diagram.</small></p>
+                <p class="lead"><small>A map backed by an adjustable voronoi diagram + small multiples.</small></p>
 
                 <div class="focus-image">
                     <img
@@ -1415,13 +1299,9 @@
                         class="img-responsive img-thumbnail" />
                 </div>
 
-                <p>The Voronoi Subplots Map is the main view within PerSE. This view is used to detect where and to what
-                    extent periodicity exists by combining two well know visualization methods: the voronoi diagram
-                    and small multiples.</p>
+                <p>The Voronoi Subplots Map is the main view within PerSE. This view is used to detect where and to what extent periodicity exists. The Voronoi Subplots Map combines two well know information visualization methods: the voronoi diagram and small multiples.</p>
 
-                <p>There are two distinct components within this view: a map and a set of plots that sit on top of
-                    the map called "subplots". In the following sections we will go over the voronoi diagram,
-                    small multiple, and the map and subplots used in PerSE.</p>
+                <p>In the following sections I will go over the voronoi diagram, small multiples, and how those two concepts integrate into the Voronoi Subplots Map.</p>
 
                 <div class="row" id="subgroup-views-voronoi-subplots-map-voronoi">
 
@@ -1434,16 +1314,9 @@
                             <label class="caption">Abstract Example of a Voronoi Diagram</label>
                         </div>
 
-                        <p>A voronoi diagram is diagram that shows the neighborhood of points, called seeds. To visualize the
-                            neighborhood boundaries are created where it is equal distance from one seed to it's neighbor.
-                            Therefore, every point within a polygon is nearest-neighbors to the polygon's seed.</p>
-                        <p>A voronoi diagram is a diagram that partitions a surface based on a set of seeds or
-                            points and their nearness/distance to each other. Each seed forms a polygon where everything
-                            within is closer its respective seed than to any other seed. Polygon boundaries indicate the
-                            location where it is equal distance to neighboring seeds.</p>
-                        <p>The Voronoi Subplots in PerSE uses a voronoi diagram to determine what data points go to which plot.
-                            This can be useful in situations where boundaries are fuzzy or unknown such as where periodicity
-                            exists.</p>
+                        <p>A voronoi diagram is a diagram that partitions a surface based on a set of seeds or points and their nearness/distance to each other. Each seed forms a cell where everything within is closer to its respective seed than to any other seed. Cell boundaries indicate the location where it is equal distance to neighboring seeds.</p>
+
+                        <p>The Voronoi Subplots in PerSE uses a voronoi diagram to determine which events go to which subplot. This can be useful in situations where boundaries are fuzzy or unknown. For instance, the boundaries between two communities, cities, or cultural groups.</p>
                     </div>
 
                 </div>
@@ -1459,15 +1332,9 @@
 
                         <h4>Small Multiples</h4>
 
-                        <p>Small Multiples are a set of same/similar charts, plots, or gylphs at the same scale, and it
-                            primarily used for comparison. For more information on this method check out Edward Tufte's
-                            <em>Envisioning Information</em> (1990).</p>
+                        <p>Small Multiples are a set of similar charts, plots, or gylphs at the same scale. Small Multiples are primarily used for identifying phenomena by comparison. Are some of the multiples similar, different, any outliers?  For more information on this method check out Edward Tufte's <em>Envisioning Information</em> (1990).</p>
 
-                        <p>The Voronoi Subplots use the small multiple visualization method with the help of a voronoi
-                            diagram. The underlying voronoi diagram is used to aggregate data points based on their location,
-                            and these collections of data points are plotted on charts that support reasoning about
-                            periodicity. In order link the plots back to the map, PerSE uses positions the plot on the edge
-                            of the map near its respective seed on the edge.</p>
+                        <p>The Voronoi Subplots Map uses the small multiples as a way to visualize the content within the voronoi diagram cells. The underlying voronoi diagram is used to aggregate events based on their location. Later, these collections of events are visualized using multiples that support reasoning about periodicity. In order link the multiples back to the map, the Voronoi Subplots Map places each small multiple near its respective voronoi seed/cell.</p>
 
                     </div>
 
@@ -1481,20 +1348,13 @@
 
                         <div class="inset-image" style="float:right;width:40%;margin-top:0;margin-right:0;">
                             <img src="img/screenshots/voronoi-subplots-map/popup.png" class="img-responsive img-thumbnail">
-                            <label class="caption">Popup</label>
+                            <label class="caption">Pop-up</label>
                         </div>
 
-                        <p>The map displays selected events based on their latitude and longitude and colors them ba
-                            sed on a specified attribute. In the case of our built
-                            in data set on Nigeria, the map colors events by their Event-Type (i.e. Violence against
-                            civilians, Battle no change in territory, etc.) If you hover over these events and
-                            single-click the left mouse button, you will see a popup that displays a brief description
-                            of the event.
+                        <p>The map displays selected events based on their latitude and longitude and colors them based on the <strong>Event Type</strong> attribute. If you click one of the events, you will see a pop-up with the event's description and recorded fatalities.</p>
 
-                        <p>As mentioned above, this view makes use of a voronoi diagram. If you brush the mouse over the map you
-                            will notice that semi-transparent white boundaries on the map will highlight. These are
-                            the voronoi diagram cells. Furthermore, you will also notice a light disk-shaped circle within
-                            each boundary. These are the voronoi diagram seeds.<p>
+                        <p>As mentioned above, this view makes use of a voronoi diagram. If you brush the mouse over the map you will notice that a semi-transparent white boundary on the map will highlight. These boundaries are voronoi diagram cells. Furthermore, you will also notice a light gray circle within each boundary. These circles are the voronoi diagram seeds that control the boundaries of the voronoi cells.<p>
+
                     </div>
 
                 </div>
@@ -1512,32 +1372,29 @@
                             <label class="caption">Voronoi Seed (Zoomed In)</label>
                         </div>
 
-                        <p>In addition the voronoi cell boundaries highlighting on mouse brushes, you will also
-                            see one of the subplots along the side of the map highlighting. The highlighted subplot displays
-                            data points within the boundary of the voronoi cell. These subplots are positioned to be close
-                            to their respective seed coordinate.</p>
+                        <p>When you brush the mouse over a voronoi cell you will also see one of the subplots along the side of the map highlight. The highlighted subplot displays data points located within the boundary of the voronoi cell. These subplots are positioned to be close to their respective seed coordinate.</p>
 
                         <h5>Remove</h5>
 
-                        <p>PerSE starts-up with six voronoi seeds on the map. Sometimes six can be to many, especially if
-                            there are few data points or if we want to compare less than six regions. If this is the case we can
-                            get rid of a voronoi seed by clicking
+                        <p>PerSE starts-up with six voronoi seeds on the map. Sometimes six can be to many, especially if there are few data points or if we want to compare less than six regions. You can get rid of a voronoi seed by clicking
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and then select <strong>Remove</strong>. Afterward you should see the seeds
-                            highlighted. If you click one of the seeds the chart will eliminate the seed and its respective
-                            subplot, and recalculate the voronoi diagram.</p>
+                        on the view's toolbar, and then select <strong>Remove</strong>. Afterward you should see the seeds highlighted. To remove a seed, simply single click the seed with the mouse. If you successfully removed a seed, the seed and it's respective subplot will disappear, and finally the Voronoi Subplots Map will recalculate the voronoi diagram.</p>
+
+                        <p>After you are finished removing a voronoi seeds, ensure that you disable the <strong>Remove</strong> setting in
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button> by single clicking the <strong>Remove</strong> setting.</p>
 
                         <h5>Add</h5>
 
-                        <p>If you have less than six voronoi seeds on the map, then you can add a voronoi seed in a similiar
-                            way. First click
+                        <p>If you have less than six voronoi seeds on the map, then you can add a voronoi seed to the Voronoi Subplots Map. First click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and then select <strong>Add</strong>. Afterward your cursor should light up on
-                            the map hinting that you can add a voronoi seed. If you click on the map, within the
-                            extent of the data points, a voronoi seed and its respective subplot will be placed on the map, and
-                            the voronoi diagram will recalculate.</p>
+                        on the view's toolbar, and then select <strong>Add</strong>. Afterward your cursor should light up on the map hinting that you can add a voronoi seed. If you click on the map, a voronoi seed and its respective subplot will be placed on the map, and finally the voronoi diagram will recalculate.</p>
+
+                        <p>After you are finished adding a voronoi seeds, ensure that you disable the <strong>Add</strong> setting in
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button> by single clicking the <strong>Add</strong> setting.</p>
 
                         <h5>Positioning</h5>
 
@@ -1547,14 +1404,10 @@
                             <label class="caption">Five Voronoi Seeds on Auto</label>
                         </div>
 
-                        <p>If you have been following the quick start up until now you will have noticed that the voronoi seeds
-                            always snap to a gridded position. This is because the <em>Positioning</em> setting in
+                        <p>Unless you change the voronoi seeds <em>Positioning</em> setting the seeds will always snap to a gridded position. This is because the <em>Positioning</em> setting in
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>
-                            is set to <strong>Auto</strong>. <strong>Auto</strong> can be a nice setting because it attempts to
-                            figure out the best position for the voronoi seeds every time the selection changes. Therefore,
-                            if the only points on the map were in the South-West corner then the voronoi seeds would try to
-                            grid the South-West corner.</p>
+                        is set to <strong>Auto</strong> (Default). <strong>Auto</strong> can be a nice setting because it attempts to figure out the best position for the voronoi seeds every time the selection changes. For example, if we removed a seed from the Voronoi Subplots Map when <em>Positioning</em> is set to <strong>Auto</strong>, then the voronoi seeds would automatically grid the remaining space (See the image on the right).</p>
 
                         <div class="inset-image" style="float:left;width:40%;margin-top:0;margin-left:0;clear:both;">
                             <img src="img/screenshots/voronoi-subplots-map/seeds-five-moved-gregorian-wmouse.png"
@@ -1562,33 +1415,22 @@
                             <label class="caption">Five Voronoi Seeds on Manual + Moved</label>
                         </div>
 
-                        <p style="clear:right;">What if you want more control over the voronoi seeds? Well, you can by changing the positioning to
-                            to <strong>Manual</strong>. To do that click
+                        <p style="clear:right;">If you want more control over the voronoi seeds, you can set the <em>Positioning</em> to <strong>Manual</strong> by clicking
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and then select <strong>Manual</strong>. Now voronoi seeds will not reposition
-                            when the selection changes. If you would like to move the voronoi seed click
-                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                                <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and then select <strong>Move</strong>. This will allow you to move a
-                            voronoi seed along with its respective subplot around the map. After you move the seed the
-                            voronoi diagram will recalculate and the voronoi seeds respective subplot will reposition to a
-                            better docking station if the layout permits.</p>
+                        on the view's toolbar, and then selecting <strong>Manual</strong> under <em>Positioning</em>. Now voronoi seeds will not reposition when the selection changes. For example, if we removed a seed from the Voronoi Subplots Map when <em>Positioning</em> is set to <strong>Manual</strong>, then the remaining voronoi seeds would stay in the exact same location, and the voronoi cell boundaries would adjust to compensate for a missing seed.</p>
 
-                        <p style="text-align:right;"><small>**Note, <strong>Move</strong> is only enabled when
-                            <em>Positioning</em> is set to <strong>Manual</strong>.</small></p>
+                        <p>To move the voronoi seed ensure that <em>Positioning</em> is set to <strong>Manual</strong>, and click
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>
+                        on the view's toolbar, and then select <strong>Move</strong>. This will allow you to move a voronoi seed and its respective subplot anywhere on the map. After you move the seed the voronoi diagram will recalculate and the voronoi seeds respective subplot will reposition to a better docking station if the layout permits.</p>
 
                         <h5 style="clear:both;">Reset</h5>
 
-                        <p>At some point during analysis you may want to revert back to the default voronoi seeds. To do
-                            this click
+                        <p>At some point during analysis you may want to reset voronoi seed locations. To reset, click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-record" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and select the <strong>Reset</strong>. By doing so, voronoi seeds will be added
-                            to the map until it reaches the maximum seeds (six). Then the seeds and their respective plots
-                            will be repositioning into a gridded layout similar to <strong>Auto</strong> <em>Positioning
-                            </em>. Finally, the subplots will update with the newly aggregated data.
-                        </p>
+                        on the view's toolbar, and select <strong>Reset</strong>. By doing so, voronoi seeds will be added to the map until it reaches the maximum seeds (six). Then the seeds and their respective plots will reposition into a gridded layout similar to <strong>Auto</strong> <em>Positioning</em>. Finally, the subplots will update with the newly aggregated data.</p>
 
                     </div>
 
@@ -1600,23 +1442,14 @@
 
                         <h4>Subplots</h4>
 
-                        <p>As mentioned above the subplots display event data derived from their respective voronoi cell. Each
-                            subplot is linked to all other subplots. Meaning, if you hover over an aggregate in one
-                            subplot, it will simulate the same hover in all the other subplot. The details for each
-                            hover are labeled in the top right corner of the subplot. This type of labeling is
-                            mirrored in all the top level views too.</p>
+                        <p>As mentioned above, subplots display event data derived from their respective voronoi cell, and colored by the <strong>Event Type</strong> attribute.</p>
 
-                        <p>The map is also linked to the subplots. Event points not associated with
-                            the hovered aggregate of the subplot will disappear on subplot hovering. Despite the
-                            dynamic linking on mouse hovers and brushes, this action has no filtering
-                            capabilities outside of the Voronoi Subplots Map.</p>
+                        <p>Subplots within the Voronoi Subplots Map are always plotted with the same scale to prevent misleading analysis, and are linked to other subplots and the map for dynamic interaction. To illustrate this linking, a mouse brush over the arc "January" within one of the subplots will cause two things to happen: a) all other subplots will display their "January" value and b) only "January" events will be displayed on the map. Keep in mind the subplots do not perform any filtering beyond the Voronoi Subplots Map.</p>
 
-                        <p>There are two types of subplots in the Voronoi Subplots Map: <strong>Time-Wheel</strong> (default)
-                            and <strong>Line Plot</strong>. To change the <em>Plot Type</em> click
+                        <p>There are two types of subplots in the Voronoi Subplots Map: <strong>Time-Wheel</strong> (default) and <strong>Line Plot</strong>. To change the <em>Plot Type</em> click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-chart" aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar and select either <strong>Time-Wheel</strong> or
-                            <strong>Line Plot</strong>.</p>
+                        on the view's toolbar, and select either <strong>Time-Wheel</strong> or <strong>Line Plot</strong>.</p>
 
                         <div class="inset-image" style="float:left;width:40%;margin-left:0;margin-top:0;">
                             <img src="img/screenshots/voronoi-subplots-map/brush-time-wheel-wmouse.png"
@@ -1626,17 +1459,9 @@
 
                         <h5>Time-Wheel</h5>
 
-                        <p>The Time-Wheel is a useful for visualizing cyclical units of time. Each ring around the
-                            plot is segmented by arcs which represent a common calendar aggregates. For example, Day
-                            of the Month, Month of the Year, Day of the Week. Each ring aggregates all selected
-                            events by their date.</p>
+                        <p>The Time-Wheel is radial plot used to display calendar units. Each ring around the plot is segmented by arcs which represent a calendar unit. For example, Day of the Month, Month of the Year, Day of the Week. Each ring aggregates all selected events by their date.</p>
 
-                        <p>The Time-Wheels in the Voronoi Subplots Map are almost exactly the same as the one in the
-                            top level view, however there are some small differences. The Time-Wheels in the
-                            Voronoi Subplots Map cannot filter outside of the Voronoi Subplots Map,
-                            meaning they are not "clickable". Second, since these plots are all linked,
-                            they place a burden on the DOMs rendering capabilites. Thus,
-                            they do not transition as smoothly as the top level view Time-Wheel.</p>
+                        <p>The Time-Wheels in the Voronoi Subplots Map are almost exactly the same as the one in the top level view, however there are some small differences. The Time-Wheels in the Voronoi Subplots Map cannot filter outside of the Voronoi Subplots Map, meaning they are not "clickable". Second, since these plots are all linked, they place a burden on the DOMs rendering capabilities. Thus, they do not transition as smoothly as the top level view Time-Wheel.</p>
 
                         <div class="inset-image" style="float:right;width:40%;margin-right:0;margin-top:0;">
                             <img src="img/screenshots/voronoi-subplots-map/brush-lineplots-wmouse.png"
@@ -1646,27 +1471,21 @@
 
                         <h5 style="clear:left;">Line-Plot</h5>
 
-                        <p>The Line Plot is useful for visualizing the linear aspects cyclical units. Each line is
-                            a temporal segment (e.g. day, month, week) determined by a cycle length (e.g. month of
-                            year, day of week). Lines are given a Y-value based on the count/frequency of
-                            events that took place during the temporal segment.</p>
+                        <p>The Line Plot is useful for visualizing the linear aspects cyclical units of time. Each line is a temporal segment (e.g. year, month, week) and is segmented by a calendar unit (e.g. month of year, day of month, day of week). Lines are given a Y-value based on the count (i.e. frequency) of events that took place during the temporal segment.</p>
 
-                        <p>You may change the cycle length for all Line Plots within the Voronoi Subplots Map by
-                            clicking
+                        <p>To change the cycle length for all Line Plots within the Voronoi Subplots Map, click clicking
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-stats" aria-hidden="true"><span
                                         class="caret"></span></span></button>
-                            in the toolbar, and then selecting and option within the <em>Cycle</em> section.</p>
+                        in the view's toolbar, and then select an option within the <em>Cycle</em> section.</p>
 
                         <h5 style="clear:both;">Change Calendar</h5>
 
-                        <p>Like most of the top level views in PerSE, the Voronoi Subplots Map allows you to change the
-                            calendar used to aggregate events. To change the calendar click
+                        <p>Like most of the top level views in PerSE, the Voronoi Subplots Map allows you to change the calendar used to aggregate events. To change the calendar click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"><span
                                         class="caret"></span></span></button>
-                            on the toolbar and select one of the calendar systems. After you have changed the calendar, the
-                            subplots in the Voronoi Subplots Map will re-aggregate the data with the new calendar.</p>
+                        on the view's toolbar and select one of the calendar systems. After you have changed the calendar, the subplots in the Voronoi Subplots Map will re-aggregate the data with the new calendar.</p>
 
                     </div>
 
@@ -1680,17 +1499,11 @@
 
                         <h5>Draw</h5>
 
-                        <p>In addition for periodicity detection and analysis, the Voronoi Subplots Map can also be used to
-                            perform spatial filters on the entire data set. To create a spatial filter first click
+                        <p>In addition to periodicity detection and analysis, the Voronoi Subplots Map can also be used to perform spatial filters on the entire data set. For example, select all events within a polygon. To create a spatial filter first click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-pencil"
                                     aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and then click <strong>Draw</strong>. Much like adding a voronoi seed, your
-                            cursor will highlight on the map, and you will be able to draw a polygon by clicking to plot a
-                            vertex. To end a drawing session double click or single click the starting vertex. After a
-                            polygon is created PerSE will filter the entire data set based on the boundaries of the newly
-                            created polygon. Note, at this time PerSE only supports one filtering polygon.
-                        </p>
+                        on the view's toolbar, and then click <strong>Draw</strong>. Much like adding a voronoi seed, your cursor will highlight on the map, and you will be able to draw a polygon by clicking to plot a vertex. To end a drawing session double click or single click the starting vertex. After a polygon is created PerSE will filter the entire data set based on the boundaries of the newly created polygon. Note, at this time PerSE only supports one filtering polygon.</p>
 
                         <div class="row image-row">
                             <div class="col-xs-5 col-xs-offset-1">
@@ -1709,12 +1522,9 @@
 
                         <p>If you would like to change the boundary of a spatial filter polygon click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-pencil"
-                              aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and then click <strong>Modify</strong>. You will notice that the spatial filter
-                            polygon becomes highlighted, and your mouse cursor will snap to the boundary when near. To modify
-                            the spatial filter polygon drag a boundary vertex or edge to the desired location. You can also
-                            remove a vertex by single clicking the vertex.</p>
+                                <span class="glyphicon glyphicon-pencil"
+                                    aria-hidden="true"><span class="caret"></span></span></button>
+                        on the view's toolbar, and then click <strong>Modify</strong>. You will notice that the spatial filter polygon becomes highlighted, and your mouse cursor will snap to the boundary when near. To modify the spatial filter polygon drag a boundary vertex or edge to the desired location. You can also remove a vertex by single clicking the vertex.</p>
 
                         <h5>Move</h5>
 
@@ -1723,32 +1533,21 @@
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                         <span class="glyphicon glyphicon-pencil"
                               aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and click <strong>Move</strong>. Much like <strong>Modify</strong> you will
-                            notice that the spatial filter polygon becomes highlighted and when you hover over it your cursor
-                            will turn into move-arrows. To move the spatial filter polygon hover over the spatial filter
-                            polygon, press-and-hold mouse button down, and drag it to the desired location. When you release
-                            the mouse button the spatial filter polygon will fix to that location, and the entire data set
-                            will update with the new filter.</p>
+                        on the view's toolbar, and click <strong>Move</strong>. Much like <strong>Modify</strong> you will notice that the spatial filter polygon becomes highlighted and when you hover over it your cursor will turn into "move-arrows". To move the spatial filter polygon hover over the spatial filter polygon, press the left mouse button down and hold, drag it to the desired location, and release. When you release the mouse button the spatial filter polygon will fix to that location, and the entire data set will update with the new filter.</p>
 
                         <h5>Remove</h5>
+
                         <p>There are two ways to remove a spatial filter polygon. The easiest of the two is to simply click
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-filter"
-                              aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar. After you click this button the spatial filter polygon will be removed from the
-                            map, and the Vornoi Subplots Map will reset. Also note the button will look like this
-                            <button class="btn btn-default btn-xs disabled" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-filter"
-                              aria-hidden="true"><span class="caret"></span></span></button>
-                            because there the Voronoi Subplots Map is not filtering the data set. This mechanism is the same
-                            on all other top level views in PerSE.</p>
+                                <span class="glyphicon glyphicon-filter"
+                                    aria-hidden="true"><span class="caret"></span></span></button>
+                        on the views toolbar. After you click this button the spatial filter polygon will be removed from the map, and the Voronoi Subplots Map filter will reset.</p>
 
-                        <p>The long way to remove a spatial fitler polygon is to click
+                        <p>The long way to remove a spatial filter is to click
                             <button class="btn btn-default btn-xs disabled" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-pencil"
-                              aria-hidden="true"><span class="caret"></span></span></button>
-                            on the toolbar, and then click <strong>Remove</strong>. This performs the exact same function as
-                            the above method, but was included in this drop-down because it naturally fits there.</p>
+                                <span class="glyphicon glyphicon-pencil"
+                                    aria-hidden="true"><span class="caret"></span></span></button>
+                        on the view's toolbar, and then click <strong>Remove</strong>. This performs the exact same function as the above method, but was included because it naturally fits on the toolbar.</p>
 
                     </div>
 
@@ -1786,18 +1585,8 @@
                                     <li><em>Plot Type:</em> Change the type of subplot used to display events with
                                      voronoi cells.
                                         <ul>
-                                            <li><strong>Time-Wheel:</strong> Change all subplots to the Time-Wheel.
-                                                The Time-Wheel is plot that displays the data in the form
-                                                of a wheel. This is useful for displaying the cyclical aspects of
-                                                temporal data. Data points are binned by their respective temporal
-                                                aggregate (i.e. Month of Year, Day of Week). As multiple cycles are
-                                                viewed in one display, cycle settings are irrelevant.</li>
-                                            <li><strong>Line Plot:</strong> Change all subplots to a Line Plot.
-                                                The Line Plot is a plot that displays the data in the form
-                                                of a line where each line is an temporal segment determined by a cycle
-                                                length (i.e. month of year, day of week). This can be useful for
-                                                visualizing individual, rather than viewing all of them like in
-                                                the Time-Wheel.</li>
+                                            <li><strong>Time-Wheel:</strong> Change all subplots to the Time-Wheel. The Time-Wheel is radial plot used to display calendar units. Each ring around the plot is segmented by arcs which represent a calendar unit.</li>
+                                            <li><strong>Line Plot:</strong> Change all subplots to the Line Plot. The Line Plot is useful for visualizing the linear aspects cyclical units of time. Each line is a temporal segment (e.g. year, month, week) and is segmented by a calendar unit (e.g. month of year, day of month, day of week). </li>
                                         </ul>
                                     </li>
                                     <li><em>Cycle:</em> (Line Plot Only) Changes the cycle used to aggregate plot data.
@@ -1823,7 +1612,7 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></td>
                             <td>Calendar</td>
-                            <td>Change the calendar used to bin events in the subplots.</td>
+                            <td>Change the calendar used to bin events within the subplots.</td>
                             <td>
                                 <ul class="list-unstyled">
                                     <li><strong>Gregorian:</strong> Change the calendar to the Gregorian calendar.</li>
@@ -1836,22 +1625,17 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></td>
                             <td>Draw/Edit</td>
-                            <td>Draw a spatial filter polygon or Edit the spatial filter polygon.</td>
+                            <td>Draw a spatial filter polygon or edit the spatial filter polygon.</td>
                             <td>
                                 <ul class="list-unstyled">
-                                    <li><strong>Draw:</strong> Draw a new spatial filter polygon. Note, PerSE
-                                        currently supports only one spatial filter polygon at a time.</li>
+                                    <li><strong>Draw:</strong> Draw a new spatial filter polygon. Note, PerSE currently supports only one spatial filter polygon at a time.</li>
                                     <li><em>Edit:</em>
                                         <ul>
-                                            <li><strong>Modify:</strong> Alter the geometry of the spatial filter
-                                                polygon. Remove a vertex by single clicking. Move a vertex by
-                                                dragging it with the mouse, and add a vertex by single clicking.</li>
-                                            <li><strong>Move:</strong> Move the entire spatial filter polygon
-                                                without changing the polygons orientation and geometry by dragging
-                                                the polygon with the mouse.</li>
+                                            <li><strong>Modify:</strong> Alter the geometry of the spatial filter polygon. Remove a vertex by single clicking. Move a vertex by dragging it with the mouse, and add a vertex by single clicking.</li>
+                                            <li><strong>Move:</strong> Move the entire spatial filter polygon without changing the polygons orientation and geometry by dragging the polygon with the mouse.</li>
                                         </ul></li>
-                                    <li><strong>Remove:</strong> Removes the spatial filter polygon. Essentially
-                                        the same as clicking <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                    <li><strong>Remove:</strong> Removes the spatial filter polygon. Essentially the same as clicking
+                                        <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                             <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>.
                                     </li>
                                 </ul>
@@ -1864,28 +1648,20 @@
                             <td>Alter the voronoi seeds or change their positioning.</td>
                             <td>
                                 <ul class="list-unstyled">
-                                    <li><em>Positioning:</em> Change how the voronoi seeds react to new selections.
+                                    <li><em>Positioning:</em> Change how the voronoi seeds position.
                                         <ul>
-                                            <li><strong>Auto: </strong> Voronoi seeds automatically adjust to
-                                                the event data by positioning into an evenly spaced grid.</li>
-                                            <li><strong>Manual: </strong> Voronoi seeds fix to a latitude and
-                                                longitude until manually moved to a different location.</li>
+                                            <li><strong>Auto: </strong> Voronoi seeds automatically position into an evenly spaced grid.</li>
+                                            <li><strong>Manual: </strong> Voronoi seeds fix to a latitude and longitude until manually moved to a different location.</li>
                                         </ul>
                                     </li>
                                     <li><em>Edit: </em> Alter the voronoi seeds.
                                         <ul>
-                                            <li><strong>Add: </strong> Add a new voronoi seed to the map by single
-                                                clicking. (Max: 6 seeds, Min: 1 seed)</li>
-                                            <li><strong>Move: </strong> Move a voronoi seed by dragging it with
-                                                the mouse. <em>Positioning</em> must be set to
-                                                <strong>Manual</strong></li>
-                                            <li><strong>Remove: </strong> Remove a voronoi seed by single clicking
-                                                the seed.</li>
+                                            <li><strong>Add: </strong> Add a new voronoi seed to the map by single clicking. (Max: 6 seeds, Min: 1 seed)</li>
+                                            <li><strong>Move: </strong> Move a voronoi seed by dragging it with the mouse. <em>Positioning</em> must be set to <strong>Manual</strong></li>
+                                            <li><strong>Remove: </strong> Remove a voronoi seed by single clicking the seed.</li>
                                         </ul>
                                     </li>
-                                    <li><strong>Reset:</strong> Resets all voronoi seeds by adding seeds to the
-                                        map until there are 6, then automatically positions the voronoi seeds into
-                                        an evenly spaced grid.</li>
+                                    <li><strong>Reset:</strong> Resets all voronoi seeds by adding seeds to the map until there are six, then automatically positions the voronoi seeds into an evenly spaced grid.</li>
                                 </ul>
                             </td>
                         </tr>
@@ -1894,8 +1670,7 @@
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button></td>
                             <td>Filter</td>
-                            <td>Remove and spatial filter polygon. This button will be enabled if there the view
-                                is currently filtering.</td>
+                            <td>Remove and spatial filter polygon. This button is enabled if the view is filtering.</td>
                             <td><em>n/a</em></td>
                         </tr>
                         </tbody></table>

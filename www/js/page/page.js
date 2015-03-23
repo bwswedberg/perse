@@ -227,8 +227,7 @@ define([
     page.createFooter = function () {
         var small1 = $('<p>')
                 .attr({'class': 'small'})
-                .html('PerSE was designed and built with love. <br> Copyright 2015 ' +
-                '<a href="mailto:bwswedberg@gmail.com">Brian Swedberg</a>.' +
+                .html('Copyright 2015 <a href="mailto:bwswedberg@gmail.com">Brian Swedberg</a>.' +
                 ' <a href="http://opensource.org/licenses/MIT">MIT License</a>');
         return $('<footer>')
             .attr({'class': 'footer'})

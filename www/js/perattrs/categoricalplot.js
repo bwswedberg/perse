@@ -133,7 +133,7 @@ define([
             .attr('height', '14px')
             .attr('width', this.size.width + this.margin.left + this.margin.right + 'px')
             .append('g')
-            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
         this.updateAxis();
     };
@@ -193,11 +193,11 @@ define([
             .ticks(0)
             .innerTickSize(0)
             .outerTickSize(0)
-            .orient("left");
+            .orient('left');
 
-        this.svgChart.append("g")
+        this.svgChart.append('g')
             .attr('class', 'categoricalplot-axis')
-            .attr("transform", "translate(-2, 0)")
+            .attr('transform', 'translate(-2, 0)'')
             .call(yAxisBuilder);
 
         this.updateChart(data);
@@ -284,7 +284,7 @@ define([
 
             });
 
-        bars.attr("transform", function (d, i) { return "translate(0," + yScale(i) + ")"; });
+        bars.attr('transform', function (d, i) { return 'translate(0,' + yScale(i) + ')'; });
 
         bars.exit().remove();
     };

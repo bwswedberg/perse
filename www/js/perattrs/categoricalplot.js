@@ -197,7 +197,7 @@ define([
 
         this.svgChart.append('g')
             .attr('class', 'categoricalplot-axis')
-            .attr('transform', 'translate(-2, 0)'')
+            .attr('transform', 'translate(-2, 0)')
             .call(yAxisBuilder);
 
         this.updateChart(data);

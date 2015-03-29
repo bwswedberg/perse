@@ -134,16 +134,14 @@ define([
 
             this.rings.forEach(function (r) {
 
-                if (ring.getRingId() === focusRingId) {
+                if (r.getRingId() === focusRingId) {
                     startRadius = endRadius - ((scaleFactor + 1) * ringRadius);
-                    r
-                        .setRadius(startRadius, endRadius)
+                    r.setRadius(startRadius, endRadius)
                         .update();
 
                 } else {
                     startRadius = endRadius - ringRadius;
-                    r
-                        .setRadius(startRadius, endRadius)
+                    r.setRadius(startRadius, endRadius)
                         .update();
 
                 }

@@ -72,6 +72,22 @@ define([
         return this;
     };
 
+    map.Map.prototype.destroy = function () {
+        this.removeInteractionListener();
+        this.removeInteractions();
+        ['filterPolygon', 'eventPoints', 'highlightedEventPoints'].forEach(function (key) {
+            this.theMap.removeLayer(this.layers[key]);
+            this.layers[key] = undefined;
+        }, this);
+        ['polygons', 'points'].forEach(function (key) {
+            this.theMap.removeLayer(this.layers.voronoi[key]);
+            this.layers.voronoi[key] = undefined;
+        }, this);
+        this.overlays = {popup: undefined};
+        this.maxPointsExtent = undefined;
+        this.shouldUpdate = true;
+    };
+
     map.Map.prototype.build = function (data) {
         var extent;
         this.layers.eventPoints = this.createEventPointsLayer(data);

@@ -40,6 +40,13 @@ define([
         return this;
     };
 
+    perplots.PerPlots.prototype.destroy = function () {
+        Object.keys(this.plots).forEach(function (key) {
+            this.removePlot(key);
+        }, this);
+        this.voronoiPolygons = undefined;
+    };
+
     perplots.PerPlots.prototype.getNewPerPlot = function (plotType) {
         switch (plotType) {
         case ('timeWheel'):

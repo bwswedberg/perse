@@ -256,6 +256,9 @@ define([
 
     pertimeline.PerTimeline.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
+        if (this.timeline) {
+            this.timeline.destroy();
+        }
         this.timeline.onDataSetChanged(data, metadata);
         this.validateFilterButton();
     };

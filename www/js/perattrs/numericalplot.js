@@ -37,6 +37,12 @@ define([
         return this;
     };
 
+    numericalplot.NumericalPlot.prototype.destroy = function () {
+        this.svg.remove();
+        $(this.container).find('svg').remove();
+        this.svg = undefined;
+    };
+
     numericalplot.NumericalPlot.prototype.createToolbar = function () {
         var filterDiv = $('<div>')
             .attr({'class': 'btn-group', 'role': 'group'})

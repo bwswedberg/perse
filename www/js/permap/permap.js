@@ -43,6 +43,8 @@ define([
 
         this.toolbar = new permaptoolbar.PerMapToolbar(this.viewParams);
 
+        this.toolbar.registerListener(this.createListener());
+
         title = $('<p>')
             .attr({'class': 'perse-header-title'})
             .text('Voronoi Subplots Map');
@@ -61,18 +63,25 @@ define([
     };
 
     permap.PerMap.prototype.build = function (data) {
-        this.toolbar.registerListener(this.createListener());
         this.toolbarListener = this.toolbar.createListener();
 
-        this.map = new map.Map(this.viewParams)
-            .render(this.container)
-            .registerListener(this.createListener());
-        this.toolbar.registerListener(this.map.createToolbarListener());
+        if (this.map) {
+            this.map.destroy();
+        } else {
+            this.map = new map.Map(this.viewParams)
+                .render(this.container)
+                .registerListener(this.createListener());
+            this.toolbar.registerListener(this.map.createToolbarListener());
+        }
 
-        this.perPlots = new perplots.PerPlots(this.viewParams)
-            .render(this.container)
-            .registerListener(this.createListener());
-        this.toolbar.registerListener(this.perPlots.createToolbarListener());
+        if (this.perPlots) {
+            this.perPlots.destroy();
+        } else {
+            this.perPlots = new perplots.PerPlots(this.viewParams)
+                .render(this.container)
+                .registerListener(this.createListener());
+            this.toolbar.registerListener(this.perPlots.createToolbarListener());
+        }
 
         this.map.onDataSetChanged(data, this.metadata);
         this.perPlots.setVoronoiPolygons(this.map.getVoronoiPolygonLayer());

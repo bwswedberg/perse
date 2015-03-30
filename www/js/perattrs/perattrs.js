@@ -36,6 +36,14 @@ define([
         return this;
     };
 
+    perattrs.PerAttrs.prototype.destroy = function () {
+        this.plots.forEach(function (p) {
+            p.destroy();
+        });
+        this.plots = [];
+        this.container.empty();
+    };
+
     perattrs.PerAttrs.prototype.build = function (data) {
         var cardContainer = $('<div>').attr({'class': 'perse-perattr-cardcontainer'}),
             b = $('<button>')
@@ -143,6 +151,9 @@ define([
 
     perattrs.PerAttrs.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
+        if (this.plots.length > 0) {
+            this.destroy();
+        }
         this.build(data);
     };
 

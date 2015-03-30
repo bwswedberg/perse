@@ -16,6 +16,7 @@ define([
     'pertimeline/pertimeline',
     'pertable/pertable',
     'pertoolbar/pertoolbar',
+    'data/metadata/builtinmetadata',
     // No namespace
     'bootstrap'
 ], function (
@@ -29,7 +30,8 @@ define([
     perattrs,
     pertimeline,
     pertable,
-    pertoolbar
+    pertoolbar,
+    builtinmetadata
 ) {
 
     var perse = {};
@@ -47,7 +49,7 @@ define([
 
     perse.PerSE.prototype.init = function () {
         this.build();
-        this.loadData();
+        this.loadData(builtinmetadata.nigeria0814);
         return this;
     };
 
@@ -89,6 +91,9 @@ define([
                 'onCalendarChanged': function (event) {
                     this.coordinator.setCalendar(event.calendarName);
                     this.coordinator.onRefresh();
+                },
+                'onDataSetChanged': function (event) {
+                    this.loadData(event.builtInDataSetMetadata);
                 }
             });
 
@@ -134,8 +139,8 @@ define([
         return this;
     };
 
-    perse.PerSE.prototype.loadData = function () {
-        var dataLoader = new dataloader.DataLoader(this.wrapper);
+    perse.PerSE.prototype.loadData = function (builtInDataSetMetadata) {
+        var dataLoader = new dataloader.DataLoader();
         dataLoader.registerListener({
             context: this,
             onLoad: function (event) {
@@ -156,7 +161,7 @@ define([
                 console.log('onCancel', this);
             }
         });
-        dataLoader.loadBuiltInData();
+        dataLoader.loadBuiltInData(builtInDataSetMetadata);
     };
 
     return perse;

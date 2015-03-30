@@ -41,6 +41,17 @@ define([
         return this;
     };
 
+    perattr.PerAttr.prototype.destroy = function () {
+        if (this.plot) {
+            this.plot.destroy();
+        }
+        if (this.toobar) {
+            this.toolbar.remove();
+        }
+
+        this.container.remove();
+    };
+
     perattr.PerAttr.prototype.build = function (data) {
         var isNumeric = this.metadata.attribute.attributes[this.attribute].isNumeric,
             plotDiv = $('<div>').attr({'class': 'perse-perattr'});

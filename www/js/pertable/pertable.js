@@ -39,6 +39,10 @@ define([
         return this;
     };
 
+    pertable.PerTable.prototype.destroy = function () {
+        this.container.find('table').remove();
+    };
+
     pertable.PerTable.prototype.createControls = function () {
         var cal = this.createCalendarButtonGroup(),
             paging = this.createPagingControlButtonGroup();
@@ -268,6 +272,9 @@ define([
 
     pertable.PerTable.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
+        if (this.container.find('table').length > 0) {
+            this.destroy();
+        }
         this.build(data);
     };
 

@@ -40,6 +40,15 @@ define([
         return this;
     };
 
+    timewheel.TimeWheel.prototype.destroy = function () {
+        if (this.svg) {
+            this.svg.remove();  // this.svg is a 'g'
+            $(this.container).find('svg').remove();
+            this.svg = undefined;
+            this.rings = [];
+        }
+    };
+
     timewheel.TimeWheel.prototype.build = function (dataObj) {
         var that = this,
             ringRadius;

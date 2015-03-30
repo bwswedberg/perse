@@ -228,6 +228,7 @@ define([
     perwheel.PerWheel.prototype.destroy = function () {
         var buttons = [this.filterButton, this.calendarButtons.islamic, this.calendarButtons.gregorian];
         buttons.forEach(function (b) {b.off(); });
+        this.timeWheel.destroy();
         this.container.remove();
     };
 
@@ -260,7 +261,7 @@ define([
         return this;
     };
 
-    perwheel.PerWheel.prototype.setCycleName = function (calendarName) {
+    perwheel.PerWheel.prototype.setCycleName = function (cycleName) {
         return this;
     };
 
@@ -308,6 +309,9 @@ define([
 
     perwheel.PerWheel.prototype.onDataSetChanged = function (data, metadata) {
         this.metadata = metadata;
+        if (this.timeWheel) {
+            this.timeWheel.destroy();
+        }
         this.timeWheel.onDataSetChanged(data, metadata);
         this.filterButton.toggleClass('disabled', true);
     };

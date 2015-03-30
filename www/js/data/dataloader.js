@@ -8,11 +8,10 @@ define([
     'jquery',
     'papaparse',
     'colorbrewer',
-    'data/metadata/builtinmetadata',
     'data/metadata/metadatabuilder',
     // plugin
     '$.calendars'
-], function ($, Papa, colorbrewer, builtinmetadata, metadatabuilder) {
+], function ($, Papa, colorbrewer, metadatabuilder) {
 
     var dataloader = {};
 
@@ -97,6 +96,44 @@ define([
                         attributes[a].uniqueValues[k].color = uniqueColors[i % arr.length];
                     });
 
+                // FIXME this shouldn't be hard coded here. Change after user study
+                if (attributes[a].label === 'Event Type') {
+                    Object.keys(attributes[a].uniqueValues).forEach(function (k) {
+                        switch (attributes[a].uniqueValues[k].name) {
+                        case ('Violence against civilians'):
+                            attributes[a].uniqueValues[k].color = '#e41a1c';
+                            return;
+                        case ('Riots/Protests'):
+                            attributes[a].uniqueValues[k].color = '#377eb8';
+                            return;
+                        case ('Remote violence'):
+                            attributes[a].uniqueValues[k].color = '#984ea3';
+                            return;
+                        case ('Non-violent transfer of territory'):
+                            attributes[a].uniqueValues[k].color = '#f781bf';
+                            return;
+                        case ('Non-violent activity by a conflict actor'):
+                            attributes[a].uniqueValues[k].color = '#ff7f00';
+                            return;
+                        case ('Headquarters or base established'):
+                            attributes[a].uniqueValues[k].color = '#999999';
+                            return;
+                        case ('Battle-Non-state actor overtakes territory'):
+                            attributes[a].uniqueValues[k].color = '#ffff33';
+                            return;
+                        case ('Battle-No change of territory'):
+                            attributes[a].uniqueValues[k].color = '#4daf4a';
+                            return;
+                        case ('Battle-Government regains territory'):
+                            attributes[a].uniqueValues[k].color = '#a65628';
+                            return;
+                        default:
+                            attributes[a].uniqueValues[k].color = '#545454';
+                        }
+                    });
+                }
+
+
             } else {
                 attributes[a].color = colorbrewer[numericColorSchemes[numericCount % numericColorSchemes.length]]['3'][1];
                 attributes[a].colors = colorbrewer[numericColorSchemes[numericCount % numericColorSchemes.length]]['5'];
@@ -166,16 +203,15 @@ define([
         });
     };
 
-    dataloader.DataLoader.prototype.loadBuiltInData = function () {
+    dataloader.DataLoader.prototype.loadBuiltInData = function (builtInMetadataObj) {
         var that = this,
-            dataSet = builtinmetadata.getRawDataMetadataNigeria0813(),
             callBackOnLoad,
             callBackOnError,
             config;
 
         callBackOnLoad = function (results) {
-            var data = that.processData(results.data, dataSet.columns),
-                metadata = that.createMetadata(data, dataSet.columns);
+            var data = that.processData(results.data, builtInMetadataObj.columns),
+                metadata = that.createMetadata(data, builtInMetadataObj.columns);
             data = that.setAttributeNames(data, metadata);
             data = that.setBadValues(data, metadata);
             data = that.flattenAttributes(data);
@@ -204,7 +240,7 @@ define([
             fastMode: undefined
         };
 
-        Papa.parse(dataSet.fileName, config);
+        Papa.parse(builtInMetadataObj.fileName, config);
     };
 
     dataloader.DataLoader.prototype.notifyListeners = function (callbackStr, event) {

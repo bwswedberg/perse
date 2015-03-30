@@ -39,6 +39,16 @@ define([
         return this;
     };
 
+    categoricalplot.CategoricalPlot.prototype.destroy = function () {
+        this.svgChart.remove();
+        this.svgXAxis.remove();
+        this.svgLabel.remove();
+        $(this.container).find('svg').remove();
+        this.svgChart = undefined;
+        this.svgXAxis = undefined;
+        this.svgLabel = undefined;
+    };
+
     categoricalplot.CategoricalPlot.prototype.createToolbar = function () {
         var none = this.createNoneButton(),
             filterDiv = this.createFilterButton(),

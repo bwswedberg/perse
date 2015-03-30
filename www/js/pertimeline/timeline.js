@@ -39,6 +39,14 @@ define([
         return this;
     };
 
+    timeline.Timeline.prototype.destroy = function () {
+        if (this.svg) {
+            this.svg.remove();  // this.svg is a 'g'
+            $(this.container).find('svg').remove();
+            this.svg = undefined;
+        }
+    };
+
     timeline.Timeline.prototype.build = function (data) {
         var that = this,
             extent = {

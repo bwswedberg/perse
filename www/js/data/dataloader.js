@@ -104,7 +104,7 @@ define([
                             attributes[a].uniqueValues[k].color = '#e41a1c';
                             return;
                         case ('Riots/Protests'):
-                            attributes[a].uniqueValues[k].color = '#377eb8';
+                            attributes[a].uniqueValues[k].color = '#4daf4a';
                             return;
                         case ('Remote violence'):
                             attributes[a].uniqueValues[k].color = '#984ea3';
@@ -122,7 +122,7 @@ define([
                             attributes[a].uniqueValues[k].color = '#ffff33';
                             return;
                         case ('Battle-No change of territory'):
-                            attributes[a].uniqueValues[k].color = '#4daf4a';
+                            attributes[a].uniqueValues[k].color = '#377eb8';
                             return;
                         case ('Battle-Government regains territory'):
                             attributes[a].uniqueValues[k].color = '#a65628';

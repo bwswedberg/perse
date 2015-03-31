@@ -241,6 +241,11 @@
                         <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
                 on every view.</p>
 
+                <p>PerSE starts up with the Nigeria data set, but you can view another data set by clicking
+                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                        <span class="glyphicon glyphicon-import" aria-hidden="true"></span></button>
+                on the Main Toolbar and select a new data set. The interface should then change over to a the new data within 3 to 6 seconds... It's slow because some of the data sets are pretty large for PerSE.</p>
+
             </div>
 
         </div>
@@ -320,11 +325,13 @@
 
                 <p><em>Non-numerical</em> attributes like <strong>Event-Type</strong> and <strong>Actor</strong> are displayed as a bar-lots. Events are binned by unique values and symbolized as bars based on count (i.e. frequency) of events. To create a filter on the bar plot click individual bars on the bar plot.</p>
 
-                <p>Sometimes there can be a lot of unique values (i.e. the <strong>Actor</strong> attribute has +100 unique values). Therefore, the bar plot has two enhancements: a) the plot is scrollable and b) you can clear all unique values by clicking
-                <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
-                        <span class="glyphicon glyphicon-ban-circle"
+                <p>Since each unique value is assigned a rectangle and there could be a large amount of unique values (the <strong>Actor</strong> attribute has +100 unique values), this plot is scrollable! You can scroll the plot using the mouse wheel or the scroll bar.</p>
+
+                <p>Sometimes you may only want to view a single unique value, for instance "Boko Haram" <strong>Actor</strong> events. You can save your self a lot of time by clicking
+                    <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                            <span class="glyphicon glyphicon-ban-circle"
                               aria-hidden="true"></span></button>
-                to improve filter work-flow (see below).</p>
+                to clear all events, and then select the desired unique attribute value (see image below).</p>
 
                 <div class="row focus-image">
                     <div class="col-xs-12">
@@ -532,7 +539,7 @@
 
                 <h3>Wrap-Up</h3>
 
-                <p>Well, this is the end of the Quickstart section. If you have any questions about the views within PerSE check out the section on this page titled <a href="#group-views">Views</a>. In that section, I'll go over each top level view in much greater detail, including some background information, interactions, buttons, etc.</p>
+                <p>Well, this is the end of the Quickstart section. If you were confused or would like more detail on any of the views within PerSE, please check out the section on this page titled <a href="#group-views">Views</a>. In that section, I'll go over each top level view in much greater detail, including some background information, interactions, buttons, etc.</p>
 
                 <p>If you have any questions about the PerSE as a whole, for instance, technology used to build it, license, why it was developed, etc., you should check out the <a href="about.html">About</a> page.</p>
 
@@ -641,7 +648,7 @@
 
                         <p>If not all attribute values are numerical, then the attribute is determined to be a Non-numerical attribute, and will be displayed as a bar chart. Events are binned by unique values and symbolized as horizontal rectangles based on count (i.e. frequency) of events.</p>
 
-                        <p>Since each unique value is assigned a rectangle and there could be a large amount of unique values (the <strong>Actor</strong> attribute has +100 unique values), this plot is scrollable. You can scroll the plot using the mouse wheel or the scroll bar.</p>
+                        <p>Since each unique value is assigned a rectangle and there could be a large amount of unique values (the <strong>Actor</strong> attribute has +100 unique values), this plot is scrollable! You can scroll the plot using the mouse wheel or the scroll bar.</p>
 
                     </div>
 
@@ -663,7 +670,7 @@
                         <p>There are two ways to remove a filter on the histogram. Like all the other views you can remove the active filter by clicking
                             <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                        on the view's toolbar, or you can single click anywhere on the histogram.</p>
+                        on the view's tool-bar, or you can single click anywhere on the histogram.</p>
 
                         <div class="row focus-image">
                             <div class="col-xs-12">
@@ -793,6 +800,22 @@
 
                 <p>The Main Toolbar is a convenience toolbar used for syncing all views with a single command.</p>
 
+                <div class="row" id="subgroup-views-main-toolbar-change-data-set">
+
+                    <div class="content col-xs-12">
+
+                        <h4>Change Data Set</h4>
+
+                        <p>PerSE starts up with the Nigeria data set, but you can view another data set by clicking
+                            <button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-import" aria-hidden="true"></span></button>
+                        on the Main Toolbar and select a new data set. The interface should then change over to a the new data within 3 to 6 seconds... It's slow because some of the data sets are pretty large for PerSE.</p>
+
+                    </div>
+
+                </div>
+
+
                 <div class="row" id="subgroup-views-main-toolbar-calendar">
 
                     <div class="content col-xs-12">
@@ -833,6 +856,22 @@
 
                         <table class="table"><tbody>
                         <tr><th>#</th><th>Name</th><th>Description</th><th>Options</th></tr>
+                        <tr>
+                            <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
+                                <span class="glyphicon glyphicon-import" aria-hidden="true"></span></button></td>
+                            <td>Change Data Set</td>
+                            <td>View a different data set with PerSE.</td>
+                            <td>
+                                <ul class="list-unstyled">
+                                    <li><strong>C.A.R. 2000 - 2014:</strong> ACLED data set subset of Central African Republic.</li>
+                                    <li><strong>D.R.C. 2000 - 2014:</strong> ACLED data set subset of Democratic Republic of Congo.</li>
+                                    <li><strong>Egypt 1997 - 2014:</strong> ACLED data set subset of Egypt.</li>
+                                    <li><strong>Nigeria 2008 - 2014:</strong> ACLED data set subset of Nigeria.</li>
+                                    <li><strong>Somalia 2000 - 2014:</strong> ACLED data set subset of Somalia.</li>
+                                    <li><strong>Sudan 2000 - 2014:</strong> ACLED data set subset of Sudan including South Sudan (2011 - 2014).</li>
+                                </ul>
+                            </td>
+                        </tr>
                         <tr>
                             <td><button class="btn btn-default btn-xs" style="pointer-events:none;" type="button">
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span></button></td>

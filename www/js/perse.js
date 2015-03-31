@@ -55,9 +55,9 @@ define([
 
     perse.PerSE.prototype.build = function () {
         var largeLeft = $('<div>')
-                .attr({'class': 'col-xs-10', 'id': 'perse-large-left'}),
+                .attr({'class': 'col-xs-2', 'id': 'perse-large-left'}),
             largeRight = $('<div>')
-                .attr({'class': 'col-xs-2', 'id': 'perse-large-right'}),
+                .attr({'class': 'col-xs-10', 'id': 'perse-large-right'}),
             topRow = $('<div>')
                 .attr({'class': 'row', 'id': 'perse-top-row'})
                 .append(largeLeft, largeRight),
@@ -76,13 +76,13 @@ define([
 
         // permap section
         var perMap = new permap.PerMap()
-            .render(largeLeft)
+            .render(largeRight)
             .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perMap);
 
         // pertoolbar section
         new pertoolbar.PerToolbar()
-            .render(largeRight)
+            .render(largeLeft)
             .registerListener({
                 'context': this,
                 'onReset': function () {
@@ -99,13 +99,13 @@ define([
 
         // perattr section
         var perAttrs = new perattrs.PerAttrs()
-            .render(largeRight)
+            .render(largeLeft)
             .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perAttrs);
 
         // perwheel section
         var perWheel = new perwheel.PerWheel()
-            .render(largeRight, true)
+            .render(largeLeft, true)
             .setShouldAnimate(true)
             .registerListener(this.coordinator.createListener());
         this.coordinator.registerObserver(perWheel);

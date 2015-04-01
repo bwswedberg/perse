@@ -164,14 +164,6 @@ define([
             .attr('transform', 'translate(0, 0)')
             .attr('class', 'categoricalplot-axis')
             .call(xAxisBuilder);
-            /*
-            .append('text')
-            .attr('class', 'categoricalplot-axis-label')
-            .attr('transform', 'translate(' + (this.size.width / 2) + ',' + 23 + ')')
-            .attr('dy', '.71em')
-            .style('text-anchor', 'middle')
-            .text('Frequency');
-            */
     };
 
     categoricalplot.CategoricalPlot.prototype.buildChart = function (container, data) {
@@ -184,7 +176,7 @@ define([
             .attr('height', this.size.height + 'px')
             .attr('width', this.size.width + this.margin.left + this.margin.right + 'px')
             .append('g')
-            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
         this.svgChart.append('rect')
             .attr('x', 0)
@@ -227,7 +219,8 @@ define([
         bars.enter().append('g')
             .attr('class', 'categoricalplot-category')
             .on('mouseup', function () {
-                var name = d3.select(this).datum().name;
+                var d,
+                    name = d3.select(this).datum().name;
                 if (that.deselected.indexOf(name) < 0) {
                     that.deselected.push(d3.select(this).datum().name);
                 } else {
@@ -235,6 +228,8 @@ define([
                 }
                 that.validateButtons();
                 that.notifyListeners('onPlotSelectionChanged', {context: that});
+                d = d3.select(this).datum();
+                that.updateLabel('Count: ' + d.events[d.events.length - 1].count.end);
             })
             .on('mouseenter', function () {
                 var d = d3.select(this).datum(),

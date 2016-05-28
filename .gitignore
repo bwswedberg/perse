@@ -1,6 +1,5 @@
 workspace/
 dist
-img
 config
 .DS_Store
 *.zip

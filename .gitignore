@@ -1,0 +1,10 @@
+workspace/
+www/css/vendor/
+www/css/fonts/
+www/dataset/
+www/dist/
+www/js/lib/
+www/img
+www/config
+.DS_Store
+*.zip

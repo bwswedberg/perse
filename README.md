@@ -1,5 +1,5 @@
 # perse
-http://www.personal.psu.edu/bws180/perse/index.html
+[https://bwswedberg.github.io/perse](https://bwswedberg.github.io/perse)
 
 ## about
 Visual analytics for periodicity detection and analysis.

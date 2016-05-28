@@ -47,7 +47,7 @@ define([
 
         title = $('<p>')
             .attr({'class': 'perse-header-title'})
-            .text('Voronoi Subplots Map');
+            .text('Map');
 
         panelHeader = $('<div>')
             .attr({'class': 'panel-heading perse-panel-heading'})
